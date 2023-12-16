@@ -70,14 +70,10 @@ public class AdventOfCode16 {
     }
 
     private static class Tile {
-        int x;
-        int y;
         char type;
         boolean isEnergized;
 
-        Tile(int x, int y, char type) {
-            this.x = x;
-            this.y = y;
+        Tile(char type) {
             this.type = type;
         }
     }
@@ -93,12 +89,12 @@ public class AdventOfCode16 {
             grid = new Tile[width][height];
             for (int i = 0; i < height; i++) {
                 String line = lines.get(i);
-                for (int j = 0; j < width; j++) grid[j][i] = new Tile(j, i, line.charAt(j));
+                for (int j = 0; j < width; j++) grid[j][i] = new Tile(line.charAt(j));
             }
         }
 
         int getBestEnergizedConfiguration() {
-            Queue<Beam> beamsToTest = new LinkedList<>();
+            List<Beam> beamsToTest = new ArrayList<>();
             for (int i = 0; i < width; i++) {
                 beamsToTest.add(new Beam(i, 0, Dir.S));
                 beamsToTest.add(new Beam(i, height - 1, Dir.N));
@@ -108,8 +104,7 @@ public class AdventOfCode16 {
                 beamsToTest.add(new Beam(width - 1, i, Dir.W));
             }
             int bestEnergizedConfiguration = Integer.MIN_VALUE;
-            while (!beamsToTest.isEmpty()) {
-                Beam current = beamsToTest.remove();
+            for (Beam current : beamsToTest) {
                 resetEnergized();
                 processLight(current.x, current.y, current.dir);
                 int energized = getEnergized();
