@@ -50,7 +50,6 @@ public class AdventOfCode20 {
         }
 
         abstract List<Pulse> process(Pulse pulse);
-        abstract void reset();
     }
 
     private static class FlipFlop extends Module {
@@ -67,11 +66,6 @@ public class AdventOfCode20 {
             isOff = !isOff;
             return outputs.stream().map(o -> new Pulse(typeSent, name, o)).toList();
         }
-
-        @Override
-        void reset() {
-            isOff = true;
-        }
     }
 
     private static class Conjunction extends Module {
@@ -87,11 +81,6 @@ public class AdventOfCode20 {
             PulseType typeSent = inputsHistory.values().stream().allMatch(t -> t == PulseType.HIGH) ? PulseType.LOW : PulseType.HIGH;
             return outputs.stream().map(o -> new Pulse(typeSent, name, o)).toList();
         }
-
-        @Override
-        void reset() {
-            inputsHistory.replaceAll((i, v) -> PulseType.LOW);
-        }
     }
 
     private static class Broadcaster extends Module {
@@ -102,11 +91,6 @@ public class AdventOfCode20 {
         @Override
         List<Pulse> process(Pulse pulse) {
             return outputs.stream().map(o -> new Pulse(pulse.type, name, o)).toList();
-        }
-
-        @Override
-        void reset() {
-            // The broadcaster has nothing to do to reset
         }
     }
 
@@ -163,11 +147,6 @@ public class AdventOfCode20 {
             return lowPulses * highPulses;
         }
 
-        void reset() {
-            buttonPushes = 0;
-            modules.values().forEach(Module::reset);
-        }
-
         private static long gcd(long a, long b) {
             return a == 0 ? b : gcd(b % a, a);
         }
@@ -196,7 +175,6 @@ public class AdventOfCode20 {
             }
             network.setInputsOutputs(lines);
             LOGGER.info("PART 1: {}", warmup());
-            network.reset();
             LOGGER.info("PART 2: {}", turnMachineOn());
         }
     }
