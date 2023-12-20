@@ -22,17 +22,7 @@ public class AdventOfCode20 {
         LOW, HIGH
     }
 
-    private static class Pulse {
-        PulseType type;
-        String sourceModule;
-        String targetModule;
-
-        Pulse(PulseType type, String sourceModule, String targetModule) {
-            this.type = type;
-            this.sourceModule = sourceModule;
-            this.targetModule = targetModule;
-        }
-    }
+    private record Pulse(PulseType type, String sourceModule, String targetModule) {}
 
     private abstract static class Module {
         String name;
