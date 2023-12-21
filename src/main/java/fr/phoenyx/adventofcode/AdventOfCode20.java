@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.utils.MathUtils;
+
 public class AdventOfCode20 {
 
     private enum PulseType {
@@ -130,23 +132,11 @@ public class AdventOfCode20 {
 
         Optional<Long> getMachineTurnOnSteps() {
             if (cycles.values().stream().anyMatch(v -> v == 0)) return Optional.empty();
-            return cycles.values().stream().reduce((a, b) -> lcm(a, b).orElseThrow());
+            return cycles.values().stream().reduce(MathUtils::leastCommonMultiple);
         }
 
         long getValue() {
             return lowPulses * highPulses;
-        }
-
-        private static long gcd(long a, long b) {
-            return a == 0 ? b : gcd(b % a, a);
-        }
-
-        private static Optional<Long> lcm(long a, long b) {
-            try {
-                return Optional.of(a * b / gcd(a, b));
-            } catch (ArithmeticException e) {
-                return Optional.empty();
-            }
         }
     }
 
