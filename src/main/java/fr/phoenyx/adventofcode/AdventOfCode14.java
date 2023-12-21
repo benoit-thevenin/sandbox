@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.utils.MathUtils;
+
 public class AdventOfCode14 {
 
     private static class Platform {
@@ -116,25 +118,10 @@ public class AdventOfCode14 {
             for (int i = 0; i < lastIteration; i++) {
                 platform.spin();
                 loads.add(platform.getNorthLoad());
-                Optional<Integer> frequency = getFrequency(loads);
+                Optional<Integer> frequency = MathUtils.getFrequency(loads);
                 if (frequency.isPresent()) i += ((lastIteration - i) / frequency.get()) * frequency.get();
             }
             LOGGER.info("PART 2: {}, time elapsed: {}ms", platform.getNorthLoad(), (System.nanoTime() - begin) / 1000000);
         }
-    }
-
-    private static Optional<Integer> getFrequency(List<Integer> loads) {
-        int middleIndex = loads.size() / 2; // middleIndex is the maximum frequency that can be found given loads input
-        for (int i = 1; i < middleIndex; i++) {
-            boolean found = true;
-            for (int j = loads.size() - 1 - 2 * i; j < loads.size() - i; j++) {
-                if (!loads.get(j).equals(loads.get(j + i))) {
-                    found = false;
-                    break;
-                }
-            }
-            if (found) return Optional.of(i);
-        }
-        return Optional.empty();
     }
 }
