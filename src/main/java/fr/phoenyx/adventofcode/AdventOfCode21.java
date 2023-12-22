@@ -11,57 +11,27 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.AbstractGrid;
+import fr.phoenyx.models.Coord;
+import fr.phoenyx.models.Dir;
+
 public class AdventOfCode21 {
 
-    private enum Dir {
-        N(0, -1),
-        E(1, 0),
-        S(0, 1),
-        W(-1, 0);
-
-        final int dx;
-        final int dy;
-
-        Dir(int dx, int dy) {
-            this.dx = dx;
-            this.dy = dy;
-        }
-    }
-
-    private static class Point {
-        int x;
-        int y;
+    private static class Point extends Coord {
         boolean isWalkable;
 
         Point(int x, int y, boolean isWalkable) {
-            this.x = x;
-            this.y = y;
+            super(x, y);
             this.isWalkable = isWalkable;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Point other = (Point) o;
-            return x == other.x && y == other.y;
-        }
-
-        @Override
-        public int hashCode() {
-            return x + 1000 * y;
         }
     }
 
-    private static class Garden {
-        int width;
-        int height;
+    private static class Garden extends AbstractGrid {
         Point[][] map;
         Point start;
 
         Garden(List<String> lines) {
-            width = lines.iterator().next().length();
-            height = lines.size();
+            super(lines);
             map = new Point[width][height];
             for (int i = 0; i < height; i++) {
                 String line = lines.get(i);
@@ -73,7 +43,7 @@ public class AdventOfCode21 {
         }
 
         long getReacheableCellsIn(int steps) {
-            Set<Point> reacheableCells = new HashSet<>();
+            Set<Coord> reacheableCells = new HashSet<>();
             List<Long> lengths = new ArrayList<>();
             reacheableCells.add(start);
             for (int i = 1; i <= steps; i++) {
@@ -88,11 +58,11 @@ public class AdventOfCode21 {
             return a * n * n + b * n + lengths.get(0);
         }
 
-        private Set<Point> getNextReacheableCells(Set<Point> reacheableCells) {
-            Set<Point> nextReacheableCells = new HashSet<>();
-            for (Point point : reacheableCells) {
-                for (Dir dir : Dir.values()) {
-                    Point neighbour = new Point(point.x + dir.dx, point.y + dir.dy, true);
+        private Set<Coord> getNextReacheableCells(Set<Coord> reacheableCells) {
+            Set<Coord> nextReacheableCells = new HashSet<>();
+            for (Coord coord : reacheableCells) {
+                for (Dir dir : Dir.fourNeighboursValues()) {
+                    Coord neighbour = coord.move(dir);
                     int x = neighbour.x % width;
                     if (x < 0) x += width;
                     int y = neighbour.y % height;

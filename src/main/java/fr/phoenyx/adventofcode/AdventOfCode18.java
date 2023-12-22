@@ -9,22 +9,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.Dir;
+
 public class AdventOfCode18 {
-
-    private enum Dir {
-        R(1, 0),
-        D(0, 1),
-        L(-1, 0),
-        U(0, -1);
-
-        final int dx;
-        final int dy;
-
-        Dir(int dx, int dy) {
-            this.dx = dx;
-            this.dy = dy;
-        }
-    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode18.class);
 
@@ -40,6 +27,7 @@ public class AdventOfCode18 {
     }
 
     private static long getLagoonArea(List<String> lines, boolean part1) {
+        char[] dirs = "RDLU".toCharArray();
         long currentX = 0;
         long currentY = 0;
         long perimeter = 0;
@@ -48,7 +36,7 @@ public class AdventOfCode18 {
             String[] split = line.split(" ");
             String hexInstruction = split[2].replaceAll("[(#)]", "");
             long steps = part1 ? Long.parseLong(split[1]) : Long.parseLong(hexInstruction.substring(0, 5), 16);
-            Dir dir = part1 ? Dir.valueOf(split[0]) : Dir.values()[Integer.parseInt(hexInstruction.substring(5, 6))];
+            Dir dir = part1 ? Dir.fromChar(split[0].charAt(0)) : Dir.fromChar(dirs[Integer.parseInt(hexInstruction.substring(5, 6))]);
             long nextX = currentX + steps * dir.dx;
             long nextY = currentY + steps * dir.dy;
             perimeter += steps;

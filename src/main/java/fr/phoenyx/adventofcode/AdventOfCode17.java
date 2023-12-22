@@ -15,52 +15,16 @@ import java.util.Queue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.CharGrid;
+import fr.phoenyx.models.Coord;
+import fr.phoenyx.models.Dir;
+
 public class AdventOfCode17 {
 
-    private enum Dir {
-        N(0, -1),
-        E(1, 0),
-        S(0, 1),
-        W(-1, 0);
-
-        final int dx;
-        final int dy;
-
-        Dir(int dx, int dy) {
-            this.dx = dx;
-            this.dy = dy;
-        }
-
-        Dir getOpposite() {
-            if (this == N) return S;
-            if (this == E) return W;
-            return this == S ? N : E;
-        }
-
-        List<Dir> getPossibleDirs(int steps, int minStreak, int maxStreak) {
-            if (steps < minStreak) return List.of(this);
-            Dir opposite = getOpposite();
-            List<Dir> possibleDirs = new ArrayList<>();
-            if (steps == maxStreak) {
-                for (Dir dir : values()) if (dir != this && dir != opposite) possibleDirs.add(dir);
-            } else for (Dir dir : values()) if (dir != opposite) possibleDirs.add(dir);
-            return possibleDirs;
-        }
-    }
-
-    private static class City {
-        final int width;
-        final int height;
-        final int[][] grid;
+    private static class City extends CharGrid {
 
         City(List<String> lines) {
-            width = lines.iterator().next().length();
-            height = lines.size();
-            grid = new int[width][height];
-            for (int i = 0; i < height; i++) {
-                String line = lines.get(i);
-                for (int j = 0; j < width; j++) grid[j][i] = line.charAt(j) - '0';
-            }
+            super(lines);
         }
 
         int getMinHeatLoss(int minStreak, int maxStreak) {
@@ -70,14 +34,14 @@ public class AdventOfCode17 {
             Queue<Node> toVisit = new LinkedList<>(heatLosses.keySet());
             while (!toVisit.isEmpty()) {
                 Node current = toVisit.remove();
-                List<Dir> possibleDirs = current.dir.getPossibleDirs(current.steps, minStreak, maxStreak);
+                List<Dir> possibleDirs = current.dir.getFourNeighboursPossibleDirs(current.steps, minStreak, maxStreak);
                 for (Dir dir : possibleDirs) {
                     int x = current.x + dir.dx;
                     int y = current.y + dir.dy;
                     if (isInGrid(x, y)) {
                         int steps = dir == current.dir ? current.steps + 1 : 1;
                         Node node = new Node(x, y, dir, steps);
-                        int heatLoss = heatLosses.get(current) + grid[x][y];
+                        int heatLoss = heatLosses.get(current) + get(x, y);
                         if (!heatLosses.containsKey(node) || heatLosses.get(node) > heatLoss) {
                             heatLosses.put(node, heatLoss);
                             toVisit.add(node);
@@ -93,20 +57,17 @@ public class AdventOfCode17 {
                 .reduce(Integer::min).orElseThrow();
         }
 
-        private boolean isInGrid(int x, int y) {
-            return x >= 0 && y >= 0 && x < width && y < height;
+        private int get(int x, int y) {
+            return grid[x][y] - '0';
         }
     }
 
-    private static class Node {
-        int x;
-        int y;
+    private static class Node extends Coord {
         Dir dir;
         int steps;
 
         Node(int x, int y, Dir dir, int steps) {
-            this.x = x;
-            this.y = y;
+            super(x, y);
             this.dir = dir;
             this.steps = steps;
         }

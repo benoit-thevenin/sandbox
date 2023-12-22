@@ -45,10 +45,7 @@ public class AdventOfCode04 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/adventofcode04.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                currentLine = currentLine.replace("  ", " ");
-                CARDS.add(new Card(currentLine));
-            }
+            while ((currentLine = reader.readLine()) != null) CARDS.add(new Card(currentLine.replace("  ", " ")));
             setCardsQuantity();
             LOGGER.info("PART 1: {}", CARDS.stream().map(c -> c.score).reduce(Integer::sum).orElse(0));
             LOGGER.info("PART 2: {}", CARDS.stream().map(c -> c.quantity).reduce(Integer::sum).orElse(0));

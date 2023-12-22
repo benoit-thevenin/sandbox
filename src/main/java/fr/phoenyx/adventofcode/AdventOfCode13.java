@@ -9,21 +9,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.CharGrid;
+
 public class AdventOfCode13 {
 
-    private static class Pattern {
-        int width;
-        int height;
-        char[][] grid;
-
+    private static class Pattern extends CharGrid {
         Pattern(List<String> lines) {
-            width = lines.iterator().next().length();
-            height = lines.size();
-            grid = new char[width][height];
-            for (int i = 0; i < height; i++) {
-                String line = lines.get(i);
-                for (int j = 0; j < width; j++) grid[j][i] = line.charAt(j);
-            }
+            super(lines);
         }
 
         int getReflectionValue(int errorCount) {
