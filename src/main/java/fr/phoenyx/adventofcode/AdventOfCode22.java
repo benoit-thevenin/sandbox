@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -48,17 +50,15 @@ public class AdventOfCode22 {
             end.z--;
         }
 
-        boolean isHorizontallyCrossing(Brick other) {
-            int minX = Math.min(start.x, end.x);
-            int maxX = Math.max(start.x, end.x);
-            int otherMinX = Math.min(other.start.x, other.end.x);
-            int otherMaxX = Math.max(other.start.x, other.end.x);
-            if (maxX < otherMinX || minX > otherMaxX) return false;
-            int minY = Math.min(start.y, end.y);
-            int maxY = Math.max(start.y, end.y);
-            int otherMinY = Math.min(other.start.y, other.end.y);
-            int otherMaxY = Math.max(other.start.y, other.end.y);
-            return maxY >= otherMinY && minY <= otherMaxY;
+        void up() {
+            start.z++;
+            end.z++;
+        }
+
+        boolean isIntersecting(Brick other) {
+            return Math.max(start.x, end.x) >= Math.min(other.start.x, other.end.x) && Math.min(start.x, end.x) <= Math.max(other.start.x, other.end.x)
+                && Math.max(start.y, end.y) >= Math.min(other.start.y, other.end.y) && Math.min(start.y, end.y) <= Math.max(other.start.y, other.end.y)
+                && Math.max(start.z, end.z) >= Math.min(other.start.z, other.end.z) && Math.min(start.z, end.z) <= Math.max(other.start.z, other.end.z);
         }
     }
 
@@ -68,48 +68,60 @@ public class AdventOfCode22 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/adventofcode22.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String test = """
-                1,0,1~1,2,1
-                0,0,2~2,0,2
-                0,2,3~2,2,3
-                0,0,4~0,2,4
-                2,0,5~2,2,5
-                0,1,6~2,1,6
-                1,1,8~1,1,9
-                """;
-            for (String s : test.split("\n")) bricks.add(new Brick(s));
-            stabilizeBricks();
-            LOGGER.info("TEST 1: {}", getDisintegrableBricks().size());
-            bricks.clear();
             String currentLine;
             while ((currentLine = reader.readLine()) != null) bricks.add(new Brick(currentLine));
+            long begin = System.nanoTime();
             stabilizeBricks();
-            LOGGER.info("PART 1: {}", getDisintegrableBricks().size());
+            LOGGER.info("PART 1: {}, time elapsed: {}ms", getDisintegrableBricks().size(), (System.nanoTime() - begin) / 1000000);
+            begin = System.nanoTime();
+            LOGGER.info("PART 2: {}, time elapsed: {}ms", computeResult(), (System.nanoTime() - begin) / 1000000);
         }
     }
 
     private static void stabilizeBricks() {
         bricks.sort(Comparator.comparingInt(Brick::getHeight));
         for (Brick brick : bricks) {
-            setSupportedBy(brick);
-            while (brick.supportedBy.isEmpty() && brick.getHeight() > 0) {
+            List<Brick> intersectingBricks = getIntersectingBricks(brick);
+            while (intersectingBricks.isEmpty() && brick.getHeight() > 0) {
                 brick.fall();
-                setSupportedBy(brick);
+                intersectingBricks = getIntersectingBricks(brick);
+            }
+            if (!intersectingBricks.isEmpty()) {
+                brick.up();
+                for (Brick intersecting : intersectingBricks) {
+                    intersecting.supports.add(brick);
+                    brick.supportedBy.add(intersecting);
+                }
             }
         }
     }
 
-    private static void setSupportedBy(Brick brick) {
-        bricks.stream().filter(b -> b.getHeight() == brick.getHeight() - 1 && brick.isHorizontallyCrossing(b))
-            .forEach(support -> {
-                support.supports.add(brick);
-                brick.supportedBy.add(support);
-            });
+    private static List<Brick> getIntersectingBricks(Brick brick) {
+        return bricks.stream().filter(b -> b != brick && brick.isIntersecting(b)).toList();
     }
 
     private static List<Brick> getDisintegrableBricks() {
         return bricks.stream()
             .filter(brick -> brick.supports.stream().allMatch(b -> b.supportedBy.size() > 1))
             .toList();
+    }
+
+    private static int computeResult() {
+        int result = 0;
+        for (Brick brick : bricks) {
+            if (brick.supports.isEmpty()) continue;
+            Set<Brick> falling = new HashSet<>();
+            falling.add(brick);
+            Queue<Brick> toVisit = new LinkedList<>(brick.supports);
+            while (!toVisit.isEmpty()) {
+                Brick current = toVisit.remove();
+                if (falling.containsAll(current.supportedBy)) {
+                    falling.add(current);
+                    toVisit.addAll(current.supports);
+                }
+            }
+            result += falling.size() - 1;
+        }
+        return result;
     }
 }
