@@ -54,7 +54,7 @@ public class AdventOfCode09 {
             int previousValue = 0;
             for (int i = sequences.size() - 2; i >= 0; i--) {
                 int[] sequence = sequences.get(i);
-                nextValue = nextValue + sequence[sequence.length - 1];
+                nextValue += sequence[sequence.length - 1];
                 previousValue = sequence[0] - previousValue;
             }
             resultPart1 += nextValue;

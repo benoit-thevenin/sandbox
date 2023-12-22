@@ -15,43 +15,17 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.AbstractGrid;
+import fr.phoenyx.models.Coord;
+import fr.phoenyx.models.Dir;
+
 public class AdventOfCode16 {
 
-    private enum Dir {
-        N(0, -1),
-        E(1, 0),
-        S(0, 1),
-        W(-1, 0);
-
-        final int dx;
-        final int dy;
-
-        Dir(int dx, int dy) {
-            this.dx = dx;
-            this.dy = dy;
-        }
-
-        Dir getMirroredDir(char tileType) {
-            if (tileType != '/' && tileType != '\\') throw new IllegalArgumentException("Can't get mirrored dir when not hitting a mirror");
-            if (tileType == '/') {
-                if (this == N) return E;
-                if (this == E) return N;
-                return this == S ? W : S;
-            }
-            if (this == N) return W;
-            if (this == E) return S;
-            return this == S ? E : N;
-        }
-    }
-
-    private static class Beam {
-        int x;
-        int y;
+    private static class Beam extends Coord {
         Dir dir;
 
         Beam(int x, int y, Dir dir) {
-            this.x = x;
-            this.y = y;
+            super(x, y);
             this.dir = dir;
         }
 
@@ -78,14 +52,11 @@ public class AdventOfCode16 {
         }
     }
 
-    private static class Contraption {
-        int width;
-        int height;
+    private static class Contraption extends AbstractGrid {
         Tile[][] grid;
 
         Contraption(List<String> lines) {
-            width = lines.iterator().next().length();
-            height = lines.size();
+            super(lines);
             grid = new Tile[width][height];
             for (int i = 0; i < height; i++) {
                 String line = lines.get(i);
@@ -130,10 +101,6 @@ public class AdventOfCode16 {
                     }
                 }
             }
-        }
-
-        private boolean isInGrid(int x, int y) {
-            return x >= 0 && y >= 0 && x < width && y < height;
         }
 
         private boolean isBeamPassingThrough(char tileType, Beam beam) {

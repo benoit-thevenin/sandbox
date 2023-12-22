@@ -10,23 +10,14 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.CharGrid;
 import fr.phoenyx.utils.MathUtils;
 
 public class AdventOfCode14 {
 
-    private static class Platform {
-        final int width;
-        final int height;
-        final char[][] grid;
-
+    private static class Platform extends CharGrid {
         Platform(List<String> lines) {
-            width = lines.iterator().next().length();
-            height = lines.size();
-            grid = new char[width][height];
-            for (int i = 0; i < height; i++) {
-                String line = lines.get(i);
-                for (int j = 0; j < width; j++) grid[j][i] = line.charAt(j);
-            }
+            super(lines);
         }
 
         void spin() {

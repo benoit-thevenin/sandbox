@@ -99,7 +99,7 @@ public class AdventOfCode19 {
 
         long getCombinations() {
             long result = 1;
-            for (char c : new char[]{'x', 'm', 'a', 's'}) result *= getRangeLength(c);
+            for (char c : "xmas".toCharArray()) result *= getRangeLength(c);
             return result;
         }
 
