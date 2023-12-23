@@ -60,10 +60,11 @@ public class AdventOfCode23 {
             int maxLength = 0;
             for (Link link : position.links) {
                 if (!visited.contains(link.target)) {
-                    int length = getLongestHikeLength(link.target, new HashSet<>(visited), steps + link.weight);
+                    int length = getLongestHikeLength(link.target, visited, steps + link.weight);
                     if (length > maxLength) maxLength = length;
                 }
             }
+            visited.remove(position);
             return maxLength;
         }
     }
@@ -147,17 +148,24 @@ public class AdventOfCode23 {
 
         private int getLongestHikeLength(Point position, Set<Point> visited) {
             if (position == exit) return visited.size();
+            Set<Point> added = new HashSet<>();
+            added.add(position);
             visited.add(position);
             List<Point> nextPositions = getNextPositions(position, visited, position.getPossibleDirs());
             while (nextPositions.size() == 1) {
                 Point next = nextPositions.get(0);
-                if (next == exit) return visited.size();
+                if (next == exit) {
+                    int result = visited.size();
+                    visited.removeAll(added);
+                    return result;
+                }
+                added.add(next);
                 visited.add(next);
                 nextPositions = getNextPositions(next, visited, next.getPossibleDirs());
             }
             int maxLength = 0;
             for (Point next : nextPositions) {
-                int length = getLongestHikeLength(next, new HashSet<>(visited));
+                int length = getLongestHikeLength(next, visited);
                 if (length > maxLength) maxLength = length;
             }
             return maxLength;
