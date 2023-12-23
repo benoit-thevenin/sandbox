@@ -15,11 +15,17 @@ public class AdventOfCode01 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2015/adventofcode01.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
+            int result1 = 0;
+            int result2 = -1;
             while ((currentLine = reader.readLine()) != null) {
-                // TODO do something
+                for (int i = 0; i < currentLine.length(); i++) {
+                    if (currentLine.charAt(i) == '(') result1++;
+                    else result1--;
+                    if (result2 == -1 && result1 < 0) result2 = i + 1;
+                }
             }
-            LOGGER.info("PART 1: {}", 0);
-            LOGGER.info("PART 2: {}", 0);
+            LOGGER.info("PART 1: {}", result1);
+            LOGGER.info("PART 2: {}", result2);
         }
     }
 }
