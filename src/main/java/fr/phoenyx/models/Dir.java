@@ -48,6 +48,24 @@ public enum Dir {
         return this == NE || this == SW ? Set.of(NW, SE) : Set.of(NE, SW);
     }
 
+    public Dir fourNeighboursTurn(char turn) {
+        if (turn == 'R') return fourNeighboursTurnRight();
+        if (turn == 'L') return fourNeighboursTurnLeft();
+        throw new IllegalArgumentException("Unknown turn: " + turn);
+    }
+
+    public Dir fourNeighboursTurnRight() {
+        if (this == N) return E;
+        if (this == E) return S;
+        return this == S ? W : N;
+    }
+
+    public Dir fourNeighboursTurnLeft() {
+        if (this == N) return W;
+        if (this == E) return N;
+        return this == S ? E : S;
+    }
+
     public Dir getMirroredDir(char tileType) {
         if (tileType != '/' && tileType != '\\') throw new IllegalArgumentException("Can't get mirrored dir when not hitting a mirror");
         if (tileType == '/') {
