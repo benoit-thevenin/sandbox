@@ -61,7 +61,7 @@ public class AdventOfCode21 {
         private Set<Coord> getNextReacheableCells(Set<Coord> reacheableCells) {
             Set<Coord> nextReacheableCells = new HashSet<>();
             for (Coord coord : reacheableCells) {
-                for (Dir dir : Dir.fourNeighboursValues()) {
+                for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                     Coord neighbour = coord.move(dir);
                     int x = neighbour.x % width;
                     if (x < 0) x += width;

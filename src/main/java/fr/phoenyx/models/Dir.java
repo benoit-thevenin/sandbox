@@ -14,6 +14,8 @@ public enum Dir {
     W(-1, 0),
     NW(-1, -1);
 
+    public static final List<Dir> FOUR_NEIGHBOURS_VALUES = List.of(N, E, S, W);
+
     public final int dx;
     public final int dy;
 
@@ -23,15 +25,11 @@ public enum Dir {
     }
 
     public static Dir fromChar(char c) {
-        if (c == 'U' || c == 'N') return N;
-        if (c == 'R' || c == 'E') return E;
-        if (c == 'D' || c == 'S') return S;
-        if (c == 'L' || c == 'W') return W;
+        if (c == 'U' || c == 'N' || c == '^') return N;
+        if (c == 'R' || c == 'E' || c == '>') return E;
+        if (c == 'D' || c == 'S' || c == 'v') return S;
+        if (c == 'L' || c == 'W' || c == '<') return W;
         throw new IllegalArgumentException("Unknown Dir: " + c);
-    }
-
-    public static List<Dir> fourNeighboursValues() {
-        return List.of(N, E, S, W);
     }
 
     public Dir getOpposite() {
@@ -67,8 +65,8 @@ public enum Dir {
         Dir opposite = getOpposite();
         List<Dir> possibleDirs = new ArrayList<>();
         if (steps == maxStreak) {
-            for (Dir dir : fourNeighboursValues()) if (dir != this && dir != opposite) possibleDirs.add(dir);
-        } else for (Dir dir : fourNeighboursValues()) if (dir != opposite) possibleDirs.add(dir);
+            for (Dir dir : FOUR_NEIGHBOURS_VALUES) if (dir != this && dir != opposite) possibleDirs.add(dir);
+        } else for (Dir dir : FOUR_NEIGHBOURS_VALUES) if (dir != opposite) possibleDirs.add(dir);
         return possibleDirs;
     }
 }

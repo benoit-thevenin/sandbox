@@ -85,7 +85,7 @@ public class AdventOfCode10 {
 
         private void setStartPipe() {
             Set<Dir> startConnectedDirs = new HashSet<>();
-            for (Dir dir : Dir.fourNeighboursValues()) {
+            for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                 int x = start.x + dir.dx;
                 int y = start.y + dir.dy;
                 if (isInGrid(x, y) && grid[x][y].pipe != null && grid[x][y].pipe.getConnectedDirs().contains(dir.getOpposite()))
@@ -136,7 +136,7 @@ public class AdventOfCode10 {
         }
 
         private void setOutsideNeighbourFlags(Point current) {
-            List<Dir> dirs = Dir.fourNeighboursValues();
+            List<Dir> dirs = Dir.FOUR_NEIGHBOURS_VALUES;
             for (int i = 0; i < dirs.size(); i++) {
                 Dir dir = dirs.get(i);
                 int x = current.x + dir.dx;
