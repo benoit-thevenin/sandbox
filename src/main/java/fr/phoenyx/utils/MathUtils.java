@@ -40,4 +40,21 @@ public class MathUtils {
         }
         return Optional.empty();
     }
+
+    public static double getDeterminant(double[][] matrix) {
+        if (matrix.length < 2 || matrix.length != matrix[0].length) throw new IllegalArgumentException("Only works on square matrix");
+        if (matrix.length == 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        double determinant = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            double ai = Math.pow(-1, i) * matrix[0][i];
+            double[][] cofactor = new double[matrix.length - 1][matrix.length - 1];
+            for (int k = 0; k < cofactor.length; k++) {
+                for (int l = 0; l < cofactor.length; l++) {
+                    cofactor[k][l] = matrix[k + 1][l < i ? l : l + 1];
+                }
+            }
+            determinant += ai * getDeterminant(cofactor);
+        }
+        return determinant;
+    }
 }
