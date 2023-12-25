@@ -72,7 +72,7 @@ public class AdventOfCode24 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) hailstones.add(new Hailstone(currentLine));
             LOGGER.info("PART 1: {}", countHorizontalCollides());
-            LOGGER.info("PART 2: {}", computeThrowPosition()); // expected 568386357876600
+            LOGGER.info("PART 2: {}", computeThrowPosition()); // expected 568386357876600 -> [vx, vy, vz] = [71, 189, 249]
         }
     }
 
@@ -92,7 +92,7 @@ public class AdventOfCode24 {
         Hailstone hailstone1 = hailstones.get(0);
         Hailstone hailstone2 = hailstones.get(1);
         Hailstone hailstone3 = hailstones.get(2);
-        for (int vx = -500; vx <= 500; vx++) {
+        for (int vx = 0; vx <= 500; vx++) {
             if ((vx + 500) % 10 == 0) LOGGER.info("Testing vx = {}", vx);
             for (int vy = -500; vy <= 500; vy++) {
                 for (int vz = -500; vz <= 500; vz++) {
@@ -142,7 +142,10 @@ public class AdventOfCode24 {
                         {0, 0, 0, vx - hailstone2.vx, vy - hailstone2.vy}
                     }) / delta;
                     long sum = Math.round(x + y + z);
-                    if (sum == 568386357876600L || hailstone3.isPathHorizontallyCrossing(new Hailstone(x, y, z, vx, vy, vz))) return sum;
+                    boolean isCrossing = hailstone3.isPathHorizontallyCrossing(new Hailstone(x, y, z, vx, vy, vz));
+                    if (sum == 568386357876600L) {
+                        LOGGER.info("Found candidate: {}, {}, {} @ {}, {}, {} (sum {}, isCrossing {})", x, y, z, vx, vy, vz, sum, isCrossing);
+                    }
                 }
             }
         }
