@@ -33,31 +33,22 @@ public class AdventOfCode24 {
             vz = Double.parseDouble(stringVelocities[2]);
         }
 
-        Hailstone(double x, double y, double z, double vx, double vy, double vz) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.vx = vx;
-            this.vy = vy;
-            this.vz = vz;
-        }
-
-        boolean isPathHorizontallyCrossing(Hailstone other) {
-            double denominator = getDenominator(other);
+        boolean isPathCrossingXY(Hailstone other) {
+            double denominator = getDenominator(vx, vy, other.vx, other.vy);
             if (denominator == 0) return false;
-            double t = getNumerator(other) / denominator;
+            double t = getNumerator(x, y, other.x, other.y, other.vx, other.vy) / denominator;
             if (t < 0 || (x - other.x + t * vx) / other.vx < 0) return false;
-            double px = x + t * vx;
-            double py = y + t * vy;
-            return px >= MIN_COORDINATE && px <= MAX_COORDINATE && py >= MIN_COORDINATE && py <= MAX_COORDINATE;
+            double pa = x + t * vx;
+            double pb = y + t * vy;
+            return pa >= MIN_COORDINATE && pa <= MAX_COORDINATE && pb >= MIN_COORDINATE && pb <= MAX_COORDINATE;
         }
 
-        double getDenominator(Hailstone other) {
-            return vy - vx * other.vy / other.vx;
+        double getDenominator(double v1, double v2, double v3, double v4) {
+            return v2 - v1 * v4 / v3;
         }
 
-        double getNumerator(Hailstone other) {
-            return other.y - y + (x - other.x) / other.vx * other.vy;
+        double getNumerator(double a, double b, double c, double d, double v1, double v2) {
+            return d - b + (a - c) / v1 * v2;
         }
     }
 
@@ -72,7 +63,7 @@ public class AdventOfCode24 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) hailstones.add(new Hailstone(currentLine));
             LOGGER.info("PART 1: {}", countHorizontalCollides());
-            LOGGER.info("PART 2: {}", computeThrowPosition()); // expected 568386357876600 -> [vx, vy, vz] = [71, 189, 249]
+            LOGGER.info("PART 2: {}", computeThrowPosition()); // expected 568386357876600
         }
     }
 
@@ -82,73 +73,48 @@ public class AdventOfCode24 {
             Hailstone hailstone1 = hailstones.get(i);
             for (int j = i + 1; j < hailstones.size(); j++) {
                 Hailstone hailstone2 = hailstones.get(j);
-                if (hailstone1.isPathHorizontallyCrossing(hailstone2)) result++;
+                if (hailstone1.isPathCrossingXY(hailstone2)) result++;
             }
         }
         return result;
     }
 
     private static long computeThrowPosition() {
-        Hailstone hailstone1 = hailstones.get(0);
-        Hailstone hailstone2 = hailstones.get(1);
-        Hailstone hailstone3 = hailstones.get(2);
-        for (int vx = 0; vx <= 500; vx++) {
-            if ((vx + 500) % 10 == 0) LOGGER.info("Testing vx = {}", vx);
-            for (int vy = -500; vy <= 500; vy++) {
-                for (int vz = -500; vz <= 500; vz++) {
-                    double delta = MathUtils.getDeterminant(new double[][]{
-                        {1, 0, 0, 1, 0},
-                        {0, 1, 0, 0, 1},
-                        {0, 0, 1, 0, 0},
-                        {vx - hailstone1.vx, vy - hailstone1.vy, vz - hailstone1.vz, 0, 0},
-                        {0, 0, 0, vx - hailstone2.vx, vy - hailstone2.vy}
-                    });
-                    if (delta == 0) continue;
-                    double t1 = MathUtils.getDeterminant(new double[][]{
-                        {1, 0, 0, 1, 0},
-                        {0, 1, 0, 0, 1},
-                        {0, 0, 1, 0, 0},
-                        {hailstone1.x, hailstone1.y, hailstone1.z, hailstone2.x, hailstone2.y},
-                        {0, 0, 0, vx - hailstone2.vx, vy - hailstone2.vy}
-                    }) / delta;
-                    if (t1 < 0) continue;
-                    double t2 = MathUtils.getDeterminant(new double[][]{
-                        {1, 0, 0, 1, 0},
-                        {0, 1, 0, 0, 1},
-                        {0, 0, 1, 0, 0},
-                        {vx - hailstone1.vx, vy - hailstone1.vy, vz - hailstone1.vz, 0, 0},
-                        {hailstone1.x, hailstone1.y, hailstone1.z, hailstone2.x, hailstone2.y}
-                    }) / delta;
-                    if (t2 < 0) continue;
-                    double x = MathUtils.getDeterminant(new double[][]{
-                        {hailstone1.x, hailstone1.y, hailstone1.z, hailstone2.x, hailstone2.y},
-                        {0, 1, 0, 0, 1},
-                        {0, 0, 1, 0, 0},
-                        {vx - hailstone1.vx, vy - hailstone1.vy, vz - hailstone1.vz, 0, 0},
-                        {0, 0, 0, vx - hailstone2.vx, vy - hailstone2.vy}
-                    }) / delta;
-                    double y = MathUtils.getDeterminant(new double[][]{
-                        {1, 0, 0, 1, 0},
-                        {hailstone1.x, hailstone1.y, hailstone1.z, hailstone2.x, hailstone2.y},
-                        {0, 0, 1, 0, 0},
-                        {vx - hailstone1.vx, vy - hailstone1.vy, vz - hailstone1.vz, 0, 0},
-                        {0, 0, 0, vx - hailstone2.vx, vy - hailstone2.vy}
-                    }) / delta;
-                    double z = MathUtils.getDeterminant(new double[][]{
-                        {1, 0, 0, 1, 0},
-                        {0, 1, 0, 0, 1},
-                        {hailstone1.x, hailstone1.y, hailstone1.z, hailstone2.x, hailstone2.y},
-                        {vx - hailstone1.vx, vy - hailstone1.vy, vz - hailstone1.vz, 0, 0},
-                        {0, 0, 0, vx - hailstone2.vx, vy - hailstone2.vy}
-                    }) / delta;
-                    long sum = Math.round(x + y + z);
-                    boolean isCrossing = hailstone3.isPathHorizontallyCrossing(new Hailstone(x, y, z, vx, vy, vz));
-                    if (sum == 568386357876600L) {
-                        LOGGER.info("Found candidate: {}, {}, {} @ {}, {}, {} (sum {}, isCrossing {})", x, y, z, vx, vy, vz, sum, isCrossing);
-                    }
-                }
-            }
+        Hailstone a = hailstones.get(0);
+        Hailstone b = hailstones.get(1);
+        Hailstone c = hailstones.get(2);
+        double[][] matrix = new double[][]{
+            {a.vy - b.vy, a.vy - c.vy, b.vz - a.vz, c.vz - a.vz, 0, 0},
+            {b.vx - a.vx, c.vx - a.vx, 0, 0, a.vz - b.vz, a.vz - c.vz},
+            {0, 0, a.vx - b.vx, a.vx - c.vx, b.vy - a.vy, c.vy - a.vy},
+            {b.y - a.y, c.y - a.y, a.z - b.z, a.z - c.z, 0, 0},
+            {a.x - b.x, a.x - c.x, 0, 0, b.z - a.z, c.z - a.z},
+            {0, 0, b.x - a.x, c.x - a.x, a.y - b.y, a.y - c.y}
+        };
+        double delta = MathUtils.getDeterminant(matrix);
+        if (delta == 0) throw new IllegalArgumentException("Change the stones ?");
+        double[] vector = new double[]{
+            (b.y * b.vx - b.x * b.vy) - (a.y * a.vx - a.x * a.vy),
+            (c.y * c.vx - c.x * c.vy) - (a.y * a.vx - a.x * a.vy),
+            (b.x * b.vz - b.z * b.vx) - (a.x * a.vz - a.z * a.vx),
+            (c.x * c.vz - c.z * c.vx) - (a.x * a.vz - a.z * a.vx),
+            (b.z * b.vy - b.y * b.vz) - (a.z * a.vy - a.y * a.vz),
+            (c.z * c.vy - c.y * c.vz) - (a.z * a.vy - a.y * a.vz)
+        };
+        double x = getNumerator(matrix, vector, 0) / delta;
+        double y = getNumerator(matrix, vector, 1) / delta;
+        double z = getNumerator(matrix, vector, 2) / delta;
+        return Math.round(x + y + z);
+    }
+
+    private static double getNumerator(double[][] matrix, double[] vector, int col) {
+        double[] save = new double[vector.length];
+        for (int i = 0; i < vector.length; i++) {
+            save[i] = matrix[col][i];
+            matrix[col][i] = vector[i];
         }
-        return 0;
+        double numerator = MathUtils.getDeterminant(matrix);
+        System.arraycopy(save, 0, matrix[col], 0, vector.length);
+        return numerator;
     }
 }
