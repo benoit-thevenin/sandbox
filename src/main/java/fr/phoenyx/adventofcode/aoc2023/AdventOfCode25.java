@@ -41,8 +41,8 @@ public class AdventOfCode25 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) processInputLine(currentLine);
-            LOGGER.info("PART 1: {}", cutThreeLinks());
-            LOGGER.info("PART 2: {}", 0);
+            long begin = System.nanoTime();
+            LOGGER.info("SOLUTION: {}, time elapsed: {}ms", cutThreeLinks(), (System.nanoTime() - begin) / 1000000);
         }
     }
 
@@ -66,19 +66,12 @@ public class AdventOfCode25 {
     }
 
     private static int cutThreeLinks() {
-        Set<Link> deletedLinks = new HashSet<>();
         for (int i = 0; i < 3; i++) {
             Link criticalLink = getCriticalLink();
-            deletedLinks.add(criticalLink);
             nodes.get(criticalLink.node1.name).links.remove(criticalLink);
             nodes.get(criticalLink.node2.name).links.remove(criticalLink);
         }
-        int result = getSubgraphsSize();
-        for (Link link : deletedLinks) {
-            nodes.get(link.node1.name).links.add(link);
-            nodes.get(link.node2.name).links.add(link);
-        }
-        return result;
+        return getSubgraphsSize();
     }
 
     private static Link getCriticalLink() {
