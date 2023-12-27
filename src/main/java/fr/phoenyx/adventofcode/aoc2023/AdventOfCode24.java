@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,15 @@ public class AdventOfCode24 {
         double vx;
         double vy;
         double vz;
+
+        Hailstone(double x, double y, double z, double vx, double vy, double vz) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.vx = vx;
+            this.vy = vy;
+            this.vz = vz;
+        }
 
         Hailstone(String line) {
             String[] split = line.split(" @ ");
@@ -63,7 +73,7 @@ public class AdventOfCode24 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) hailstones.add(new Hailstone(currentLine));
             LOGGER.info("PART 1: {}", countHorizontalCollides());
-            LOGGER.info("PART 2: {}", computeThrowPosition()); // expected 568386357876600
+            LOGGER.info("PART 2: {}", computeThrowPosition());
         }
     }
 
@@ -80,9 +90,15 @@ public class AdventOfCode24 {
     }
 
     private static long computeThrowPosition() {
-        Hailstone a = hailstones.get(0);
-        Hailstone b = hailstones.get(1);
-        Hailstone c = hailstones.get(2);
+        // Here, we arbitrary take 3 hailstones to solve the system.
+        // But as shown by the LOGGER below, there are imprecisions in the double calculations required to solve the system.
+        // Therefore, using another set of hailstones might round the result differently and yield an answer considered wrong (but very close)
+        Hailstone rock = buildRock(hailstones.get(0), hailstones.get(1), hailstones.get(2)).orElseThrow();
+        LOGGER.info("Found rock: {}, {}, {} @ {}, {}, {}", rock.x, rock.y, rock.z, rock.vx, rock.vy, rock.vz);
+        return Math.round(rock.x + rock.y + rock.z);
+    }
+
+    private static Optional<Hailstone> buildRock(Hailstone a, Hailstone b, Hailstone c) {
         double[][] matrix = new double[][]{
             {a.vy - b.vy, a.vy - c.vy, b.vz - a.vz, c.vz - a.vz, 0, 0},
             {b.vx - a.vx, c.vx - a.vx, 0, 0, a.vz - b.vz, a.vz - c.vz},
@@ -92,7 +108,7 @@ public class AdventOfCode24 {
             {0, 0, b.x - a.x, c.x - a.x, a.y - b.y, a.y - c.y}
         };
         double delta = MathUtils.getDeterminant(matrix);
-        if (delta == 0) throw new IllegalArgumentException("Change the stones ?");
+        if (delta == 0) return Optional.empty();
         double[] vector = new double[]{
             (b.y * b.vx - b.x * b.vy) - (a.y * a.vx - a.x * a.vy),
             (c.y * c.vx - c.x * c.vy) - (a.y * a.vx - a.x * a.vy),
@@ -104,7 +120,10 @@ public class AdventOfCode24 {
         double x = getNumerator(matrix, vector, 0) / delta;
         double y = getNumerator(matrix, vector, 1) / delta;
         double z = getNumerator(matrix, vector, 2) / delta;
-        return Math.round(x + y + z);
+        double vx = getNumerator(matrix, vector, 3) / delta;
+        double vy = getNumerator(matrix, vector, 4) / delta;
+        double vz = getNumerator(matrix, vector, 5) / delta;
+        return Optional.of(new Hailstone(x, y, z, vx, vy, vz));
     }
 
     private static double getNumerator(double[][] matrix, double[] vector, int col) {
