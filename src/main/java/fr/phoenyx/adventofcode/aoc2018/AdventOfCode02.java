@@ -3,6 +3,10 @@ package fr.phoenyx.adventofcode.aoc2018;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +18,40 @@ public class AdventOfCode02 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2018/adventofcode02.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            List<String> ids = new ArrayList<>();
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                // TODO do something
-            }
-            LOGGER.info("PART 1: {}", 0);
-            LOGGER.info("PART 2: {}", 0);
+            while ((currentLine = reader.readLine()) != null) ids.add(currentLine);
+            LOGGER.info("PART 1: {}", getChecksum(ids));
+            LOGGER.info("PART 2: {}", getCommonLettersFromIds(ids));
         }
+    }
+
+    private static int getChecksum(List<String> ids) {
+        int twoSameLettersCount = 0;
+        int threeSameLettersCount = 0;
+        for (String id : ids) {
+            Map<Character, Integer> letterCount = new HashMap<>();
+            for (int i = 0; i < id.length(); i++) {
+                char c = id.charAt(i);
+                if (letterCount.containsKey(c)) letterCount.put(c, letterCount.get(c) + 1);
+                else letterCount.put(c, 1);
+            }
+            if (letterCount.values().stream().anyMatch(c -> c == 2)) twoSameLettersCount++;
+            if (letterCount.values().stream().anyMatch(c -> c == 3)) threeSameLettersCount++;
+        }
+        return twoSameLettersCount * threeSameLettersCount;
+    }
+
+    private static String getCommonLettersFromIds(List<String> ids) {
+        for (int i = 0; i < ids.size() - 1; i++) {
+            String id1 = ids.get(i);
+            for (int j = i + 1; j < ids.size(); j++) {
+                String id2 = ids.get(j);
+                StringBuilder result = new StringBuilder();
+                for (int k = 0; k < id1.length(); k++) if (id1.charAt(k) == id2.charAt(k)) result.append(id1.charAt(k));
+                if (result.length() == id1.length() - 1) return result.toString();
+            }
+        }
+        throw new IllegalArgumentException("Not found");
     }
 }
