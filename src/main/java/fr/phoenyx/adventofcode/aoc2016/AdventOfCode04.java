@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class AdventOfCode04 {
 
     private static class Room {
-        String encryptedName = "";
+        String encryptedName;
         int sectorId;
         String checksum;
 
@@ -45,6 +45,14 @@ public class AdventOfCode04 {
             }
             return true;
         }
+
+        String getDecryptedName() {
+            StringBuilder name = new StringBuilder();
+            for (int i = 0; i < encryptedName.length(); i++) {
+                name.append((char) (((encryptedName.charAt(i) - 'a' + sectorId) % 26) + 'a'));
+            }
+            return name.toString();
+        }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode04.class);
@@ -56,7 +64,7 @@ public class AdventOfCode04 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) rooms.add(new Room(currentLine));
             LOGGER.info("PART 1: {}", rooms.stream().filter(Room::isReal).map(r -> r.sectorId).reduce(Integer::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", 0);
+            LOGGER.info("PART 2: {}", rooms.stream().filter(r -> r.getDecryptedName().contains("northpoleobjects")).map(r -> r.sectorId).findAny().orElseThrow());
         }
     }
 }
