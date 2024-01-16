@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -12,61 +13,33 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.models.Range;
+
 public class AdventOfCode05 {
 
-    private static class Range {
-        long destinationStart;
-        long sourceStart;
-        long length;
+    private static class MappingRange {
+        Range destinationRange;
+        Range sourceRange;
 
-        Range(long destinationStart, long sourceStart, long length) {
-            this.destinationStart = destinationStart;
-            this.sourceStart = sourceStart;
-            this.length = length;
-        }
-
-        Range(String line) {
-            this(Long.parseLong(line.split(" ")[0]), Long.parseLong(line.split(" ")[1]), Long.parseLong(line.split(" ")[2]));
-        }
-
-        boolean isSourceInRange(long source) {
-            return source >= sourceStart && sourceStart + length > source;
+        MappingRange(String line) {
+            String[] split = line.split(" ");
+            long destinationStart = Long.parseLong(split[0]);
+            long sourceStart = Long.parseLong(split[1]);
+            long length = Long.parseLong(split[2]);
+            destinationRange = Range.buildFromStartAndLength(destinationStart, length);
+            sourceRange = Range.buildFromStartAndLength(sourceStart, length);
         }
 
         long getDestination(long source) {
-            return source - sourceStart + destinationStart;
-        }
-
-        Optional<SeedRange> intersection(SeedRange seedRange) {
-            if (seedRange.start + seedRange.length <= sourceStart
-             || sourceStart + length <= seedRange.start) return Optional.empty();
-            long start = Math.max(seedRange.start, sourceStart);
-            long end = Math.min(seedRange.start + seedRange.length, sourceStart + length);
-            return Optional.of(new SeedRange(start, end - start));
-        }
-    }
-
-    private static class SeedRange implements Comparable<SeedRange> {
-        long start;
-        long length;
-
-        SeedRange(long start, long length) {
-            this.start = start;
-            this.length = length;
-        }
-
-        @Override
-        public int compareTo(SeedRange o) {
-            return Long.compare(start, o.start);
+            return source - sourceRange.start + destinationRange.start;
         }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode05.class);
 
     private static final List<List<Long>> seedValues = new ArrayList<>();
-    private static final List<List<SeedRange>> seedRanges = new ArrayList<>();
-
-    private static final List<List<Range>> ranges = new ArrayList<>();
+    private static final List<List<Range>> seedRanges = new ArrayList<>();
+    private static final List<List<MappingRange>> ranges = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2023/adventofcode05.txt";
@@ -80,15 +53,15 @@ public class AdventOfCode05 {
                     String[] split = currentLine.split("seeds: ")[1].split(" ");
                     seedValues.get(0).addAll(Arrays.stream(split).map(Long::parseLong).toList());
                     for (int i = 0; i < split.length; i += 2)
-                        seedRanges.get(0).add(new SeedRange(Long.parseLong(split[i]), Long.parseLong(split[i + 1])));
+                        seedRanges.get(0).add(Range.buildFromStartAndLength(Long.parseLong(split[i]), Long.parseLong(split[i + 1])));
                 }
                 else if (currentLine.contains("-")) ranges.add(new ArrayList<>());
-                else ranges.get(ranges.size() - 1).add(new Range(currentLine));
+                else ranges.get(ranges.size() - 1).add(new MappingRange(currentLine));
             }
             setSeedValues();
             setSeedRanges();
             LOGGER.info("PART 1: {}", seedValues.get(seedValues.size() - 1).stream().sorted().findFirst().orElseThrow());
-            LOGGER.info("PART 2: {}", seedRanges.get(seedRanges.size() - 1).stream().sorted().findFirst().orElseThrow().start);
+            LOGGER.info("PART 2: {}", seedRanges.get(seedRanges.size() - 1).stream().min(Comparator.comparingLong(r -> r.start)).orElseThrow().start);
         }
     }
 
@@ -96,9 +69,9 @@ public class AdventOfCode05 {
         for (int i = 0; i < ranges.size(); i++) {
             List<Long> sourceValues = seedValues.get(i);
             List<Long> destinationValues = new ArrayList<>();
-            List<Range> map = ranges.get(i);
+            List<MappingRange> map = ranges.get(i);
             for (long source : sourceValues) {
-                long destination = map.stream().filter(r -> r.isSourceInRange(source)).findFirst().map(r -> r.getDestination(source)).orElse(source);
+                long destination = map.stream().filter(r -> r.sourceRange.isInRange(source)).findFirst().map(r -> r.getDestination(source)).orElse(source);
                 destinationValues.add(destination);
             }
             seedValues.add(destinationValues);
@@ -107,15 +80,19 @@ public class AdventOfCode05 {
 
     private static void setSeedRanges() {
         for (int i = 0; i < ranges.size(); i++) {
-            List<SeedRange> sourceRanges = seedRanges.get(i);
-            List<SeedRange> destinationRanges = new ArrayList<>();
-            List<Range> map = ranges.get(i);
-            for (SeedRange source : sourceRanges) {
-                List<SeedRange> destinations = map.stream().map(r -> r.intersection(source)).filter(Optional::isPresent).map(Optional::get).sorted().toList();
-                List<SeedRange> unmapped = getUnmapped(source, destinations);
-                for (SeedRange seedRange : destinations) {
-                    Range range = map.stream().filter(r -> r.intersection(seedRange).isPresent()).findFirst().orElseThrow();
-                    destinationRanges.add(new SeedRange(range.destinationStart, seedRange.length));
+            List<Range> sourceRanges = seedRanges.get(i);
+            List<Range> destinationRanges = new ArrayList<>();
+            List<MappingRange> map = ranges.get(i);
+            for (Range source : sourceRanges) {
+                List<Range> destinations = map.stream()
+                    .map(r -> r.sourceRange.intersection(source))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .sorted(Comparator.comparingLong(r -> r.start)).toList();
+                List<Range> unmapped = getUnmapped(source, destinations);
+                for (Range seedRange : destinations) {
+                    MappingRange mappingRange = map.stream().filter(r -> r.sourceRange.intersection(seedRange).isPresent()).findFirst().orElseThrow();
+                    destinationRanges.add(Range.buildFromStartAndLength(mappingRange.destinationRange.start, seedRange.length));
                 }
                 destinationRanges.addAll(unmapped);
             }
@@ -123,21 +100,21 @@ public class AdventOfCode05 {
         }
     }
 
-    private static List<SeedRange> getUnmapped(SeedRange source, List<SeedRange> destinations) {
+    private static List<Range> getUnmapped(Range source, List<Range> destinations) {
         if (destinations.isEmpty()) return List.of(source);
-        List<SeedRange> unmapped = new ArrayList<>();
-        Iterator<SeedRange> iterator = destinations.iterator();
-        SeedRange current = iterator.next();
+        List<Range> unmapped = new ArrayList<>();
+        Iterator<Range> iterator = destinations.iterator();
+        Range current = iterator.next();
         if (current.start > source.start)
-            unmapped.add(new SeedRange(source.start, current.start - source.start));
+            unmapped.add(Range.buildFromStartAndLength(source.start, current.start - source.start));
         while (iterator.hasNext()) {
-            SeedRange previous = current;
+            Range previous = current;
             current = iterator.next();
             if (previous.start + previous.length < current.start)
-                unmapped.add(new SeedRange(previous.start + previous.length, current.start - previous.start - previous.length));
+                unmapped.add(Range.buildFromStartAndLength(previous.start + previous.length, current.start - previous.start - previous.length));
         }
         if (current.start + current.length < source.start + source.length)
-            unmapped.add(new SeedRange(current.start + current.length, source.start + source.length - current.start - current.length));
+            unmapped.add(Range.buildFromStartAndLength(current.start + current.length, source.start + source.length - current.start - current.length));
         return unmapped;
     }
 }
