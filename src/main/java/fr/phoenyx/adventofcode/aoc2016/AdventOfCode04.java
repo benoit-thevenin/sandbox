@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import fr.phoenyx.utils.Utils;
 
 public class AdventOfCode04 {
 
@@ -28,12 +29,7 @@ public class AdventOfCode04 {
         }
 
         boolean isReal() {
-            Map<Character, Integer> letterCount = new HashMap<>();
-            for (int i = 0; i < encryptedName.length(); i++) {
-                char c = encryptedName.charAt(i);
-                if (letterCount.containsKey(c)) letterCount.put(c, letterCount.get(c) + 1);
-                else letterCount.put(c, 1);
-            }
+            Map<Character, Integer> letterCount = Utils.getLetterCount(encryptedName);
             List<Character> computedChecksum = letterCount.keySet().stream()
                 .sorted((c1, c2) -> {
                     int compare = Integer.compare(letterCount.get(c2), letterCount.get(c1));
