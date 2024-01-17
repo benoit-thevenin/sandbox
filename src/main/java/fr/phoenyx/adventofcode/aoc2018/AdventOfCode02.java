@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import fr.phoenyx.utils.Utils;
 
 public class AdventOfCode02 {
 
@@ -30,12 +31,7 @@ public class AdventOfCode02 {
         int twoSameLettersCount = 0;
         int threeSameLettersCount = 0;
         for (String id : ids) {
-            Map<Character, Integer> letterCount = new HashMap<>();
-            for (int i = 0; i < id.length(); i++) {
-                char c = id.charAt(i);
-                if (letterCount.containsKey(c)) letterCount.put(c, letterCount.get(c) + 1);
-                else letterCount.put(c, 1);
-            }
+            Map<Character, Integer> letterCount = Utils.getLetterCount(id);
             if (letterCount.values().stream().anyMatch(c -> c == 2)) twoSameLettersCount++;
             if (letterCount.values().stream().anyMatch(c -> c == 3)) threeSameLettersCount++;
         }
