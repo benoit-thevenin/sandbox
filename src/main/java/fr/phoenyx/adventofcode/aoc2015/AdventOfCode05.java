@@ -3,8 +3,6 @@ package fr.phoenyx.adventofcode.aoc2015;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -13,7 +11,6 @@ import org.slf4j.LoggerFactory;
 public class AdventOfCode05 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode05.class);
-    private static final List<Character> vowels = List.of('a', 'e', 'i', 'o', 'u');
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2015/adventofcode05.txt";

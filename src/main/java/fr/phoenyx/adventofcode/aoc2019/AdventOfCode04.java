@@ -3,6 +3,7 @@ package fr.phoenyx.adventofcode.aoc2019;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,15 +38,10 @@ public class AdventOfCode04 {
 
     private static boolean isValid(int password, boolean part1) {
         String s = Integer.toString(password);
-        boolean hasAdjacentsSameDigits = false;
         for (int i = 0; i < s.length() - 1; i++) {
-            char c1 = s.charAt(i);
-            char c2 = s.charAt(i + 1);
-            if (c1 - c2 > 0) return false;
-            if (c1 == c2 && (part1 || (i == 0 || s.charAt(i - 1) != c1) && (i == s.length() - 2 || s.charAt(i + 2) != c1))) {
-                hasAdjacentsSameDigits = true;
-            }
+            if (s.charAt(i) - s.charAt(i + 1) > 0) return false;
         }
-        return hasAdjacentsSameDigits;
+        return part1 && Pattern.matches(".*([1-9])\\1.*", s)
+           || !part1 && Pattern.matches("([1-9])*((?!\\1)[1-9])\\2(?!\\2).*", s);
     }
 }
