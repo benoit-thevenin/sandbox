@@ -1,5 +1,6 @@
 package fr.phoenyx.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,5 +61,32 @@ public class MathUtils {
             determinant += ai * getDeterminant(cofactor);
         }
         return determinant;
+    }
+
+    public static List<int[]> getAllPermutations(int[] values) {
+        List<int[]> permutations = new ArrayList<>();
+        computePermutations(values.length, values, permutations);
+        return permutations;
+    }
+
+    private static void computePermutations(int n, int[] values, List<int[]> permutations) {
+        if (n == 1) {
+            int[] next = new int[values.length];
+            System.arraycopy(values, 0, next, 0, values.length);
+            permutations.add(next);
+        } else {
+            for (int i = 0; i < n - 1; i++) {
+                computePermutations(n - 1, values, permutations);
+                if (n % 2 == 0) swap(values, i, n - 1);
+                else swap(values, 0, n - 1);
+            }
+            computePermutations(n - 1, values, permutations);
+        }
+    }
+
+    private static void swap(int[] values, int index1, int index2) {
+        int tmp = values[index1];
+        values[index1] = values[index2];
+        values[index2] = tmp;
     }
 }
