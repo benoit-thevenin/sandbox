@@ -58,31 +58,27 @@ public class AdventOfCode08 {
         digitToSegments.put(7, inputs.stream().filter(i -> i.length() == 3).findFirst().orElseThrow());
         digitToSegments.put(8, inputs.stream().filter(i -> i.length() == 7).findFirst().orElseThrow());
 
-        Map<Character, Integer> letterCount4 = Utils.getLetterCount(digitToSegments.get(4));
-        Map<Character, Integer> letterCount7 = Utils.getLetterCount(digitToSegments.get(7));
+        Set<Character> letters4 = Utils.getLetterCount(digitToSegments.get(4)).keySet();
+        Set<Character> letters7 = Utils.getLetterCount(digitToSegments.get(7)).keySet();
 
         // Digit 6 is the only one of length 6 that does not fully contain segments of digit 7
-        digitToSegments.put(6, inputs.stream().filter(i -> i.length() == 6).filter(i -> {
-            Map<Character, Integer> letterCount = Utils.getLetterCount(i);
-            return !letterCount7.keySet().stream().allMatch(letterCount::containsKey);
-        }).findFirst().orElseThrow());
+        digitToSegments.put(6, inputs.stream().filter(i -> i.length() == 6)
+            .filter(i -> !Utils.getLetterCount(i).keySet().containsAll(letters7)).findFirst().orElseThrow());
         // Digit 9 fully contains segments of digit 4, while 0 doesn't
-        digitToSegments.put(9, inputs.stream().filter(i -> i.length() == 6 && !digitToSegments.containsValue(i)).filter(i -> {
-            Map<Character, Integer> letterCount = Utils.getLetterCount(i);
-            return letterCount4.keySet().stream().allMatch(letterCount::containsKey);
-        }).findFirst().orElseThrow());
+        digitToSegments.put(9, inputs.stream().filter(i -> i.length() == 6 && !digitToSegments.containsValue(i))
+            .filter(i -> Utils.getLetterCount(i).keySet().containsAll(letters4)).findFirst().orElseThrow());
         // Digit 0 is the last of length 6
         digitToSegments.put(0, inputs.stream().filter(i -> i.length() == 6 && !digitToSegments.containsValue(i)).findFirst().orElseThrow());
 
-        Map<Character, Integer> letterCount6 = Utils.getLetterCount(digitToSegments.get(6));
-        Map<Character, Integer> letterCount9 = Utils.getLetterCount(digitToSegments.get(9));
+        Set<Character> letters6 = Utils.getLetterCount(digitToSegments.get(6)).keySet();
+        Set<Character> letters9 = Utils.getLetterCount(digitToSegments.get(9)).keySet();
 
         // Digit 2 is the only one of length 5 that is not fully contained by segments of digit 9
         digitToSegments.put(2, inputs.stream().filter(i -> i.length() == 5)
-            .filter(i -> !Utils.getLetterCount(i).keySet().stream().allMatch(letterCount9::containsKey)).findFirst().orElseThrow());
+            .filter(i -> !letters9.containsAll(Utils.getLetterCount(i).keySet())).findFirst().orElseThrow());
         // Digit 5 is fully contained by segments of digit 6, while 3 doesn't
         digitToSegments.put(5, inputs.stream().filter(i -> i.length() == 5 && !digitToSegments.containsValue(i))
-            .filter(i -> Utils.getLetterCount(i).keySet().stream().allMatch(letterCount6::containsKey)).findFirst().orElseThrow());
+            .filter(i -> letters6.containsAll(Utils.getLetterCount(i).keySet())).findFirst().orElseThrow());
         // Digit 3 is the last digit
         digitToSegments.put(3, inputs.stream().filter(i -> !digitToSegments.containsValue(i)).findFirst().orElseThrow());
         return digitToSegments;
