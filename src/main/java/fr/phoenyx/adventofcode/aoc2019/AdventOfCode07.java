@@ -19,23 +19,23 @@ public class AdventOfCode07 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode07.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            int[] program = new int[0];
+            long[] program = new long[0];
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(",");
-                program = new int[split.length];
-                for (int i = 0; i < split.length; i++) program[i] = Integer.parseInt(split[i]);
+                program = new long[split.length];
+                for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
             }
             LOGGER.info("PART 1: {}", getMaximumThrustersOutput(program));
             LOGGER.info("PART 2: {}", getMaximumThrustersOutputWithFeedbackLoop(program));
         }
     }
 
-    private static int getMaximumThrustersOutput(int[] program) {
+    private static long getMaximumThrustersOutput(long[] program) {
         IntcodeComputer[] amplifiers = new IntcodeComputer[5];
-        int maxOutput = Integer.MIN_VALUE;
+        long maxOutput = Long.MIN_VALUE;
         List<int[]> permutations = MathUtils.getAllPermutations(new int[]{0, 1, 2, 3, 4});
         for (int i = 0; i < permutations.size() - 1; i++) {
-            int current = 0;
+            long current = 0;
             int[] phases = permutations.get(i);
             for (int j = 0; j < 5; j++) {
                 amplifiers[j] = new IntcodeComputer(program);
@@ -47,9 +47,9 @@ public class AdventOfCode07 {
         return maxOutput;
     }
 
-    private static int getMaximumThrustersOutputWithFeedbackLoop(int[] program) {
+    private static long getMaximumThrustersOutputWithFeedbackLoop(long[] program) {
         IntcodeComputer[] amplifiers = new IntcodeComputer[5];
-        int maxOutput = Integer.MIN_VALUE;
+        long maxOutput = Long.MIN_VALUE;
         List<int[]> permutations = MathUtils.getAllPermutations(new int[]{5, 6, 7, 8, 9});
         for (int i = 0; i < permutations.size() - 1; i++) {
             int[] phases = permutations.get(i);
@@ -57,9 +57,9 @@ public class AdventOfCode07 {
                 amplifiers[j] = new IntcodeComputer(program);
                 amplifiers[j].run(phases[j]);
             }
-            int current = 0;
+            long current = 0;
             while (true) {
-                int save = current;
+                long save = current;
                 current = amplifiers[0].run(current);
                 if (current == 0) {
                     current = save;
