@@ -3,6 +3,8 @@ package fr.phoenyx.adventofcode.aoc2019;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,32 +12,40 @@ import org.slf4j.LoggerFactory;
 public class AdventOfCode05 {
 
     public static class IntcodeComputer {
-        int[] program;
-        int index = 0;
+        final Map<Long, Long> program = new HashMap<>();
+        private long index = 0;
+        private long relativeBase = 0;
 
-        IntcodeComputer(int[] program) {
-            this.program = new int[program.length];
-            System.arraycopy(program, 0, this.program, 0, program.length);
+        IntcodeComputer(long[] program) {
+            for (int i = 0; i < program.length; i++) this.program.put((long) i, program[i]);
         }
 
-        int run(int parameter) {
+        long run(long parameter) {
             boolean parameterUsed = false;
             while (true) {
-                if (program[index] % 100 == 99) return 0;
-                int opCode = program[index] % 10;
-                int first = (program[index] / 100) % 10 == 0 ? program[program[index + 1]] : program[index + 1];
-                int second = 0;
-                if (opCode != 3 && opCode != 4) second = (program[index] / 1000) % 10 == 0 ? program[program[index + 2]] : program[index + 2];
+                long value0 = program.getOrDefault(index, 0L);
+                long value1 = program.getOrDefault(index + 1, 0L);
+                long value2 = program.getOrDefault(index + 2, 0L);
+                long value3 = program.getOrDefault(index + 3, 0L);
+                if (value0 % 100 == 99) return 0;
+                long opCode = value0 % 10;
+                long first = getParameter(value0, value1, 1);
+                long second = getParameter(value0, value2, 2);
                 if (opCode == 1) {
-                    program[program[index + 3]] = first + second;
+                    long result = first + second;
+                    if ((value0 / 10000) != 2) program.put(value3, result);
+                    else program.put(value3 + relativeBase, result);
                     index += 4;
                 } else if (opCode == 2) {
-                    program[program[index + 3]] = first * second;
+                    long result = first * second;
+                    if ((value0 / 10000) != 2) program.put(value3, result);
+                    else program.put(value3 + relativeBase, result);
                     index += 4;
                 } else if (opCode == 3) {
                     if (parameterUsed) return -2;
                     parameterUsed = true;
-                    program[program[index + 1]] = parameter;
+                    if ((value0 / 100) != 2) program.put(value1, parameter);
+                    else program.put(value1 + relativeBase, parameter);
                     index += 2;
                 } else if (opCode == 4) {
                     index += 2;
@@ -47,13 +57,28 @@ public class AdventOfCode05 {
                     if (first == 0) index = second;
                     else index += 3;
                 } else if (opCode == 7) {
-                    program[program[index + 3]] = first < second ? 1 : 0;
+                    long result = first < second ? 1L : 0;
+                    if ((value0 / 10000) != 2) program.put(value3, result);
+                    else program.put(value3 + relativeBase, result);
                     index += 4;
                 } else if (opCode == 8) {
-                    program[program[index + 3]] = first == second ? 1 : 0;
+                    long result = first == second ? 1L : 0;
+                    if ((value0 / 10000) != 2) program.put(value3, result);
+                    else program.put(value3 + relativeBase, result);
                     index += 4;
+                } else if (opCode == 9) {
+                    relativeBase += first;
+                    index += 2;
                 } else return -1;
             }
+        }
+
+        private long getParameter(long value0, long value, int index) {
+            int divisor = 10;
+            for (int i = 0; i < index; i++) divisor *= 10;
+            long mode = (value0 / divisor) % 10;
+            if (mode == 0) return program.getOrDefault(value, 0L);
+            return mode == 1 ? value : program.getOrDefault(relativeBase + value, 0L);
         }
     }
 
@@ -63,11 +88,11 @@ public class AdventOfCode05 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode05.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            int[] program = new int[0];
+            long[] program = new long[0];
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(",");
-                program = new int[split.length];
-                for (int i = 0; i < split.length; i++) program[i] = Integer.parseInt(split[i]);
+                program = new long[split.length];
+                for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
             }
             LOGGER.info("PART 1: {}", new IntcodeComputer(program).run(1));
             LOGGER.info("PART 2: {}", new IntcodeComputer(program).run(5));

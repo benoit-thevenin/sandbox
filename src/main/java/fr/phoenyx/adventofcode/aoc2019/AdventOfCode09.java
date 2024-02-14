@@ -7,6 +7,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.phoenyx.adventofcode.aoc2019.AdventOfCode05.IntcodeComputer;
+
 public class AdventOfCode09 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode09.class);
@@ -15,11 +17,14 @@ public class AdventOfCode09 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode09.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
+            long[] program = new long[0];
             while ((currentLine = reader.readLine()) != null) {
-                // TODO do something
+                String[] split = currentLine.split(",");
+                program = new long[split.length];
+                for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
             }
-            LOGGER.info("PART 1: {}", 0);
-            LOGGER.info("PART 2: {}", 0);
+            LOGGER.info("PART 1: {}", new IntcodeComputer(program).run(1));
+            LOGGER.info("PART 2: {}", new IntcodeComputer(program).run(2));
         }
     }
 }
