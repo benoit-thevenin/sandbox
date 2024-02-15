@@ -16,10 +16,31 @@ public class AdventOfCode10 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                // TODO do something
+                LOGGER.info("PART 1: {}", getLookAndSay(currentLine, 40).length());
+                LOGGER.info("PART 2: {}", getLookAndSay(currentLine, 50).length());
             }
-            LOGGER.info("PART 1: {}", 0);
-            LOGGER.info("PART 2: {}", 0);
         }
+    }
+
+    private static String getLookAndSay(String line, int iterations) {
+        String result = line;
+        for (int i = 0; i < iterations; i++) result = getNextLookAndSay(result);
+        return result;
+    }
+
+    private static String getNextLookAndSay(String s) {
+        StringBuilder sb = new StringBuilder();
+        int index = 0;
+        while (index < s.length()) {
+            char digit = s.charAt(index);
+            int count = 0;
+            while (index < s.length() && s.charAt(index) == digit) {
+                index++;
+                count++;
+            }
+            sb.append(count);
+            sb.append(digit);
+        }
+        return sb.toString();
     }
 }
