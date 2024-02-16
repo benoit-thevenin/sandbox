@@ -42,15 +42,14 @@ public class AdventOfCode08 {
 
     private static String printLayers(List<List<Integer>> layers) {
         StringBuilder sb = new StringBuilder();
-        sb.append('\n');
         for (int i = 0; i < 6; i++) {
+            sb.append('\n');
             for (int j = 0; j < 25; j++) {
                 int layerIndex = 0;
                 while (layers.get(layerIndex).get(j + 25 * i) == 2) layerIndex++;
                 if (layers.get(layerIndex).get(j + 25 * i) == 0) sb.append('.');
                 else sb.append('#');
             }
-            sb.append('\n');
         }
         return sb.toString();
     }
