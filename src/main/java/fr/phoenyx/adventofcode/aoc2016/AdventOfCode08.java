@@ -63,13 +63,12 @@ public class AdventOfCode08 {
 
     private static String printScreen(boolean[][] screen) {
         StringBuilder sb = new StringBuilder();
-        sb.append('\n');
         for (int i = 0; i < 6; i++) {
+            sb.append('\n');
             for (int j = 0; j < 50; j++) {
                 if (screen[j][i]) sb.append('#');
                 else sb.append('.');
             }
-            sb.append('\n');
         }
         return sb.toString();
     }
