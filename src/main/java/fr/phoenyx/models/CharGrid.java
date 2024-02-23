@@ -13,4 +13,10 @@ public class CharGrid extends AbstractGrid {
             for (int j = 0; j < width; j++) grid[j][i] = line.charAt(j);
         }
     }
+
+    public void copyGrid(char[][] next) {
+        if (next.length != width) throw new IllegalArgumentException("Widths do not match");
+        if (next[0].length != height) throw new IllegalArgumentException("Heights do not match");
+        for (int i = 0; i < width; i++) System.arraycopy(next[i], 0, grid[i], 0, height);
+    }
 }
