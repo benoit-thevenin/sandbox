@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 public class AdventOfCode05 {
 
     public static class IntcodeComputer {
-        final Map<Long, Long> program = new HashMap<>();
         private long index = 0;
         private long relativeBase = 0;
+        final Map<Long, Long> program = new HashMap<>();
+        boolean isHalted = false;
 
         IntcodeComputer(long[] program) {
             for (int i = 0; i < program.length; i++) this.program.put((long) i, program[i]);
@@ -27,7 +28,10 @@ public class AdventOfCode05 {
                 long value1 = program.getOrDefault(index + 1, 0L);
                 long value2 = program.getOrDefault(index + 2, 0L);
                 long value3 = program.getOrDefault(index + 3, 0L);
-                if (value0 % 100 == 99) return 0;
+                if (value0 % 100 == 99) {
+                    isHalted = true;
+                    return 0;
+                }
                 long opCode = value0 % 10;
                 long first = getParameter(value0, value1, 1);
                 long second = getParameter(value0, value2, 2);
@@ -49,7 +53,7 @@ public class AdventOfCode05 {
                     index += 2;
                 } else if (opCode == 4) {
                     index += 2;
-                    if (first != 0) return first;
+                    return first;
                 } else if (opCode == 5) {
                     if (first != 0) index = second;
                     else index += 3;
@@ -94,8 +98,15 @@ public class AdventOfCode05 {
                 program = new long[split.length];
                 for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
             }
-            LOGGER.info("PART 1: {}", new IntcodeComputer(program).run(1));
-            LOGGER.info("PART 2: {}", new IntcodeComputer(program).run(5));
+            LOGGER.info("PART 1: {}", getResult(program, 1));
+            LOGGER.info("PART 2: {}", getResult(program, 5));
         }
+    }
+
+    private static long getResult(long[] program, int parameter) {
+        IntcodeComputer computer = new IntcodeComputer(program);
+        long result = computer.run(parameter);
+        while (result == 0) result = computer.run(parameter);
+        return result;
     }
 }
