@@ -1,9 +1,9 @@
 package fr.phoenyx.models.coords;
 
 public class MovingCoord3 extends Coord3 {
-    final int vx;
-    final int vy;
-    final int vz;
+    public final int vx;
+    public final int vy;
+    public final int vz;
 
     public MovingCoord3(int x, int y, int z, int vx, int vy, int vz) {
         super(x, y, z);
