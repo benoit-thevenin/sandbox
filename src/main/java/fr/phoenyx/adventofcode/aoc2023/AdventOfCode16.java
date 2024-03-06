@@ -16,12 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.AbstractGrid;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode16 {
 
-    private static class Beam extends Coord {
+    private static class Beam extends Coord2 {
         Dir dir;
 
         Beam(int x, int y, Dir dir) {

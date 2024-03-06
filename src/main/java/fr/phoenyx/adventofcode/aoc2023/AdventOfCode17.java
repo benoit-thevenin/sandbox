@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.CharGrid;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode17 {
 
@@ -62,7 +62,7 @@ public class AdventOfCode17 {
         }
     }
 
-    private static class Node extends Coord {
+    private static class Node extends Coord2 {
         Dir dir;
         int steps;
 

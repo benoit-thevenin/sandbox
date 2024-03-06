@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
+import fr.phoenyx.models.coords.Coord2;
 
 public class AdventOfCode06 {
 
-    private static class Point extends Coord {
+    private static class Point extends Coord2 {
         int id = -1;
         boolean isOnEdge = false;
 

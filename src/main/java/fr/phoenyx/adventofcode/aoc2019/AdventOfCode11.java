@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.adventofcode.aoc2019.AdventOfCode05.IntcodeComputer;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode11 {
 
@@ -34,21 +34,21 @@ public class AdventOfCode11 {
 
     private static int countPaintedPanels(long[] program) {
         IntcodeComputer robot = new IntcodeComputer(program);
-        Map<Coord, Boolean> colors = new HashMap<>();
-        runRobot(robot, colors, new Coord(0, 0));
+        Map<Coord2, Boolean> colors = new HashMap<>();
+        runRobot(robot, colors, new Coord2(0, 0));
         return colors.size();
     }
 
     private static String getRegistrationIdentifier(long[] program) {
         IntcodeComputer robot = new IntcodeComputer(program);
-        Coord currentPos = new Coord(0, 0);
-        Map<Coord, Boolean> colors = new HashMap<>();
+        Coord2 currentPos = new Coord2(0, 0);
+        Map<Coord2, Boolean> colors = new HashMap<>();
         colors.put(currentPos, true);
         runRobot(robot, colors, currentPos);
         return getRegistrationIdentifier(colors);
     }
 
-    private static void runRobot(IntcodeComputer robot, Map<Coord, Boolean> colors, Coord currentPos) {
+    private static void runRobot(IntcodeComputer robot, Map<Coord2, Boolean> colors, Coord2 currentPos) {
         Dir currentDir = Dir.N;
         while (true) {
             int nextInput = 0;
@@ -63,7 +63,7 @@ public class AdventOfCode11 {
         }
     }
 
-    private static String getRegistrationIdentifier(Map<Coord, Boolean> colors) {
+    private static String getRegistrationIdentifier(Map<Coord2, Boolean> colors) {
         StringBuilder sb = new StringBuilder();
         int minX = colors.keySet().stream().map(c -> c.x).min(Integer::compare).orElseThrow();
         int maxX = colors.keySet().stream().map(c -> c.x).max(Integer::compare).orElseThrow();
@@ -72,7 +72,7 @@ public class AdventOfCode11 {
         for (int i = minY; i <= maxY; i++) {
             sb.append('\n');
             for (int j = minX; j <= maxX; j++) {
-                Coord current = new Coord(j, i);
+                Coord2 current = new Coord2(j, i);
                 if (colors.containsKey(current) && colors.get(current) == Boolean.TRUE) sb.append('#');
                 else sb.append('.');
             }

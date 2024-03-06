@@ -9,13 +9,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode03 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode03.class);
-    private static final Coord accessPort = new Coord(0, 0);
+    private static final Coord2 accessPort = new Coord2(0, 0);
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2017/adventofcode03.txt";
@@ -28,7 +28,7 @@ public class AdventOfCode03 {
         }
     }
 
-    private static Coord getCoordinates(int value) {
+    private static Coord2 getCoordinates(int value) {
         if (value < 1) throw new IllegalArgumentException("Value must be greater than 0");
         if (value == 1) return accessPort;
         int baseX = 0;
@@ -39,7 +39,7 @@ public class AdventOfCode03 {
             baseX++;
             baseY++;
         }
-        if (squareValue * squareValue == value) return new Coord(baseX, baseY);
+        if (squareValue * squareValue == value) return new Coord2(baseX, baseY);
         int inc = 1;
         int offsetX = 1;
         int offsetY = 0;
@@ -50,18 +50,18 @@ public class AdventOfCode03 {
             else offsetX++;
             inc++;
         }
-        return new Coord(baseX + offsetX, baseY + offsetY);
+        return new Coord2(baseX + offsetX, baseY + offsetY);
     }
 
     private static int getFirstValueGreaterThan(int input) {
         int value = 1;
-        Map<Coord, Integer> coordValues = new HashMap<>();
+        Map<Coord2, Integer> coordValues = new HashMap<>();
         coordValues.put(accessPort, value);
         while (value <= input) {
-            Coord coord = getCoordinates(coordValues.size() + 1);
+            Coord2 coord = getCoordinates(coordValues.size() + 1);
             value = 0;
             for (Dir dir : Dir.values()) {
-                Coord neighbour = coord.move(dir);
+                Coord2 neighbour = coord.move(dir);
                 if (coordValues.containsKey(neighbour)) value += coordValues.get(neighbour);
             }
             coordValues.put(coord, value);

@@ -13,23 +13,23 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode03 {
 
     private static class Wire {
-        Map<Coord, Integer> stepsByCoord = new HashMap<>();
+        Map<Coord2, Integer> stepsByCoord = new HashMap<>();
 
         Wire(String line) {
-            Coord current = START;
+            Coord2 current = START;
             int totalSteps = 0;
             for (String s : line.split(",")) {
                 Dir dir = Dir.fromChar(s.charAt(0));
                 int steps = Integer.parseInt(s.substring(1));
                 for (int i = 0; i < steps; i++) {
                     totalSteps++;
-                    Coord next = current.move(dir);
+                    Coord2 next = current.move(dir);
                     stepsByCoord.putIfAbsent(next, totalSteps);
                     current = next;
                 }
@@ -38,7 +38,7 @@ public class AdventOfCode03 {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode03.class);
-    private static final Coord START = new Coord(0, 0);
+    private static final Coord2 START = new Coord2(0, 0);
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode03.txt";
@@ -48,10 +48,10 @@ public class AdventOfCode03 {
             while ((currentLine = reader.readLine()) != null) wires.add(new Wire(currentLine));
             Wire wire1 = wires.get(0);
             Wire wire2 = wires.get(1);
-            Set<Coord> crossingCoords = wire1.stepsByCoord.keySet().stream().filter(c -> wire2.stepsByCoord.containsKey(c)).collect(Collectors.toSet());
+            Set<Coord2> crossingCoords = wire1.stepsByCoord.keySet().stream().filter(c -> wire2.stepsByCoord.containsKey(c)).collect(Collectors.toSet());
             int minDistance = Integer.MAX_VALUE;
             int minSteps = Integer.MAX_VALUE;
-            for (Coord coord : crossingCoords) {
+            for (Coord2 coord : crossingCoords) {
                 int distance = coord.manhattanDistanceTo(START);
                 int steps = wire1.stepsByCoord.get(coord) + wire2.stepsByCoord.get(coord);
                 if (distance < minDistance) minDistance = distance;

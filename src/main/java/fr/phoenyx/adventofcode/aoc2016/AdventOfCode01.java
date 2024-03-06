@@ -9,8 +9,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode01 {
 
@@ -23,8 +23,8 @@ public class AdventOfCode01 {
             int x = 0;
             int y = 0;
             Dir dir = Dir.N;
-            Set<Coord> visited = new HashSet<>();
-            visited.add(new Coord(x, y));
+            Set<Coord2> visited = new HashSet<>();
+            visited.add(new Coord2(x, y));
             int hqDistance = -1;
             while ((currentLine = reader.readLine()) != null) {
                 String[] instructions = currentLine.split(", ");
@@ -35,7 +35,7 @@ public class AdventOfCode01 {
                         x += dir.dx;
                         y += dir.dy;
                         if (hqDistance == -1) {
-                            Coord next = new Coord(x, y);
+                            Coord2 next = new Coord2(x, y);
                             if (visited.contains(next)) hqDistance = Math.abs(x) + Math.abs(y);
                             else visited.add(next);
                         }

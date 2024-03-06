@@ -11,7 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
+import fr.phoenyx.models.coords.Coord2;
 
 public class AdventOfCode05 {
 
@@ -39,14 +39,14 @@ public class AdventOfCode05 {
             return x1 == x2;
         }
 
-        List<Coord> getCoords() {
-            List<Coord> coords = new ArrayList<>();
+        List<Coord2> getCoords() {
+            List<Coord2> coords = new ArrayList<>();
             int length = isHorizontal() ? Math.abs(x1 - x2) : Math.abs(y1 - y2);
             int offsetX = x1 < x2 ? 1 : -1;
             int offsetY = y1 < y2 ? 1 : -1;
             if (isHorizontal()) offsetY = 0;
             else if (isVertical()) offsetX = 0;
-            for (int i = 0; i <= length; i++) coords.add(new Coord(x1 + i * offsetX, y1 + i * offsetY));
+            for (int i = 0; i <= length; i++) coords.add(new Coord2(x1 + i * offsetX, y1 + i * offsetY));
             return coords;
         }
     }
@@ -65,9 +65,9 @@ public class AdventOfCode05 {
     }
 
     private static long getOverlapCount(List<Vent> vents) {
-        Map<Coord, Integer> coordsCount = new HashMap<>();
+        Map<Coord2, Integer> coordsCount = new HashMap<>();
         for (Vent vent : vents) {
-            for (Coord coord : vent.getCoords()) {
+            for (Coord2 coord : vent.getCoords()) {
                 if (coordsCount.containsKey(coord)) coordsCount.put(coord, coordsCount.get(coord) + 1);
                 else coordsCount.put(coord, 1);
             }

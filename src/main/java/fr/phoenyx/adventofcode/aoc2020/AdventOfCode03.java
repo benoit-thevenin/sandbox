@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.CharGrid;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode03 {
 
@@ -32,7 +32,7 @@ public class AdventOfCode03 {
     }
 
     private static long countEncounteredTrees(int rightSlope, int downSlope) {
-        Coord current = new Coord(0, 0);
+        Coord2 current = new Coord2(0, 0);
         long trees = 0;
         while (true) {
             for (int i = 0; i < rightSlope; i++) current = current.move(Dir.E);
