@@ -14,12 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.AbstractGrid;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode23 {
 
-    private static class Point extends Coord {
+    private static class Point extends Coord2 {
         final char type;
 
         Point(int x, int y, char type) {

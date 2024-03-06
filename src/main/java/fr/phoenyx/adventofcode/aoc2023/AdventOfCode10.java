@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.AbstractGrid;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode10 {
 
@@ -39,7 +39,7 @@ public class AdventOfCode10 {
         }
     }
 
-    private static class Point extends Coord {
+    private static class Point extends Coord2 {
         Pipe pipe;
         Set<Point> neighbours = new HashSet<>();
         int distance = -1;

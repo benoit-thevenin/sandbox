@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.AbstractGrid;
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode21 {
 
-    private static class Point extends Coord {
+    private static class Point extends Coord2 {
         boolean isWalkable;
 
         Point(int x, int y, boolean isWalkable) {
@@ -43,7 +43,7 @@ public class AdventOfCode21 {
         }
 
         long getReacheableCellsIn(int steps) {
-            Set<Coord> reacheableCells = new HashSet<>();
+            Set<Coord2> reacheableCells = new HashSet<>();
             List<Long> lengths = new ArrayList<>();
             reacheableCells.add(start);
             for (int i = 1; i <= steps; i++) {
@@ -58,11 +58,11 @@ public class AdventOfCode21 {
             return a * n * n + b * n + lengths.get(0);
         }
 
-        private Set<Coord> getNextReacheableCells(Set<Coord> reacheableCells) {
-            Set<Coord> nextReacheableCells = new HashSet<>();
-            for (Coord coord : reacheableCells) {
+        private Set<Coord2> getNextReacheableCells(Set<Coord2> reacheableCells) {
+            Set<Coord2> nextReacheableCells = new HashSet<>();
+            for (Coord2 coord : reacheableCells) {
                 for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                    Coord neighbour = coord.move(dir);
+                    Coord2 neighbour = coord.move(dir);
                     int x = neighbour.x % width;
                     if (x < 0) x += width;
                     int y = neighbour.y % height;

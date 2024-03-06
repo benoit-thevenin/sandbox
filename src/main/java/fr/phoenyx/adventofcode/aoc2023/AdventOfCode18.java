@@ -9,7 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode18 {
 

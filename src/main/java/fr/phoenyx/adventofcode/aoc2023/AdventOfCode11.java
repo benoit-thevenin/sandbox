@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.phoenyx.models.AbstractGrid;
-import fr.phoenyx.models.Coord;
+import fr.phoenyx.models.coords.Coord2;
 
 public class AdventOfCode11 {
 
-    private static class Point extends Coord {
+    private static class Point extends Coord2 {
         boolean isGalaxy;
 
         Point(int x, int y, boolean isGalaxy) {

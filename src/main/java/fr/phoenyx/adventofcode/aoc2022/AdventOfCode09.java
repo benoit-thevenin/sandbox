@@ -12,8 +12,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode09 {
 
@@ -31,9 +31,9 @@ public class AdventOfCode09 {
     }
 
     private static int simulateRope(int ropeLength, List<String> instructions) {
-        Set<Coord> visitedByTail = new HashSet<>();
-        Coord[] rope = new Coord[ropeLength];
-        for (int i = 0; i < ropeLength; i++) rope[i] = new Coord(0, 0);
+        Set<Coord2> visitedByTail = new HashSet<>();
+        Coord2[] rope = new Coord2[ropeLength];
+        for (int i = 0; i < ropeLength; i++) rope[i] = new Coord2(0, 0);
         visitedByTail.add(rope[ropeLength - 1]);
         for (String instruction : instructions) {
             Dir dir = Dir.fromChar(instruction.charAt(0));
@@ -50,7 +50,7 @@ public class AdventOfCode09 {
         return visitedByTail.size();
     }
 
-    private static Optional<Dir> getTailDir(Coord head, Coord tail) {
+    private static Optional<Dir> getTailDir(Coord2 head, Coord2 tail) {
         if (head.manhattanDistanceTo(tail) < 2 || head.manhattanDistanceTo(tail) == 2 && head.x != tail.x && head.y != tail.y) return Optional.empty();
         if (head.x == tail.x) return head.y < tail.y ? Optional.of(Dir.N) : Optional.of(Dir.S);
         if (head.y == tail.y) return head.x < tail.x ? Optional.of(Dir.W) : Optional.of(Dir.E);

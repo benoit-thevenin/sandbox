@@ -9,8 +9,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.Coord;
-import fr.phoenyx.models.Dir;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.Dir;
 
 public class AdventOfCode03 {
 
@@ -20,11 +20,11 @@ public class AdventOfCode03 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2015/adventofcode03.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            Set<Coord> visited = new HashSet<>();
-            Set<Coord> visitedWithRoboSanta = new HashSet<>();
-            Coord current = new Coord(0, 0);
-            Coord currentSanta = current;
-            Coord currentRoboSanta = current;
+            Set<Coord2> visited = new HashSet<>();
+            Set<Coord2> visitedWithRoboSanta = new HashSet<>();
+            Coord2 current = new Coord2(0, 0);
+            Coord2 currentSanta = current;
+            Coord2 currentRoboSanta = current;
             visited.add(current);
             visitedWithRoboSanta.add(current);
             while ((currentLine = reader.readLine()) != null) {
