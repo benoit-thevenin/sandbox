@@ -10,7 +10,11 @@ public class Coord2 {
     }
 
     public Coord2 move(Dir dir) {
-        return new Coord2(x + dir.dx, y + dir.dy);
+        return move(dir, 1);
+    }
+
+    public Coord2 move(Dir dir, int steps) {
+        return new Coord2(x + steps * dir.dx, y + steps * dir.dy);
     }
 
     public int manhattanDistanceTo(Coord2 other) {
