@@ -40,7 +40,7 @@ public class AdventOfCode10 {
         return values[0] * values[1];
     }
 
-    private static String getKnotHash(String line) {
+    static String getKnotHash(String line) {
         List<Integer> lengths = new ArrayList<>();
         for (char c : line.toCharArray()) lengths.add((int) c);
         lengths.addAll(List.of(17, 31, 73, 47, 23));
