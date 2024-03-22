@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +46,9 @@ public class AdventOfCode04 {
                  || !VALID_HEIGHT_UNITS.contains(unit)
                  || "cm".equals(unit) && (hgt < 150 || hgt > 193)
                  || "in".equals(unit) && (hgt < 59 || hgt > 76)
-                 || !Pattern.matches("#[0-9a-f]{6}", values.get("hcl"))
+                 || !values.get("hcl").matches("#[0-9a-f]{6}")
                  || !VALID_EYES_COLOR.contains(values.get("ecl"))
-                 || !Pattern.matches("\\d{9}", values.get("pid"))) return false;
+                 || !values.get("pid").matches("\\d{9}")) return false;
             } catch (NumberFormatException e) {
                 return false;
             }

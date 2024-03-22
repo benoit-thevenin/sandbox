@@ -3,7 +3,6 @@ package fr.phoenyx.adventofcode.aoc2019;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ public class AdventOfCode04 {
         for (int i = 0; i < s.length() - 1; i++) {
             if (s.charAt(i) - s.charAt(i + 1) > 0) return false;
         }
-        return part1 && Pattern.matches(".*([1-9])\\1.*", s)
-           || !part1 && Pattern.matches("([1-9])*((?!\\1)[1-9])\\2(?!\\2).*", s);
+        return part1 && s.matches(".*([1-9])\\1.*")
+           || !part1 && s.matches("([1-9])*((?!\\1)[1-9])\\2(?!\\2).*");
     }
 }
