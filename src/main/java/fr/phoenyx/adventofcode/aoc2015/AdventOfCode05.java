@@ -3,7 +3,6 @@ package fr.phoenyx.adventofcode.aoc2015;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +27,10 @@ public class AdventOfCode05 {
     }
 
     private static boolean isNice1(String s) {
-        return !Pattern.matches(".*((ab)|(cd)|(pq)|(xy)).*", s)
-            && Pattern.matches("(.*[aeiou].*){3,}", s)
-            && Pattern.matches(".*([a-z])\\1.*", s);
+        return !s.matches(".*((ab)|(cd)|(pq)|(xy)).*") && s.matches("(.*[aeiou].*){3}") && s.matches(".*([a-z])\\1.*");
     }
 
     private static boolean isNice2(String s) {
-        return Pattern.matches(".*([a-z]).\\1.*", s) && Pattern.matches(".*([a-z]{2}).*\\1.*", s);
+        return s.matches(".*([a-z]).\\1.*") && s.matches(".*([a-z]{2}).*\\1.*");
     }
 }

@@ -12,13 +12,17 @@ public class Utils {
         // Not mean't to be instanciated
     }
 
-    public static String getHexadecimalMD5Hash(String key) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(key.getBytes());
-        byte[] digest = md.digest();
-        BigInteger bi = new BigInteger(1, digest);
-        String format = "%0" + (digest.length << 1) + "x";
-        return String.format(format, bi);
+    public static String getHexadecimalMD5Hash(String key) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(key.getBytes());
+            byte[] digest = md.digest();
+            BigInteger bi = new BigInteger(1, digest);
+            String format = "%0" + (digest.length << 1) + "x";
+            return String.format(format, bi);
+        } catch (NoSuchAlgorithmException e) {
+            throw new UnsupportedOperationException("The MD5 algorithm should exist");
+        }
     }
 
     public static Map<Character, Integer> getLetterCount(String string) {

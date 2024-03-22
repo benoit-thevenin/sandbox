@@ -3,7 +3,6 @@ package fr.phoenyx.adventofcode.aoc2015;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ public class AdventOfCode11 {
                 break;
             }
         }
-        return !hasIncreasingStraight || Pattern.matches("[a-z]*[iol][a-z]*", password)
-            || !Pattern.matches("[a-z]*([a-z])\\1[a-z]*((?!\\1)[a-z])\\2[a-z]*", password);
+        return !hasIncreasingStraight || password.matches("[a-z]*[iol][a-z]*")
+            || !password.matches("[a-z]*([a-z])\\1[a-z]*((?!\\1)[a-z])\\2[a-z]*");
     }
 }

@@ -3,7 +3,6 @@ package fr.phoenyx.adventofcode.aoc2016;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ public class AdventOfCode05 {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode05.class);
     private static final Set<Character> positionDigits = Set.of('0', '1', '2', '3', '4', '5', '6', '7');
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2016/adventofcode05.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
@@ -29,7 +28,7 @@ public class AdventOfCode05 {
         }
     }
 
-    private static String getPasswordPart1(String key) throws NoSuchAlgorithmException {
+    private static String getPasswordPart1(String key) {
         long begin = System.nanoTime();
         StringBuilder password = new StringBuilder();
         int iteration = 0;
@@ -46,7 +45,7 @@ public class AdventOfCode05 {
         return password.toString();
     }
 
-    private static String getPasswordPart2(String key) throws NoSuchAlgorithmException {
+    private static String getPasswordPart2(String key) {
         long begin = System.nanoTime();
         char[] password = new char[8];
         int iteration = 0;

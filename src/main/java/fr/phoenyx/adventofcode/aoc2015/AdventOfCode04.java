@@ -3,9 +3,6 @@ package fr.phoenyx.adventofcode.aoc2015;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +13,7 @@ public class AdventOfCode04 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode04.class);
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2015/adventofcode04.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String secretKey;
