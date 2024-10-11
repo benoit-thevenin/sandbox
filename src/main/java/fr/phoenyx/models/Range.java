@@ -73,6 +73,11 @@ public class Range {
         return Optional.of(Range.buildFromStartAndEnd(intersectionStart, intersectionEnd));
     }
 
+    public Range union(Range other) {
+        if (start > other.end || end < other.start) throw new IllegalArgumentException("Ranges can't be united if they don't intersect");
+        return Range.buildFromStartAndEnd(Math.min(start, other.start), Math.max(end, other.end));
+    }
+
     public boolean contains(Range other) {
         Optional<Range> intersection = intersection(other);
         return intersection.isPresent() && intersection.get().equals(other);
