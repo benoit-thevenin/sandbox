@@ -5,6 +5,11 @@ import java.util.List;
 public class CharGrid extends AbstractGrid {
     public final char[][] grid;
 
+    public CharGrid(int width, int height) {
+        super(width, height);
+        grid = new char[width][height];
+    }
+
     public CharGrid(List<String> lines) {
         super(lines);
         grid = new char[width][height];
