@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fr.phoenyx.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +71,7 @@ public class AdventOfCode16 {
         }
 
         void guessOpCodes() {
-            while (opCodeMapping.values().stream().anyMatch(ops -> ops.size() > 1)) {
-                Set<String> foundOpCodes = opCodeMapping.values().stream()
-                    .filter(ops -> ops.size() == 1).flatMap(Collection::stream).collect(Collectors.toSet());
-                opCodeMapping.values().stream().filter(ops -> ops.size() > 1).forEach(ops -> ops.removeAll(foundOpCodes));
-            }
+            Utils.filterMappingContentByUniqueness(opCodeMapping);
         }
 
         void addr(int a, int b, int c) {
