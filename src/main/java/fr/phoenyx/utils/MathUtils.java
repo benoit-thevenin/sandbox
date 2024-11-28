@@ -89,4 +89,23 @@ public class MathUtils {
         values[index1] = values[index2];
         values[index2] = tmp;
     }
+
+    public static List<int[]> getAllCombinations(int[] values, int k) {
+        List<int[]> combinations = new ArrayList<>();
+        computeCombinations(values, k, 0, new int[k], combinations);
+        return combinations;
+    }
+
+    private static void computeCombinations(int[] values, int k, int startPosition, int[] result, List<int[]> combinations) {
+        if (k == 0) {
+            int[] next = new int[result.length];
+            System.arraycopy(result, 0, next, 0, result.length);
+            combinations.add(next);
+        } else {
+            for (int i = startPosition; i <= values.length - k; i++) {
+                result[result.length - k] = values[i];
+                computeCombinations(values, k - 1, i + 1, result, combinations);
+            }
+        }
+    }
 }
