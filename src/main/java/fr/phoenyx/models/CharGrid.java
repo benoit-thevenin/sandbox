@@ -1,5 +1,8 @@
 package fr.phoenyx.models;
 
+import fr.phoenyx.models.coords.Coord2;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class CharGrid extends AbstractGrid {
@@ -23,5 +26,13 @@ public class CharGrid extends AbstractGrid {
         if (next.length != width) throw new IllegalArgumentException("Widths do not match");
         if (next[0].length != height) throw new IllegalArgumentException("Heights do not match");
         for (int i = 0; i < width; i++) System.arraycopy(next[i], 0, grid[i], 0, height);
+    }
+
+    public List<Coord2> getCoordinatesMatching(char c) {
+        List<Coord2> coords = new ArrayList<>();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) if (grid[i][j] == c) coords.add(new Coord2(i, j));
+        }
+        return coords;
     }
 }
