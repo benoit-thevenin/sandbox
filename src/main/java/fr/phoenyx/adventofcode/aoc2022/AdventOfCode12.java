@@ -5,12 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,18 +34,10 @@ public class AdventOfCode12 {
     }
 
     private static int getShortestPathLength(CharGrid grid, char start) {
-        return getStartingPoints(grid, start).stream()
+        return grid.getCoordinatesMatching(start).stream()
             .map(s -> getShortestPathLength(grid, s))
             .filter(l -> l > 0)
             .min(Integer::compare).orElseThrow();
-    }
-
-    private static Set<Coord2> getStartingPoints(CharGrid grid, char start) {
-        Set<Coord2> startingPoints = new HashSet<>();
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) if (grid.grid[i][j] == start) startingPoints.add(new Coord2(i, j));
-        }
-        return startingPoints;
     }
 
     private static int getShortestPathLength(CharGrid grid, Coord2 start) {
