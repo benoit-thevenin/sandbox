@@ -32,4 +32,9 @@ public class Coord2 {
     public int hashCode() {
         return x + (1 << 16) * y;
     }
+
+    @Override
+    public String toString() {
+        return x + "," + y;
+    }
 }
