@@ -10,12 +10,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 public class AdventOfCode20 {
@@ -35,32 +32,13 @@ public class AdventOfCode20 {
     }
 
     private static List<Integer> getBestCheats(CharGrid grid, int cheatTime) {
-        Map<Coord2, Integer> posTimes = getPosTimes(grid);
-        return posTimes.keySet().stream()
-                .flatMap(start -> getCheatsFor(start, grid, posTimes, cheatTime).stream())
+        Map<Coord2, Integer> distances = grid.getDistancesMatching(grid.getCoordinatesMatching(c -> c == 'S').get(0), (c1, c2) -> c2 != '#');
+        return distances.keySet().stream()
+                .flatMap(start -> getCheatsFor(start, grid, distances, cheatTime).stream())
                 .filter(time -> time > 99).toList();
     }
 
-    private static Map<Coord2, Integer> getPosTimes(CharGrid grid) {
-        Coord2 start = grid.getCoordinatesMatching('S').get(0);
-        Queue<Coord2> toVisit = new LinkedList<>();
-        toVisit.add(start);
-        Map<Coord2, Integer> posTimes = new HashMap<>();
-        posTimes.put(start, 0);
-        while (!toVisit.isEmpty()) {
-            Coord2 current = toVisit.remove();
-            for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                Coord2 next = current.move(dir);
-                if (grid.isInGrid(next.x, next.y) && grid.grid[next.x][next.y] != '#' && !posTimes.containsKey(next)) {
-                    toVisit.add(next);
-                    posTimes.put(next, posTimes.get(current) + 1);
-                }
-            }
-        }
-        return posTimes;
-    }
-
-    private static List<Integer> getCheatsFor(Coord2 start, CharGrid grid, Map<Coord2, Integer> posTimes, int cheatTime) {
+    private static List<Integer> getCheatsFor(Coord2 start, CharGrid grid, Map<Coord2, Integer> distances, int cheatTime) {
         List<Integer> cheats = new ArrayList<>();
         List<Coord2> toVisit = new ArrayList<>();
         toVisit.add(start);
@@ -72,9 +50,9 @@ public class AdventOfCode20 {
             for (Coord2 current : toVisit) {
                 for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                     Coord2 neigh = current.move(dir);
-                    if (grid.isInGrid(neigh.x, neigh.y) && visited.add(neigh)) {
+                    if (grid.isInGrid(neigh) && visited.add(neigh)) {
                         next.add(neigh);
-                        if (grid.grid[neigh.x][neigh.y] != '#') cheats.add(posTimes.get(neigh) - posTimes.get(start) - steps);
+                        if (grid.grid[neigh.x][neigh.y] != '#') cheats.add(distances.get(neigh) - distances.get(start) - steps);
                     }
                 }
             }

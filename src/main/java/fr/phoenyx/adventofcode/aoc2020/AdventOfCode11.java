@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.phoenyx.models.coords.Coord2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +30,7 @@ public class AdventOfCode11 {
 
     private static int countOccupiedSeats(CharGrid grid, boolean isPart1) {
         processUntilStabilized(grid, isPart1);
-        int occupiedSeats = 0;
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) if (grid.grid[i][j] == '#') occupiedSeats++;
-        }
-        return occupiedSeats;
+        return grid.getCoordinatesMatching(c -> c == '#').size();
     }
 
     private static void processUntilStabilized(CharGrid grid, boolean isPart1) {
@@ -44,7 +41,7 @@ public class AdventOfCode11 {
             char[][] nextGrid = new char[grid.width][grid.height];
             for (int i = 0; i < grid.width; i++) {
                 for (int j = 0; j < grid.height; j++) {
-                    int occupiedNeighbours = getOccupiedNeighbours(grid, isPart1, i, j);
+                    int occupiedNeighbours = getOccupiedNeighbours(grid, isPart1, new Coord2(i, j));
                     if (grid.grid[i][j] == 'L' && occupiedNeighbours == 0) {
                         changed = true;
                         nextGrid[i][j] = '#';
@@ -58,18 +55,12 @@ public class AdventOfCode11 {
         }
     }
 
-    private static int getOccupiedNeighbours(CharGrid grid, boolean isPart1, int x, int y) {
+    private static int getOccupiedNeighbours(CharGrid grid, boolean isPart1, Coord2 pos) {
         int occupiedNeighbours = 0;
         for (Dir dir : Dir.values()) {
-            int nextX = x + dir.dx;
-            int nextY = y + dir.dy;
-            if (!isPart1) {
-                while (grid.isInGrid(nextX, nextY) && grid.grid[nextX][nextY] == '.') {
-                    nextX += dir.dx;
-                    nextY += dir.dy;
-                }
-            }
-            if (grid.isInGrid(nextX, nextY) && grid.grid[nextX][nextY] == '#') occupiedNeighbours++;
+            Coord2 next = pos.move(dir);
+            if (!isPart1) while (grid.isInGrid(next) && grid.grid[next.x][next.y] == '.') next = next.move(dir);
+            if (grid.isInGrid(next) && grid.grid[next.x][next.y] == '#') occupiedNeighbours++;
         }
         return occupiedNeighbours;
     }

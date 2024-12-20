@@ -40,7 +40,8 @@ public class AdventOfCode08 {
         for (int i = 0; i < grid.width; i++) {
             for (int j = 0; j < grid.height; j++) {
                 if (!visited.add(grid.grid[i][j])) continue;
-                computeAllAntinodes(grid, grid.getCoordinatesMatching(grid.grid[i][j]), antinodes1, antinodes2);
+                char currentChar = grid.grid[i][j];
+                computeAllAntinodes(grid, grid.getCoordinatesMatching(c -> c == currentChar), antinodes1, antinodes2);
             }
         }
         return new AbstractMap.SimpleEntry<>(antinodes1.size(), antinodes2.size());

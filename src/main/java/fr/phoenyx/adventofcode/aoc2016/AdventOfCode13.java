@@ -36,9 +36,8 @@ public class AdventOfCode13 {
 
     private static Entry<Integer, Long> getResult() {
         Map<Coord2, Integer> visited = new HashMap<>();
-        Queue<Coord2> toVisit = new LinkedList<>();
         visited.put(START, 0);
-        toVisit.add(START);
+        Queue<Coord2> toVisit = new LinkedList<>(visited.keySet());
         while (!toVisit.isEmpty()) {
             Coord2 current = toVisit.remove();
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
