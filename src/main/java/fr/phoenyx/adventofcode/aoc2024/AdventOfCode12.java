@@ -11,9 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 public class AdventOfCode12 {
@@ -26,45 +24,16 @@ public class AdventOfCode12 {
             String currentLine;
             List<String> lines = new ArrayList<>();
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
-            List<Set<Coord2>> regions = getRegions(new CharGrid(lines));
+            List<Set<Coord2>> regions = new CharGrid(lines).getAllRegionsMatching(c -> true);
             LOGGER.info("PART 1: {}", regions.stream().map(region -> getPerimeter(region) * region.size()).reduce(Long::sum).orElseThrow());
             LOGGER.info("PART 2: {}", regions.stream().map(region -> getSides(region) * region.size()).reduce(Long::sum).orElseThrow());
         }
     }
 
-    private static List<Set<Coord2>> getRegions(CharGrid grid) {
-        List<Set<Coord2>> regions = new ArrayList<>();
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                Coord2 coord = new Coord2(i, j);
-                if (regions.stream().noneMatch(region -> region.contains(coord))) regions.add(getRegion(grid, coord));
-            }
-        }
-        return regions;
-    }
-
-    private static Set<Coord2> getRegion(CharGrid grid, Coord2 coord) {
-        Set<Coord2> region = new HashSet<>();
-        char c = grid.grid[coord.x][coord.y];
-        region.add(coord);
-        Queue<Coord2> toVisit = new LinkedList<>(region);
-        while (!toVisit.isEmpty()) {
-            Coord2 current = toVisit.remove();
-            for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                Coord2 next = current.move(dir);
-                if (grid.isInGrid(next.x, next.y) && c == grid.grid[next.x][next.y] && region.add(next)) toVisit.add(next);
-            }
-        }
-        return region;
-    }
-
     private static long getPerimeter(Set<Coord2> region) {
         long perimeter = 0;
         for (Coord2 coord : region) {
-            for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                Coord2 next = coord.move(dir);
-                if (!region.contains(next)) perimeter++;
-            }
+            for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) if (!region.contains(coord.move(dir))) perimeter++;
         }
         return perimeter;
     }

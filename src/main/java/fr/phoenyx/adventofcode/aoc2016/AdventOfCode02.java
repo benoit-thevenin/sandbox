@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import fr.phoenyx.models.coords.Coord2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,30 +22,20 @@ public class AdventOfCode02 {
             String currentLine;
             CharGrid keyPad = new CharGrid(List.of("123", "456", "789"));
             CharGrid realKeyPad = new CharGrid(List.of("..1..", ".234.", "56789", ".ABC.", "..D.."));
-            int x = 1;
-            int y = 1;
-            int realX = 0;
-            int realY = 2;
+            Coord2 current = new Coord2(1, 1);
+            Coord2 realCurrent = new Coord2(0, 2);
             StringBuilder bathroomCode = new StringBuilder();
             StringBuilder realBathroomCode = new StringBuilder();
             while ((currentLine = reader.readLine()) != null) {
                 for (char c : currentLine.toCharArray()) {
                     Dir dir = Dir.fromChar(c);
-                    int nextX = x + dir.dx;
-                    int nextY = y + dir.dy;
-                    int realNextX = realX + dir.dx;
-                    int realNextY = realY + dir.dy;
-                    if (keyPad.isInGrid(nextX, nextY)) {
-                        x = nextX;
-                        y = nextY;
-                    }
-                    if (realKeyPad.isInGrid(realNextX, realNextY) && realKeyPad.grid[realNextX][realNextY] != '.') {
-                        realX = realNextX;
-                        realY = realNextY;
-                    }
+                    Coord2 next = current.move(dir);
+                    Coord2 realNext = realCurrent.move(dir);
+                    if (keyPad.isInGrid(next)) current = next;
+                    if (realKeyPad.isInGrid(realNext) && realKeyPad.grid[realNext.x][realNext.y] != '.') realCurrent = realNext;
                 }
-                bathroomCode.append(keyPad.grid[x][y]);
-                realBathroomCode.append(realKeyPad.grid[realX][realY]);
+                bathroomCode.append(keyPad.grid[current.x][current.y]);
+                realBathroomCode.append(realKeyPad.grid[realCurrent.x][realCurrent.y]);
             }
             LOGGER.info("PART 1: {}", bathroomCode);
             LOGGER.info("PART 2: {}", realBathroomCode);

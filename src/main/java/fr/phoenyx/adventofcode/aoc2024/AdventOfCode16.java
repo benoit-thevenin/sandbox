@@ -45,7 +45,7 @@ public class AdventOfCode16 {
 
     private static Map.Entry<Integer, Integer> getResult(CharGrid grid) {
         PriorityQueue<State> toVisit = new PriorityQueue<>(Comparator.comparingInt(s -> s.score));
-        toVisit.add(new State(new Node(grid.getCoordinatesMatching('S').get(0), Dir.E), 0));
+        toVisit.add(new State(new Node(grid.getCoordinatesMatching(c -> c == 'S').get(0), Dir.E), 0));
         Set<Node> visited = new HashSet<>();
         Map<State, Set<State>> predecessors = new HashMap<>();
         while (!toVisit.isEmpty()) {

@@ -1,5 +1,7 @@
 package fr.phoenyx.models;
 
+import fr.phoenyx.models.coords.Coord2;
+
 import java.util.List;
 
 public abstract class AbstractGrid {
@@ -18,6 +20,10 @@ public abstract class AbstractGrid {
         width = lines.iterator().next().length();
         if (width == 0) throw new IllegalArgumentException("Can't build an empty CharGrid");
         height = lines.size();
+    }
+
+    public boolean isInGrid(Coord2 pos) {
+        return isInGrid(pos.x, pos.y);
     }
 
     public boolean isInGrid(int x, int y) {

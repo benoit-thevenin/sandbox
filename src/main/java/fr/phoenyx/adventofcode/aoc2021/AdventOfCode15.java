@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 import fr.phoenyx.models.CharGrid;
@@ -21,8 +22,12 @@ public class AdventOfCode15 {
         int cost;
         int heuristic;
 
-        public Node(int x, int y) {
+        Node(int x, int y) {
             super(x, y);
+        }
+
+        Node(Coord2 coord) {
+            this(coord.x, coord.y);
         }
     }
 
@@ -47,16 +52,14 @@ public class AdventOfCode15 {
 
     private static int getLowestRiskPath(CharGrid grid) {
         Set<Node> closed = new HashSet<>();
-        Set<Node> open = new HashSet<>();
+        PriorityQueue<Node> open = new PriorityQueue<>(Comparator.comparingInt(n -> n.heuristic));
         open.add(START);
         while (!open.isEmpty()) {
-            Node current = open.stream().min(Comparator.comparingInt(n -> n.heuristic)).orElseThrow();
-            open.remove(current);
+            Node current = open.remove();
             if (current.equals(END)) return current.cost;
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                Coord2 neighbour = current.move(dir);
-                Node next = new Node(neighbour.x, neighbour.y);
-                if (grid.isInGrid(next.x, next.y) && !closed.contains(next)) {
+                Node next = new Node(current.move(dir));
+                if (grid.isInGrid(next) && !closed.contains(next)) {
                     next.cost = current.cost + grid.grid[next.x][next.y] - '0';
                     next.heuristic = next.cost + next.manhattanDistanceTo(END);
                     if (open.stream().filter(next::equals).noneMatch(n -> n.cost < next.cost)) {

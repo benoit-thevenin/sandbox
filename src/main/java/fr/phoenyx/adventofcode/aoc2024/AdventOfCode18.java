@@ -2,7 +2,6 @@ package fr.phoenyx.adventofcode.aoc2024;
 
 import fr.phoenyx.models.CharGrid;
 import fr.phoenyx.models.coords.Coord2;
-import fr.phoenyx.models.coords.Dir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,9 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class AdventOfCode18 {
 
@@ -33,7 +30,7 @@ public class AdventOfCode18 {
             bytes.subList(0, 1024).forEach(b -> grid.grid[b.x][b.y] = '#');
             LOGGER.info("PART 1: {}", getMinSteps(grid));
             long begin = System.nanoTime();
-            LOGGER.info("PART 2: {}, time elapsed {}ms", bytes.get(getFirstByteIndexCuttingPath(grid, bytes)).toString(), (System.nanoTime() - begin) / 1000000);
+            LOGGER.info("PART 2: {}, time elapsed {}ms", getFirstByteCuttingPath(grid, bytes).toString(), (System.nanoTime() - begin) / 1000000);
         }
     }
 
@@ -45,34 +42,17 @@ public class AdventOfCode18 {
     }
 
     private static int getMinSteps(CharGrid grid) {
-        List<Coord2> toVisit = new ArrayList<>();
-        toVisit.add(START);
-        Set<Coord2> visited = new HashSet<>(toVisit);
-        int steps = 0;
-        while (!toVisit.isEmpty()) {
-            List<Coord2> next = new ArrayList<>();
-            for (Coord2 current : toVisit) {
-                if (current.equals(END)) return steps;
-                for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                    Coord2 neigh = current.move(dir);
-                    if (grid.isInGrid(neigh.x, neigh.y) && grid.grid[neigh.x][neigh.y] == '.' && visited.add(neigh)) next.add(neigh);
-                }
-            }
-            toVisit = next;
-            steps++;
-        }
-        throw new IllegalArgumentException("No path found");
+        return grid.getDistancesMatching(START, Character::equals).getOrDefault(END, -1);
     }
 
-    private static int getFirstByteIndexCuttingPath(CharGrid grid, List<Coord2> bytes) {
-        for (int i = 1024; i < bytes.size(); i++) {
-            grid.grid[bytes.get(i).x][bytes.get(i).y] = '#';
-            try {
-                getMinSteps(grid);
-            } catch (IllegalArgumentException e) {
-                return i;
-            }
+    private static Coord2 getFirstByteCuttingPath(CharGrid grid, List<Coord2> bytes) {
+        int index = 1023;
+        int steps = getMinSteps(grid);
+        while (steps != -1) {
+            index++;
+            grid.grid[bytes.get(index).x][bytes.get(index).y] = '#';
+            steps = getMinSteps(grid);
         }
-        throw new IllegalArgumentException("No time cutting path found");
+        return bytes.get(index);
     }
 }

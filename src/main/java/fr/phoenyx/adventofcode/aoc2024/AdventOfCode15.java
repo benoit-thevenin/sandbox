@@ -40,7 +40,7 @@ public class AdventOfCode15 {
     }
 
     private static void applyRobotMoves(CharGrid grid, String moves) {
-        Coord2 robot = grid.getCoordinatesMatching('@').get(0);
+        Coord2 robot = grid.getCoordinatesMatching(c -> c == '@').get(0);
         grid.grid[robot.x][robot.y] = '.';
         for (char c : moves.toCharArray()) {
             Dir dir = Dir.fromChar(c);

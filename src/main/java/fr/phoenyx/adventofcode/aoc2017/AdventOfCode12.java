@@ -35,31 +35,18 @@ public class AdventOfCode12 {
 
     private static Set<Integer> getGroup(int id) {
         Queue<Integer> toVisit = new LinkedList<>();
-        Set<Integer> visited = new HashSet<>();
         toVisit.add(id);
-        visited.add(id);
+        Set<Integer> visited = new HashSet<>(toVisit);
         while (!toVisit.isEmpty()) {
             Integer current = toVisit.remove();
-            for (Integer pipe : pipes.get(current)) {
-                if (!visited.contains(pipe)) {
-                    toVisit.add(pipe);
-                    visited.add(pipe);
-                }
-            }
+            for (Integer pipe : pipes.get(current)) if (visited.add(pipe)) toVisit.add(pipe);
         }
         return visited;
     }
 
     private static Set<Set<Integer>> getAllGroups() {
         Set<Set<Integer>> allGroups = new HashSet<>();
-        Set<Integer> idsVisited = new HashSet<>();
-        for (int id : pipes.keySet()) {
-            if (!idsVisited.contains(id)) {
-                Set<Integer> group = getGroup(id);
-                allGroups.add(group);
-                idsVisited.addAll(group);
-            }
-        }
+        for (int id : pipes.keySet()) if (allGroups.stream().noneMatch(group -> group.contains(id))) allGroups.add(getGroup(id));
         return allGroups;
     }
 }
