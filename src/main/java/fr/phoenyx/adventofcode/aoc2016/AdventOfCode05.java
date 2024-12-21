@@ -13,52 +13,37 @@ import fr.phoenyx.utils.Utils;
 public class AdventOfCode05 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode05.class);
-    private static final Set<Character> positionDigits = Set.of('0', '1', '2', '3', '4', '5', '6', '7');
+    private static final Set<Character> POSITION_DIGITS = Set.of('0', '1', '2', '3', '4', '5', '6', '7');
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2016/adventofcode05.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                String password1 = getPasswordPart1(currentLine);
-                LOGGER.info("PART 1: {}", password1);
-                String password2 = getPasswordPart2(currentLine);
-                LOGGER.info("PART 2: {}", password2);
+                long begin = System.nanoTime();
+                LOGGER.info("PART 1: {}, time elapsed {}ms", getPassword(currentLine, true), (System.nanoTime() - begin) / 1000000);
+                begin = System.nanoTime();
+                LOGGER.info("PART 2: {}, time elapsed {}ms", getPassword(currentLine, false), (System.nanoTime() - begin) / 1000000);
             }
         }
     }
 
-    private static String getPasswordPart1(String key) {
-        long begin = System.nanoTime();
-        StringBuilder password = new StringBuilder();
-        int iteration = 0;
-        for (int i = 0; i < 8; i++) {
-            String nextHash = Utils.getHexadecimalMD5Hash(key + iteration);
-            while (!nextHash.startsWith("00000")) {
-                iteration++;
-                nextHash = Utils.getHexadecimalMD5Hash(key + iteration);
-            }
-            LOGGER.info("Found next hash: {}, time elpased: {}ms", nextHash, (System.nanoTime() - begin) / 1000000);
-            password.append(nextHash.charAt(5));
-            iteration++;
-        }
-        return password.toString();
-    }
-
-    private static String getPasswordPart2(String key) {
-        long begin = System.nanoTime();
+    private static String getPassword(String key, boolean isPart1) {
         char[] password = new char[8];
         int iteration = 0;
         for (int i = 0; i < 8; i++) {
-            String nextHash = Utils.getHexadecimalMD5Hash(key + iteration);
-            while (!nextHash.startsWith("00000") || !positionDigits.contains(nextHash.charAt(5)) || password[nextHash.charAt(5) - '0'] != 0) {
+            String nextHash = "";
+            while (!isValid(nextHash, password, isPart1)) {
                 iteration++;
                 nextHash = Utils.getHexadecimalMD5Hash(key + iteration);
             }
-            LOGGER.info("Found next hash: {}, time elpased: {}ms", nextHash, (System.nanoTime() - begin) / 1000000);
-            password[nextHash.charAt(5) - '0'] = nextHash.charAt(6);
-            iteration++;
+            if (isPart1) password[i] = nextHash.charAt(5);
+            else password[nextHash.charAt(5) - '0'] = nextHash.charAt(6);
         }
         return new String(password);
+    }
+
+    private static boolean isValid(String hash, char[] password, boolean isPart1) {
+        return hash.startsWith("0".repeat(5)) && (isPart1 || POSITION_DIGITS.contains(hash.charAt(5)) && password[hash.charAt(5) - '0'] == 0);
     }
 }

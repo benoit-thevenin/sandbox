@@ -16,32 +16,13 @@ public class AdventOfCode09 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                LOGGER.info("PART 1: {}", getDecompressedLength(currentLine));
-                LOGGER.info("PART 2: {}", getDecompressedLengthV2(currentLine));
+                LOGGER.info("PART 1: {}", getDecompressedLength(currentLine, true));
+                LOGGER.info("PART 2: {}", getDecompressedLength(currentLine, false));
             }
         }
     }
 
-    private static int getDecompressedLength(String s) {
-        int length = 0;
-        int index = 0;
-        while (index < s.length()) {
-            if (s.charAt(index) != '(') {
-                length++;
-                index++;
-            } else {
-                String marker = getMarker(s, index + 1);
-                index += marker.length() + 2;
-                String[] split = marker.split("x");
-                int markerLength = Integer.parseInt(split[0]);
-                length += markerLength * Integer.parseInt(split[1]);
-                index += markerLength;
-            }
-        }
-        return length;
-    }
-
-    private static long getDecompressedLengthV2(String s) {
+    private static long getDecompressedLength(String s, boolean isPart1) {
         long length = 0;
         int index = 0;
         while (index < s.length()) {
@@ -54,7 +35,8 @@ public class AdventOfCode09 {
                 String[] split = marker.split("x");
                 int markerLength = Integer.parseInt(split[0]);
                 int repetitions = Integer.parseInt(split[1]);
-                length += repetitions * getDecompressedLengthV2(s.substring(index, index + markerLength));
+                if (isPart1) length += markerLength * Long.parseLong(split[1]);
+                else length += repetitions * getDecompressedLength(s.substring(index, index + markerLength), false);
                 index += markerLength;
             }
         }

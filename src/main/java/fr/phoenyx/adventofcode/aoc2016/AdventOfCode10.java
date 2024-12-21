@@ -67,7 +67,7 @@ public class AdventOfCode10 {
                     if (!bot.isHighBot) outputs.put(bot.high, new Output());
                 } else {
                     int botId = Integer.parseInt(split[5]);
-                    Bot bot = bots.getOrDefault(botId, new Bot(Integer.parseInt(split[5])));
+                    Bot bot = bots.getOrDefault(botId, new Bot(botId));
                     if (bot.first == null) bot.first = new Microchip(id);
                     else bot.second = new Microchip(id);
                     bots.put(botId, bot);
@@ -84,7 +84,7 @@ public class AdventOfCode10 {
         if (bot.isLowBot) bots.get(bot.low).receive(low);
         else outputs.get(bot.low).microchip = low;
         if (bot.isHighBot) bots.get(bot.high).receive(high);
-        else outputs.get(bot.high).microchip =high;
+        else outputs.get(bot.high).microchip = high;
         bot.first = null;
         bot.second = null;
     }

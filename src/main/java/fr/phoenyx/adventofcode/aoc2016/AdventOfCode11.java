@@ -28,86 +28,42 @@ public class AdventOfCode11 {
 
         private void addMicrochipsMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, Floor currentFloor) {
             for (String microchip : currentFloor.microchips) {
-                addSoloMicrochipMoveStates(nextStates, nextElevatorIndexes, microchip);
+                addNextStates(nextStates, nextElevatorIndexes, List.of(microchip), List.of(true));
                 if (currentFloor.microchips.size() > 1) {
                     for (String secondMicrochip : currentFloor.microchips) {
                         if (secondMicrochip.equals(microchip)) continue;
-                        addPairMicrochipsMoveStates(nextStates, nextElevatorIndexes, microchip, secondMicrochip);
+                        addNextStates(nextStates, nextElevatorIndexes, List.of(microchip, secondMicrochip), List.of(true, true));
                     }
                 }
                 currentFloor.generators.stream().filter(g -> g.equals(microchip)).findFirst()
-                    .ifPresent(s -> addPairMicrochipGeneratorMoveStates(nextStates, nextElevatorIndexes, microchip, s));
+                    .ifPresent(s -> addNextStates(nextStates, nextElevatorIndexes, List.of(microchip, s), List.of(true, false)));
             }
         }
 
         private void addGeneratorsMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, Floor currentFloor) {
             for (String generator : currentFloor.generators) {
-                addSoloGeneratorMoveStates(nextStates, nextElevatorIndexes, generator);
+                addNextStates(nextStates, nextElevatorIndexes, List.of(generator), List.of(false));
                 if (currentFloor.generators.size() > 1) {
                     for (String secondGenerator : currentFloor.generators) {
                         if (secondGenerator.equals(generator)) continue;
-                        addPairGeneratorsMoveStates(nextStates, nextElevatorIndexes, generator, secondGenerator);
+                        addNextStates(nextStates, nextElevatorIndexes, List.of(generator, secondGenerator), List.of(false, false));
                     }
                 }
             }
         }
 
-        private void addSoloMicrochipMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, String microchip) {
+        private void addNextStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, List<String> names, List<Boolean> isMicrochip) {
             for (int nextElevatorIndex : nextElevatorIndexes) {
-                List<Floor> nextFloors = new ArrayList<>();
-                for (Floor floor : floors) nextFloors.add(new Floor(floor));
-                nextFloors.get(elevatorIndex).microchips.remove(microchip);
-                nextFloors.get(nextElevatorIndex).microchips.add(microchip);
-                State state = new State(nextElevatorIndex, nextFloors);
-                if (state.isValid()) nextStates.add(state);
-            }
-        }
-
-        private void addSoloGeneratorMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, String generator) {
-            for (int nextElevatorIndex : nextElevatorIndexes) {
-                List<Floor> nextFloors = new ArrayList<>();
-                for (Floor floor : floors) nextFloors.add(new Floor(floor));
-                nextFloors.get(elevatorIndex).generators.remove(generator);
-                nextFloors.get(nextElevatorIndex).generators.add(generator);
-                State state = new State(nextElevatorIndex, nextFloors);
-                if (state.isValid()) nextStates.add(state);
-            }
-        }
-
-        private void addPairMicrochipsMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, String microchip, String secondMicrochip) {
-            for (int nextElevatorIndex : nextElevatorIndexes) {
-                List<Floor> nextFloors = new ArrayList<>();
-                for (Floor floor : floors) nextFloors.add(new Floor(floor));
-                nextFloors.get(elevatorIndex).microchips.remove(microchip);
-                nextFloors.get(elevatorIndex).microchips.remove(secondMicrochip);
-                nextFloors.get(nextElevatorIndex).microchips.add(microchip);
-                nextFloors.get(nextElevatorIndex).microchips.add(secondMicrochip);
-                State state = new State(nextElevatorIndex, nextFloors);
-                if (state.isValid()) nextStates.add(state);
-            }
-        }
-
-        private void addPairMicrochipGeneratorMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, String microchip, String generator) {
-            for (int nextElevatorIndex : nextElevatorIndexes) {
-                List<Floor> nextFloors = new ArrayList<>();
-                for (Floor floor : floors) nextFloors.add(new Floor(floor));
-                nextFloors.get(elevatorIndex).microchips.remove(microchip);
-                nextFloors.get(elevatorIndex).generators.remove(generator);
-                nextFloors.get(nextElevatorIndex).microchips.add(microchip);
-                nextFloors.get(nextElevatorIndex).generators.add(generator);
-                State state = new State(nextElevatorIndex, nextFloors);
-                if (state.isValid()) nextStates.add(state);
-            }
-        }
-
-        private void addPairGeneratorsMoveStates(Set<State> nextStates, List<Integer> nextElevatorIndexes, String generator, String secondGenerator) {
-            for (int nextElevatorIndex : nextElevatorIndexes) {
-                List<Floor> nextFloors = new ArrayList<>();
-                for (Floor floor : floors) nextFloors.add(new Floor(floor));
-                nextFloors.get(elevatorIndex).generators.remove(generator);
-                nextFloors.get(elevatorIndex).generators.remove(secondGenerator);
-                nextFloors.get(nextElevatorIndex).generators.add(generator);
-                nextFloors.get(nextElevatorIndex).generators.add(secondGenerator);
+                List<Floor> nextFloors = new ArrayList<>(floors.stream().map(Floor::new).toList());
+                for (int i = 0; i < names.size(); i++) {
+                    if (isMicrochip.get(i)) {
+                        nextFloors.get(elevatorIndex).microchips.remove(names.get(i));
+                        nextFloors.get(nextElevatorIndex).microchips.add(names.get(i));
+                    } else {
+                        nextFloors.get(elevatorIndex).generators.remove(names.get(i));
+                        nextFloors.get(nextElevatorIndex).generators.add(names.get(i));
+                    }
+                }
                 State state = new State(nextElevatorIndex, nextFloors);
                 if (state.isValid()) nextStates.add(state);
             }
@@ -182,23 +138,19 @@ public class AdventOfCode11 {
                 floors.add(floor);
             }
             long begin = System.nanoTime();
-            LOGGER.info("PART 1: {}, time elpased: {}ms", getMinStepsToLastFloor(floors), (System.nanoTime() - begin) / 1000000);
-            floors.get(0).microchips.add("a");
-            floors.get(0).generators.add("a");
-            floors.get(0).microchips.add("b");
-            floors.get(0).generators.add("b");
+            LOGGER.info("PART 1: {}, time elapsed: {}ms", getMinStepsToLastFloor(floors), (System.nanoTime() - begin) / 1000000);
+            floors.get(0).microchips.addAll(List.of("a", "b"));
+            floors.get(0).generators.addAll(List.of("a", "b"));
             begin = System.nanoTime();
-            LOGGER.info("PART 2: {}, time elpased: {}ms", getMinStepsToLastFloor(floors), (System.nanoTime() - begin) / 1000000);
+            LOGGER.info("PART 2: {}, time elapsed: {}ms", getMinStepsToLastFloor(floors), (System.nanoTime() - begin) / 1000000);
         }
     }
 
     private static int getMinStepsToLastFloor(List<Floor> initialFloors) {
         int steps = 0;
-        Set<State> visited = new HashSet<>();
         Set<State> current = new HashSet<>();
-        State initialState = new State(0, initialFloors);
-        visited.add(initialState);
-        current.add(initialState);
+        current.add(new State(0, initialFloors));
+        Set<State> visited = new HashSet<>(current);
         while (!current.isEmpty()) {
             steps++;
             Set<State> next = new HashSet<>();

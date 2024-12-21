@@ -19,7 +19,6 @@ import fr.phoenyx.models.coords.Dir;
 public class AdventOfCode13 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode13.class);
-    private static final Coord2 START = new Coord2(1, 1);
     private static final Coord2 TARGET = new Coord2(31, 39);
     private static int officeDesignerFavoriteNumber;
 
@@ -36,7 +35,7 @@ public class AdventOfCode13 {
 
     private static Entry<Integer, Long> getResult() {
         Map<Coord2, Integer> visited = new HashMap<>();
-        visited.put(START, 0);
+        visited.put(new Coord2(1, 1), 0);
         Queue<Coord2> toVisit = new LinkedList<>(visited.keySet());
         while (!toVisit.isEmpty()) {
             Coord2 current = toVisit.remove();
