@@ -39,7 +39,6 @@ public class AdventOfCode12 {
 
     private static int getHeight(char c) {
         if (c == 'S') return 0;
-        if (c == 'E') return 25;
-        return c - 'a';
+        return c == 'E' ? 25 : c - 'a';
     }
 }
