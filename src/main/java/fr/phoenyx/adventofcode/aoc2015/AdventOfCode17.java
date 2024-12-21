@@ -35,21 +35,15 @@ public class AdventOfCode17 {
         for (int i = 0; i < indexes.length; i++) indexes[i] = i;
         int min = containers.size();
         for (int i = 1; i < containers.size(); i++) {
-            boolean areAllCombinationsAboveN = true;
-            List<int[]> combinations = MathUtils.getAllCombinations(indexes, i);
-            for (int[] combination : combinations) {
+            for (int[] combination : MathUtils.getAllCombinations(indexes, i)) {
                 int sum = 0;
                 for (int index : combination) sum += containers.get(index);
-                if (sum <= 150) {
-                    areAllCombinationsAboveN = false;
-                    if (sum == 150) {
-                        count1++;
-                        min = Math.min(i, min);
-                        if (min == i) count2++;
-                    }
+                if (sum == 150) {
+                    count1++;
+                    min = Math.min(i, min);
+                    if (min == i) count2++;
                 }
             }
-            if (areAllCombinationsAboveN) break;
         }
         return new AbstractMap.SimpleEntry<>(count1, count2);
     }

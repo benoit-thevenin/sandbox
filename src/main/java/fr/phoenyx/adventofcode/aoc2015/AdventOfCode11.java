@@ -17,9 +17,8 @@ public class AdventOfCode11 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 String passwordPart1 = getNextPassword(currentLine);
-                String passwordPart2 = getNextPassword(passwordPart1);
                 LOGGER.info("PART 1: {}", passwordPart1);
-                LOGGER.info("PART 2: {}", passwordPart2);
+                LOGGER.info("PART 2: {}", getNextPassword(passwordPart1));
             }
         }
     }

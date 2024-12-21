@@ -15,14 +15,7 @@ import fr.phoenyx.utils.MathUtils;
 
 public class AdventOfCode13 {
 
-    private static class Person {
-        final String name;
-        final Map<String, Integer> affinities = new HashMap<>();
-
-        Person(String name) {
-            this.name = name;
-        }
-    }
+    private record Person(String name, Map<String, Integer> affinities) {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode13.class);
     private static final List<Person> persons = new ArrayList<>();
@@ -34,7 +27,7 @@ public class AdventOfCode13 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.replace(".", "").split(" ");
-                personsByName.putIfAbsent(split[0], new Person(split[0]));
+                personsByName.putIfAbsent(split[0], new Person(split[0], new HashMap<>()));
                 Person current = personsByName.get(split[0]);
                 int affinity = "gain".equals(split[2]) ? Integer.parseInt(split[3]) : -Integer.parseInt(split[3]);
                 current.affinities.put(split[10], affinity);
@@ -67,7 +60,7 @@ public class AdventOfCode13 {
     }
 
     private static void addMyself() {
-        Person me = new Person("me");
+        Person me = new Person("me", new HashMap<>());
         for (Person person : persons) {
             person.affinities.put(me.name, 0);
             me.affinities.put(person.name, 0);

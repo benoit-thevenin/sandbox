@@ -13,14 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode16 {
 
-    private static class Aunt {
-        final int id;
-        final Map<String, Integer> compounds = new HashMap<>();
-
-        Aunt(int id) {
-            this.id = id;
-        }
-    }
+    private record Aunt(int id, Map<String, Integer> compounds) {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode16.class);
     private static final Set<Aunt> AUNTS = new HashSet<>();
@@ -47,9 +40,8 @@ public class AdventOfCode16 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 currentLine = currentLine.substring(4);
-                Aunt aunt = new Aunt(Integer.parseInt(currentLine.split(":")[0]));
-                currentLine = currentLine.replace(aunt.id + ": ", "");
-                String[] split = currentLine.split(", ");
+                Aunt aunt = new Aunt(Integer.parseInt(currentLine.split(":")[0]), new HashMap<>());
+                String[] split = currentLine.replace(aunt.id + ": ", "").split(", ");
                 for (String compound : split) {
                     String[] keyValue = compound.split(": ");
                     aunt.compounds.put(keyValue[0], Integer.parseInt(keyValue[1]));
