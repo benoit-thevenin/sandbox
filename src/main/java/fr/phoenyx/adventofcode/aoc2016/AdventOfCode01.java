@@ -15,16 +15,16 @@ import fr.phoenyx.models.coords.Dir;
 public class AdventOfCode01 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode01.class);
+    private static final Coord2 START = new Coord2(0, 0);
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2016/adventofcode01.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            int x = 0;
-            int y = 0;
+            Coord2 current = START;
             Dir dir = Dir.N;
             Set<Coord2> visited = new HashSet<>();
-            visited.add(new Coord2(x, y));
+            visited.add(current);
             int hqDistance = -1;
             while ((currentLine = reader.readLine()) != null) {
                 String[] instructions = currentLine.split(", ");
@@ -32,17 +32,12 @@ public class AdventOfCode01 {
                     int steps = Integer.parseInt(instruction.substring(1));
                     dir = dir.fourNeighboursTurn(instruction.charAt(0));
                     for (int i = 0; i < steps; i++) {
-                        x += dir.dx;
-                        y += dir.dy;
-                        if (hqDistance == -1) {
-                            Coord2 next = new Coord2(x, y);
-                            if (visited.contains(next)) hqDistance = Math.abs(x) + Math.abs(y);
-                            else visited.add(next);
-                        }
+                        current = current.move(dir);
+                        if (hqDistance == -1 && !visited.add(current)) hqDistance = current.manhattanDistanceTo(START);
                     }
                 }
             }
-            LOGGER.info("PART 1: {}", Math.abs(x) + Math.abs(y));
+            LOGGER.info("PART 1: {}", current.manhattanDistanceTo(START));
             LOGGER.info("PART 2: {}", hqDistance);
         }
     }

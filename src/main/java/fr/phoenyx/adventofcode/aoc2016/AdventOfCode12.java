@@ -18,7 +18,6 @@ public class AdventOfCode12 {
         final Map<Character, Integer> registers = new HashMap<>();
 
         Computer(List<String[]> instructions, boolean isPart2) {
-            for (char register : REGISTERS_NAMES.toCharArray()) registers.put(register, 0);
             if (isPart2) registers.put('c', 1);
             int index = 0;
             while (index < instructions.size()) {
@@ -32,7 +31,7 @@ public class AdventOfCode12 {
         }
 
         private int getValue(String value) {
-            return REGISTERS_NAMES.contains(value) ? registers.get(value.charAt(0)) : Integer.parseInt(value);
+            return REGISTERS_NAMES.contains(value) ? registers.getOrDefault(value.charAt(0), 0) : Integer.parseInt(value);
         }
     }
 

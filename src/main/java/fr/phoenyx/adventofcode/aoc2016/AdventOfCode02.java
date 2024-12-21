@@ -22,8 +22,8 @@ public class AdventOfCode02 {
             String currentLine;
             CharGrid keyPad = new CharGrid(List.of("123", "456", "789"));
             CharGrid realKeyPad = new CharGrid(List.of("..1..", ".234.", "56789", ".ABC.", "..D.."));
-            Coord2 current = new Coord2(1, 1);
-            Coord2 realCurrent = new Coord2(0, 2);
+            Coord2 current = keyPad.getCoordinatesMatching(c -> c == '5').get(0);
+            Coord2 realCurrent = realKeyPad.getCoordinatesMatching(c -> c == '1').get(0);
             StringBuilder bathroomCode = new StringBuilder();
             StringBuilder realBathroomCode = new StringBuilder();
             while ((currentLine = reader.readLine()) != null) {
