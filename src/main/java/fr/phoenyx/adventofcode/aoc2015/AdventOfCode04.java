@@ -19,19 +19,20 @@ public class AdventOfCode04 {
             String secretKey;
             while ((secretKey = reader.readLine()) != null) {
                 long begin = System.nanoTime();
-                int iteration = 0;
-                String hash = Utils.getHexadecimalMD5Hash(secretKey + iteration);
-                while (!hash.startsWith("00000")) {
-                    iteration ++;
-                    hash = Utils.getHexadecimalMD5Hash(secretKey + iteration);
-                }
-                LOGGER.info("PART 1: {} ({}), time elpased: {}ms", iteration, hash, (System.nanoTime() - begin) / 1000000);
-                while (!hash.startsWith("000000")) {
-                    iteration++;
-                    hash = Utils.getHexadecimalMD5Hash(secretKey + iteration);
-                }
-                LOGGER.info("PART 2: {} ({}), time elpased: {}ms", iteration, hash, (System.nanoTime() - begin) / 1000000);
+                LOGGER.info("PART 1: {}, time elapsed: {}ms", getIterations(secretKey, 5), (System.nanoTime() - begin) / 1000000);
+                begin = System.nanoTime();
+                LOGGER.info("PART 2: {}, time elapsed: {}ms", getIterations(secretKey, 6), (System.nanoTime() - begin) / 1000000);
             }
         }
+    }
+
+    private static int getIterations(String secretKey, int zeroCount) {
+        int iteration = 0;
+        String hash = "";
+        while (!hash.startsWith("0".repeat(zeroCount))) {
+            iteration++;
+            hash = Utils.getHexadecimalMD5Hash(secretKey + iteration);
+        }
+        return iteration;
     }
 }

@@ -11,18 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode02 {
 
-    private static class Box {
-        final int l;
-        final int w;
-        final int h;
-
-        Box(String line) {
-            String[] split = line.split("x");
-            l = Integer.parseInt(split[0]);
-            w = Integer.parseInt(split[1]);
-            h = Integer.parseInt(split[2]);
-        }
-
+    private record Box(int l, int w, int h) {
         int getWrappingPaperNeeded() {
             return getArea() + getSmallestSideArea();
         }
@@ -46,8 +35,7 @@ public class AdventOfCode02 {
         private int getSmallestPerimeter() {
             int max = Math.max(Math.max(l, w), h);
             if (max == h) return 2 * l + 2 * w;
-            if (max == w) return 2 * l + 2 * h;
-            return 2 * w + 2 * h;
+            return max == w ? 2 * l + 2 * h : 2 * w + 2 * h;
         }
     }
 
@@ -58,9 +46,12 @@ public class AdventOfCode02 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             List<Box> boxes = new ArrayList<>();
-            while ((currentLine = reader.readLine()) != null) boxes.add(new Box(currentLine));
-            LOGGER.info("PART 1: {}", boxes.stream().map(Box::getWrappingPaperNeeded).reduce(Integer::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", boxes.stream().map(Box::getRibbonLengthNeeded).reduce(Integer::sum).orElseThrow());
+            while ((currentLine = reader.readLine()) != null) {
+                String[] split = currentLine.split("x");
+                boxes.add(new Box(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+            }
+            LOGGER.info("PART 1: {}", boxes.stream().map(Box::getWrappingPaperNeeded).reduce(0, Integer::sum));
+            LOGGER.info("PART 2: {}", boxes.stream().map(Box::getRibbonLengthNeeded).reduce(0, Integer::sum));
         }
     }
 }

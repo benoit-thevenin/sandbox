@@ -20,26 +20,14 @@ public class AdventOfCode08 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 totalInitialCharacters += currentLine.length();
-                totalInMemoryCharacters += getInMemoryString(currentLine).length();
-                totalEncodedCharacters += getEncodedString(currentLine).length();
+                totalInMemoryCharacters += currentLine.substring(1, currentLine.length() - 1)
+                    .replaceAll("\\\\x[0-9a-f]{2}", "?")
+                    .replace("\\\"", "\"")
+                    .replace("\\\\", "\\").length();
+                totalEncodedCharacters += ("\"" + currentLine.replace("\\", "\\\\").replace("\"", "\\\"") + "\"").length();
             }
             LOGGER.info("PART 1: {}", totalInitialCharacters - totalInMemoryCharacters);
             LOGGER.info("PART 2: {}", totalEncodedCharacters - totalInitialCharacters);
         }
-    }
-
-    private static String getInMemoryString(String encodedString) {
-        String inMemoryString = encodedString.substring(1, encodedString.length() - 1);
-        inMemoryString = inMemoryString.replaceAll("\\\\x[0-9a-f]{2}", "?");
-        inMemoryString = inMemoryString.replace("\\\"", "\"");
-        inMemoryString = inMemoryString.replace("\\\\", "\\");
-        return inMemoryString;
-    }
-
-    private static String getEncodedString(String s) {
-        String encodedString = s.replace("\\", "\\\\");
-        encodedString = encodedString.replace("\"", "\\\"");
-        encodedString = "\"" + encodedString + "\"";
-        return encodedString;
     }
 }

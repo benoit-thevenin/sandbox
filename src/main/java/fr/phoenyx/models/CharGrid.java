@@ -37,6 +37,10 @@ public class CharGrid extends AbstractGrid {
         for (int i = 0; i < width; i++) System.arraycopy(next[i], 0, grid[i], 0, height);
     }
 
+    public List<Coord2> getAllCoords() {
+        return getCoordinatesMatching(c -> true);
+    }
+
     public List<Coord2> getCoordinatesMatching(Function<Character, Boolean> matcher) {
         List<Coord2> coords = new ArrayList<>();
         for (int i = 0; i < width; i++) {

@@ -20,13 +20,12 @@ public class AdventOfCode03 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2015/adventofcode03.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            Set<Coord2> visited = new HashSet<>();
-            Set<Coord2> visitedWithRoboSanta = new HashSet<>();
             Coord2 current = new Coord2(0, 0);
             Coord2 currentSanta = current;
             Coord2 currentRoboSanta = current;
+            Set<Coord2> visited = new HashSet<>();
             visited.add(current);
-            visitedWithRoboSanta.add(current);
+            Set<Coord2> visitedWithRoboSanta = new HashSet<>(visited);
             while ((currentLine = reader.readLine()) != null) {
                 for (int i = 0; i < currentLine.length(); i++) {
                     Dir dir = Dir.fromChar(currentLine.charAt(i));

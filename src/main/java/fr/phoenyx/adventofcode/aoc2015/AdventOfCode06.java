@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import fr.phoenyx.models.CharGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,16 +35,16 @@ public class AdventOfCode06 {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode06.class);
-    private static final boolean[][] lightGrid1 = new boolean[1000][1000];
-    private static final int[][] lightGrid2 = new int[1000][1000];
+    private static final CharGrid lightGrid1 = new CharGrid(1000, 1000);
+    private static final CharGrid lightGrid2 = new CharGrid(1000, 1000);
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2015/adventofcode06.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) perform(new Instruction(currentLine));
-            LOGGER.info("PART 1: {}", countLightsOn());
-            LOGGER.info("PART 2: {}", getBrightness());
+            LOGGER.info("PART 1: {}", lightGrid1.getCoordinatesMatching(c -> c == 1).size());
+            LOGGER.info("PART 2: {}", lightGrid2.getAllCoords().stream().map(c -> (int) lightGrid2.grid[c.x][c.y]).reduce(0, Integer::sum));
         }
     }
 
@@ -51,32 +52,16 @@ public class AdventOfCode06 {
         for (int x = (int) instruction.xRange.start; x < instruction.xRange.end; x++) {
             for (int y = (int) instruction.yRange.start; y < instruction.yRange.end; y++) {
                 if (instruction.action == Action.TURN_ON) {
-                    lightGrid1[x][y] = true;
-                    lightGrid2[x][y]++;
+                    lightGrid1.grid[x][y] = 1;
+                    lightGrid2.grid[x][y]++;
                 } else if (instruction.action == Action.TURN_OFF) {
-                    lightGrid1[x][y] = false;
-                    if (lightGrid2[x][y] > 0) lightGrid2[x][y]--;
+                    lightGrid1.grid[x][y] = 0;
+                    if (lightGrid2.grid[x][y] > 0) lightGrid2.grid[x][y]--;
                 } else {
-                    lightGrid1[x][y] = !lightGrid1[x][y];
-                    lightGrid2[x][y] += 2;
+                    lightGrid1.grid[x][y] = (char) (lightGrid1.grid[x][y] == 1 ? 0 : 1);
+                    lightGrid2.grid[x][y] += 2;
                 }
             }
         }
-    }
-
-    private static int countLightsOn() {
-        int count = 0;
-        for (int i = 0; i < 1000; i++) {
-            for (int j = 0; j < 1000; j++) if (lightGrid1[i][j]) count++;
-        }
-        return count;
-    }
-
-    private static int getBrightness() {
-        int brightness = 0;
-        for (int i = 0; i < 1000; i++) {
-            for (int j = 0; j < 1000; j++) brightness += lightGrid2[i][j];
-        }
-        return brightness;
     }
 }
