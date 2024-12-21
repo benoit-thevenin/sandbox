@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import fr.phoenyx.models.coords.Coord2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,42 +25,39 @@ public class AdventOfCode08 {
             List<String> lines = new ArrayList<>();
             String currentLine;
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
-            Entry<Integer, Integer> result = computeResult(new CharGrid(lines));
+            Entry<Integer, Integer> result = getResult(new CharGrid(lines));
             LOGGER.info("PART 1: {}", result.getKey());
             LOGGER.info("PART 2: {}", result.getValue());
         }
     }
 
-    private static Entry<Integer, Integer> computeResult(CharGrid grid) {
+    private static Entry<Integer, Integer> getResult(CharGrid grid) {
         int visibleTrees = 0;
         int bestScenicScore = 0;
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                Entry<Boolean, Integer> treeResult = computeTree(i, j, grid);
-                if (Boolean.TRUE.equals(treeResult.getKey())) visibleTrees++;
-                if (treeResult.getValue() > bestScenicScore) bestScenicScore = treeResult.getValue();
-            }
+        for (Coord2 tree : grid.getAllCoords()) {
+            Entry<Boolean, Integer> treeResult = getResult(tree, grid);
+            if (Boolean.TRUE.equals(treeResult.getKey())) visibleTrees++;
+            bestScenicScore = Math.max(bestScenicScore, treeResult.getValue());
         }
         return new SimpleEntry<>(visibleTrees, bestScenicScore);
     }
 
-    private static Entry<Boolean, Integer> computeTree(int i, int j, CharGrid grid) {
+    private static Entry<Boolean, Integer> getResult(Coord2 tree, CharGrid grid) {
         boolean isVisible = false;
         int scenicScore = 1;
         for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-            int step = 0;
+            int steps = 0;
             boolean end = false;
             while (!end) {
-                step++;
-                int x = i + step * dir.dx;
-                int y = j + step * dir.dy;
-                if (!grid.isInGrid(x, y)) {
+                steps++;
+                Coord2 current = tree.move(dir, steps);
+                if (!grid.isInGrid(current)) {
                     isVisible = true;
                     end = true;
-                    step--;
-                } else if (grid.grid[x][y] >= grid.grid[i][j]) end = true;
+                    steps--;
+                } else if (grid.grid[current.x][current.y] >= grid.grid[tree.x][tree.y]) end = true;
             }
-            scenicScore *= step;
+            scenicScore *= steps;
         }
         return new SimpleEntry<>(isVisible, scenicScore);
     }

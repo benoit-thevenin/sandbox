@@ -45,7 +45,7 @@ public class AdventOfCode15 {
 
     private static long countImpossibleBeaconPositionAtRow2000000(List<Coord2> sensors, List<Coord2> beacons) {
         Set<Range> impossibleBeaconsX = getImpossibleBeaconsXAtRow(2000000, sensors, beacons);
-        return impossibleBeaconsX.stream().map(range -> range.length).reduce(Long::sum).orElseThrow() - beacons.stream().filter(b -> b.y == 2000000 && impossibleBeaconsX.stream().anyMatch(r -> r.isInRange(b.x))).distinct().count();
+        return impossibleBeaconsX.stream().map(range -> range.length).reduce(0L, Long::sum) - beacons.stream().filter(b -> b.y == 2000000 && impossibleBeaconsX.stream().anyMatch(r -> r.isInRange(b.x))).distinct().count();
     }
 
     private static Set<Range> getImpossibleBeaconsXAtRow(int row, List<Coord2> sensors, List<Coord2> beacons) {

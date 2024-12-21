@@ -24,45 +24,43 @@ public class AdventOfCode11 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2022/adventofcode11.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            List<String> monkeyLines = new ArrayList<>();
-            List<Monkey> monkeysPart1 = new ArrayList<>();
-            List<Monkey> monkeysPart2 = new ArrayList<>();
+            List<String> lines = new ArrayList<>();
+            List<Monkey> monkeys = new ArrayList<>();
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 if (currentLine.isBlank()) continue;
-                monkeyLines.add(currentLine);
-                if (monkeyLines.size() == 6) {
-                    monkeysPart1.add(buildMonkey(monkeyLines));
-                    monkeysPart2.add(buildMonkey(monkeyLines));
-                    monkeyLines.clear();
+                lines.add(currentLine);
+                if (lines.size() == 6) {
+                    monkeys.add(buildMonkey(lines));
+                    lines.clear();
                 }
             }
-            LOGGER.info("PART 1: {}", getMonkeyBusiness(monkeysPart1, true));
-            LOGGER.info("PART 2: {}", getMonkeyBusiness(monkeysPart2, false));
+            LOGGER.info("PART 1: {}", getMonkeyBusiness(monkeys.stream().map(m -> new Monkey(new ArrayList<>(m.items), m.operation, m.test)).toList(), true));
+            LOGGER.info("PART 2: {}", getMonkeyBusiness(monkeys, false));
         }
     }
 
     private static Monkey buildMonkey(List<String> lines) {
         List<Long> items = new ArrayList<>();
         Arrays.stream(lines.get(1).replace(" ", "").split(":")[1].split(",")).map(Long::parseLong).forEach(items::add);
-        LongUnaryOperator operation;
-        if (lines.get(2).contains("+")) {
-            long operationParameter = Long.parseLong(lines.get(2).split("\\+ ")[1]);
-            operation = a -> a + operationParameter;
-        } else {
-            String token = lines.get(2).split("\\* ")[1];
-            if ("old".equals(token)) operation = a -> a * a;
-            else {
-                long operationParameter = Long.parseLong(token);
-                operation = a -> a * operationParameter;
-            }
-        }
+        LongUnaryOperator operation = getOperation(lines);
         int indexIfTrue = Integer.parseInt(lines.get(4).split("monkey ")[1]);
         int indexIfFalse = Integer.parseInt(lines.get(5).split("monkey ")[1]);
         long testParameter = Long.parseLong(lines.get(3).split("by ")[1]);
         leastCommonMultiple = MathUtils.leastCommonMultiple(leastCommonMultiple, testParameter);
         Function<Long, Integer> test = a -> a % testParameter == 0 ? indexIfTrue : indexIfFalse;
         return new Monkey(items, operation, test);
+    }
+
+    private static LongUnaryOperator getOperation(List<String> lines) {
+        if (lines.get(2).contains("+")) {
+            long operationParameter = Long.parseLong(lines.get(2).split("\\+ ")[1]);
+            return a -> a + operationParameter;
+        }
+        String token = lines.get(2).split("\\* ")[1];
+        if ("old".equals(token)) return a -> a * a;
+        long operationParameter = Long.parseLong(token);
+        return a -> a * operationParameter;
     }
 
     private static long getMonkeyBusiness(List<Monkey> monkeys, boolean isPart1) {

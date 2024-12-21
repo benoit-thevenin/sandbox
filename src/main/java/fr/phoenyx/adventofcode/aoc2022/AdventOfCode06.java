@@ -16,7 +16,7 @@ public class AdventOfCode06 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2022/adventofcode06.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String message = "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg";
+            String message = "";
             String currentLine;
             while ((currentLine = reader.readLine()) != null) message = currentLine;
             LOGGER.info("PART 1: {}", getMarkerPosition(message, 4));

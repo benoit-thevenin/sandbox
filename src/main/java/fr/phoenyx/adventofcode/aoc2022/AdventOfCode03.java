@@ -4,43 +4,32 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import fr.phoenyx.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AdventOfCode03 {
 
-    private static class Rucksack {
-        final String content;
-
-        Rucksack(String line) {
-            content = line;
-        }
-
+    private record Rucksack(String content) {
         int getWronglyPlacedItemPriority() {
-            Set<Character> compartment1 = new HashSet<>();
-            for (int i = 0; i < content.length() / 2; i++) compartment1.add(content.charAt(i));
-            for (int i = content.length() / 2; i < content.length(); i++) {
-                if (compartment1.contains(content.charAt(i))) return getPriority(content.charAt(i));
-            }
-            throw new IllegalArgumentException("No wrongly placed item");
+            Set<Character> compartment1 = Utils.getLetterCount(content.substring(0, content.length() / 2)).keySet();
+            Set<Character> compartment2 = Utils.getLetterCount(content.substring(content.length() / 2)).keySet();
+            return getPriority(compartment1.stream().filter(compartment2::contains).findAny().orElseThrow());
         }
 
         int getBadgePriority(Rucksack other1, Rucksack other2) {
-            for (int i = 0; i < content.length(); i++) {
-                String c = Character.toString(content.charAt(i));
-                if (other1.content.contains(c) && other2.content.contains(c)) return getPriority(c.charAt(0));
-            }
-            throw new IllegalArgumentException("No badge present");
+            Set<Character> c1 = Utils.getLetterCount(content).keySet();
+            Set<Character> c2 = Utils.getLetterCount(other1.content).keySet();
+            Set<Character> c3 = Utils.getLetterCount(other2.content).keySet();
+            return getPriority(c1.stream().filter(c2::contains).filter(c3::contains).findAny().orElseThrow());
         }
 
         private int getPriority(char c) {
             int priority = c - 'A';
-            if (priority < 26) return priority + 27;
-            return c - 'a' + 1;
+            return priority < 26 ? priority + 27 : c - 'a' + 1;
         }
     }
 
@@ -52,7 +41,7 @@ public class AdventOfCode03 {
             List<Rucksack> rucksacks = new ArrayList<>();
             String currentLine;
             while ((currentLine = reader.readLine()) != null) rucksacks.add(new Rucksack(currentLine));
-            LOGGER.info("PART 1: {}", rucksacks.stream().map(Rucksack::getWronglyPlacedItemPriority).reduce(Integer::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", rucksacks.stream().map(Rucksack::getWronglyPlacedItemPriority).reduce(0, Integer::sum));
             int result = 0;
             for (int i = 0; i < rucksacks.size(); i += 3) result += rucksacks.get(i).getBadgePriority(rucksacks.get(i + 1), rucksacks.get(i + 2));
             LOGGER.info("PART 2: {}", result);

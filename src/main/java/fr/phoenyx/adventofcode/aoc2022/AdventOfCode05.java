@@ -49,17 +49,7 @@ public class AdventOfCode05 {
         }
     }
 
-    private static class Instruction {
-        final int quantity;
-        final char from;
-        final char to;
-
-        Instruction(String line) {
-            quantity = Integer.parseInt(line.split(" from")[0].split(" ")[1]);
-            from = line.split("from ")[1].split(" to")[0].charAt(0);
-            to = line.split("to ")[1].charAt(0);
-        }
-    }
+    private record Instruction(int quantity, char from, char to) {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode05.class);
 
@@ -72,8 +62,12 @@ public class AdventOfCode05 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 if (currentLine.isBlank()) isInstructions = true;
-                else if (isInstructions) instructions.add(new Instruction(currentLine));
-                else lines.add(currentLine);
+                else if (isInstructions) {
+                    int quantity = Integer.parseInt(currentLine.split(" from")[0].split(" ")[1]);
+                    char from = currentLine.split("from ")[1].split(" to")[0].charAt(0);
+                    char to = currentLine.split("to ")[1].charAt(0);
+                    instructions.add(new Instruction(quantity, from, to));
+                } else lines.add(currentLine);
             }
             LOGGER.info("PART 1: {}", new Ship(lines).performInstructions(instructions, false));
             LOGGER.info("PART 2: {}", new Ship(lines).performInstructions(instructions, true));
