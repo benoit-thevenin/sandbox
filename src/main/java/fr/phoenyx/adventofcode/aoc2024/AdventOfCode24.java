@@ -18,9 +18,24 @@ import java.util.stream.Collectors;
 
 public class AdventOfCode24 {
 
-    private record Gate(String input1, String input2, BiFunction<Boolean, Boolean, Boolean> operation, String output) {}
+    private record Gate(String input1, String input2, BiFunction<Boolean, Boolean, Boolean> operation, String output) {
+        boolean hasInputMatching(String input) {
+            return input1.equals(input) || input2.equals(input);
+        }
+
+        boolean hasInputsMatching(String i1, String i2) {
+            return hasInputMatching(i1) && hasInputMatching(i2);
+        }
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode24.class);
+    private static final Map<String, BiFunction<Boolean, Boolean, Boolean>> OPERATIONS = new HashMap<>();
+
+    static {
+        OPERATIONS.put("AND", (a, b) -> a && b);
+        OPERATIONS.put("OR", (a, b) -> a || b);
+        OPERATIONS.put("XOR", (a, b) -> a ^ b);
+    }
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2024/adventofcode24.txt";
@@ -37,9 +52,7 @@ public class AdventOfCode24 {
                 } else {
                     String[] split = currentLine.split(" -> ");
                     String[] input = split[0].split(" ");
-                    BiFunction<Boolean, Boolean, Boolean> operation = (a, b) -> a && b;
-                    if ("OR".equals(input[1])) operation = (a, b) -> a || b;
-                    else if ("XOR".equals(input[1])) operation = (a, b) -> a ^ b;
+                    BiFunction<Boolean, Boolean, Boolean> operation = OPERATIONS.get(input[1]);
                     gates.add(new Gate(input[0], input[2], operation, split[1]));
                 }
             }
@@ -79,19 +92,42 @@ public class AdventOfCode24 {
     }
 
     private static Set<String> getSwappedOutputs(Map<String, Boolean> values, List<Gate> gates) {
-        Set<String> wrongBits = new HashSet<>();
+        Set<Integer> wrongBits = new HashSet<>();
         for (int i = 0; i < 45; i++) {
             Map<String, Boolean> copy = new HashMap<>(values);
             copy.keySet().stream().filter(key -> key.startsWith("x") || key.startsWith("y")).forEach(key -> copy.put(key, false));
-            String index = i < 10 ? "0" + i : i + "";
+            String index = getIndex(i);
             copy.put("x" + index, true);
             copy.put("y" + index, true);
             long expected = getDecimalNumber(copy, "x") + getDecimalNumber(copy, "y");
-            if (expected > getDecimalNumber(copy, gates)) wrongBits.add(index);
-            else if (expected < getDecimalNumber(copy, gates)) wrongBits.add((i + 1) < 10 ? "0" + (i + 1) : (i + 1) + "");
+            if (expected > getDecimalNumber(copy, gates)) wrongBits.add(i);
+            else if (expected < getDecimalNumber(copy, gates)) wrongBits.add(i + 1);
         }
-        // When a sum is wrong, it means two gates have been swapped in the cluster of the corresponding index
-        // The answer below has been found by manually checking the doors where the indexes were wrong
-        return Set.of("ffj", "z08", "kfm", "dwp", "z22", "gjh", "jdr", "z31");
+        Set<String> swappedOutputs = new HashSet<>();
+        wrongBits.forEach(i -> swappedOutputs.addAll(getSwappedOutputsAtIndex(i, gates)));
+        return swappedOutputs;
+    }
+
+    private static Set<String> getSwappedOutputsAtIndex(int i, List<Gate> gates) {
+        String index = getIndex(i);
+        String previousIndex = getIndex(i - 1);
+        String zi = "z" + index;
+        Gate additionGate = gates.stream().filter(g -> g.hasInputsMatching("x" + index, "y" + index) && g.operation.equals(OPERATIONS.get("XOR"))).findAny().orElseThrow();
+        Optional<Gate> outputGate = gates.stream().filter(g -> g.output.equals(zi) && g.operation.equals(OPERATIONS.get("XOR"))).findAny();
+        if (outputGate.isEmpty()) {
+            Gate previousCarryGate = gates.stream().filter(g -> g.hasInputsMatching("x" + previousIndex, "y" + previousIndex) && g.operation.equals(OPERATIONS.get("AND"))).findAny().orElseThrow();
+            Gate carryGate = gates.stream().filter(g -> g.hasInputMatching(previousCarryGate.output) && g.operation.equals(OPERATIONS.get("OR"))).findAny().orElseThrow();
+            Gate swapped = gates.stream().filter(g -> g.hasInputsMatching(additionGate.output, carryGate.output) && g.operation.equals(OPERATIONS.get("XOR"))).findAny().orElseThrow();
+            return Set.of(zi, swapped.output);
+        }
+        Gate input1 = gates.stream().filter(g -> g.output.equals(outputGate.get().input1)).findAny().orElseThrow();
+        Gate input2 = gates.stream().filter(g -> g.output.equals(outputGate.get().input2)).findAny().orElseThrow();
+        if (input1.operation.equals(OPERATIONS.get("AND"))) return Set.of(input1.output, additionGate.output);
+        else if (input2.operation.equals(OPERATIONS.get("AND"))) return Set.of(input2.output, additionGate.output);
+        else throw new IllegalArgumentException("No swapped gates found at index " + i);
+    }
+
+    private static String getIndex(int i) {
+        return i < 10 ? "0" + i : i + "";
     }
 }
