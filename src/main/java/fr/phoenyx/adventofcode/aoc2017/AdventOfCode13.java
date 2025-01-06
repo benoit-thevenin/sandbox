@@ -37,8 +37,7 @@ public class AdventOfCode13 {
     }
 
     private static boolean isCaught(int time, int layer) {
-        if (!firewall.containsKey(layer)) return false;
-        return time % (2 * (firewall.get(layer) - 1)) == 0;
+        return firewall.containsKey(layer) && time % (2 * (firewall.get(layer) - 1)) == 0;
     }
 
     private static int getDelayUncaught() {

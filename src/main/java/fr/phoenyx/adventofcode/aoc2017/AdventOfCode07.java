@@ -57,7 +57,7 @@ public class AdventOfCode07 {
                 program.holding.forEach(name -> programs.get(name).holder = program);
                 subTowerWeight.putIfAbsent(program, getSubTowerWeight(program));
             });
-            LOGGER.info("PART 1: {}", getBottomProgram());
+            LOGGER.info("PART 1: {}", programs.values().stream().filter(program -> program.holder == null).findAny().orElseThrow().name);
             LOGGER.info("PART 2: {}", getBalancedWeight());
         }
     }
@@ -65,14 +65,8 @@ public class AdventOfCode07 {
     private static int getSubTowerWeight(Program program) {
         if (subTowerWeight.containsKey(program)) return subTowerWeight.get(program);
         if (program.holding.isEmpty()) subTowerWeight.put(program, program.weight);
-        else subTowerWeight.put(program, program.weight + programs.values().stream().filter(p -> program.holding.contains(p.name)).map(AdventOfCode07::getSubTowerWeight).reduce(Integer::sum).orElseThrow());
+        else subTowerWeight.put(program, program.weight + programs.values().stream().filter(p -> program.holding.contains(p.name)).map(AdventOfCode07::getSubTowerWeight).reduce(0, Integer::sum));
         return subTowerWeight.get(program);
-    }
-
-    private static String getBottomProgram() {
-        Program current = programs.values().iterator().next();
-        while (current.holder != null) current = current.holder;
-        return current.name;
     }
 
     private static int getBalancedWeight() {

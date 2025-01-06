@@ -14,23 +14,10 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode06 {
 
-    private static class MemoryBanks {
-        int[] banks;
-
-        MemoryBanks(String line) {
-            String[] split = line.split("\t");
-            banks = new int[split.length];
-            for (int i = 0; i < banks.length; i++) banks[i] = Integer.parseInt(split[i]);
-        }
-
-        MemoryBanks(MemoryBanks memoryBanks) {
-            banks = new int[memoryBanks.banks.length];
-            System.arraycopy(memoryBanks.banks, 0, banks, 0, banks.length);
-        }
-
+    private record MemoryBanks(int[] banks) {
         @Override
         public boolean equals(Object o) {
-            if (o == this) return true;
+            if (this == o) return true;
             if (!(o instanceof MemoryBanks other)) return false;
             return Arrays.equals(banks, other.banks);
         }
@@ -47,11 +34,14 @@ public class AdventOfCode06 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2017/adventofcode06.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            MemoryBanks memoryBanks = new MemoryBanks("0\t2\t7\t0");
-            while ((currentLine = reader.readLine()) != null) memoryBanks = new MemoryBanks(currentLine);
-            Entry<Integer, Integer> result = getCycles(memoryBanks);
-            LOGGER.info("PART 1: {}", result.getKey());
-            LOGGER.info("PART 2: {}", result.getValue());
+            while ((currentLine = reader.readLine()) != null) {
+                String[] split = currentLine.split("\t");
+                int[] banks = new int[split.length];
+                for (int i = 0; i < banks.length; i++) banks[i] = Integer.parseInt(split[i]);
+                Entry<Integer, Integer> result = getCycles(new MemoryBanks(banks));
+                LOGGER.info("PART 1: {}", result.getKey());
+                LOGGER.info("PART 2: {}", result.getValue());
+            }
         }
     }
 
@@ -70,11 +60,11 @@ public class AdventOfCode06 {
                     index = i;
                 }
             }
-            MemoryBanks next = new MemoryBanks(current);
+            int[] nextBank = new int[current.banks.length];
+            System.arraycopy(current.banks, 0, nextBank, 0, current.banks.length);
+            MemoryBanks next = new MemoryBanks(nextBank);
             next.banks[index] = 0;
-            for (int i = 1; i <= valueToSpread; i++) {
-                next.banks[(index + i) % memoryBanks.banks.length]++;
-            }
+            for (int i = 1; i <= valueToSpread; i++) next.banks[(index + i) % memoryBanks.banks.length]++;
             current = next;
         }
         return new SimpleEntry<>(cycles, cycles - states.indexOf(current));

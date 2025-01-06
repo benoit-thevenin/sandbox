@@ -19,35 +19,27 @@ public class AdventOfCode05 {
             List<Integer> instructions = new ArrayList<>();
             String currentLine;
             while ((currentLine = reader.readLine()) != null) instructions.add(Integer.parseInt(currentLine));
-            LOGGER.info("PART 1: {}", countStepsOut1(instructions));
-            LOGGER.info("PART 2: {}", countStepsOut2(instructions));
+            LOGGER.info("PART 1: {}", countStepsOut(instructions, false));
+            LOGGER.info("PART 2: {}", countStepsOut(instructions, true));
         }
     }
 
-    private static int countStepsOut1(List<Integer> instructionList) {
+    private static int countStepsOut(List<Integer> instructionList, boolean isPart2) {
         int[] instructions = new int[instructionList.size()];
         for (int i = 0; i < instructions.length; i++) instructions[i] = instructionList.get(i);
         int count = 0;
         int index = 0;
         while (true) {
             count++;
-            instructions[index]++;
-            index += instructions[index] - 1;
-            if (index < 0 || index >= instructions.length) return count;
-        }
-    }
-
-    private static int countStepsOut2(List<Integer> instructionList) {
-        int[] instructions = new int[instructionList.size()];
-        for (int i = 0; i < instructions.length; i++) instructions[i] = instructionList.get(i);
-        int count = 0;
-        int index = 0;
-        while (true) {
-            count++;
-            int jump = instructions[index];
-            if (jump > 2) instructions[index]--;
-            else instructions[index]++;
-            index += jump;
+            if (isPart2) {
+                int jump = instructions[index];
+                if (jump > 2) instructions[index]--;
+                else instructions[index]++;
+                index += jump;
+            } else {
+                instructions[index]++;
+                index += instructions[index] - 1;
+            }
             if (index < 0 || index >= instructions.length) return count;
         }
     }

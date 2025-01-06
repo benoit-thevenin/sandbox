@@ -62,9 +62,7 @@ public class AdventOfCode10 {
     private static int[] knot(int[] values, int index, int length) {
         int[] next = new int[values.length];
         System.arraycopy(values, 0, next, 0, values.length);
-        for (int i = 0; i < length; i++) {
-            next[(index + i) % values.length] = values[(index + length - i - 1) % values.length];
-        }
+        for (int i = 0; i < length; i++) next[(index + i) % values.length] = values[(index + length - i - 1) % values.length];
         return next;
     }
 
