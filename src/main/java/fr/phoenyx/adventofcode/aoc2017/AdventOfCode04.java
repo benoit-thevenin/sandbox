@@ -19,21 +19,16 @@ public class AdventOfCode04 {
             int count1 = 0;
             int count2 = 0;
             while ((currentLine = reader.readLine()) != null) {
-                if (isValid1(currentLine)) count1++;
-                if (isValid2(currentLine)) count2++;
+                String[] words = currentLine.split(" ");
+                if (words.length == Arrays.stream(words).distinct().count()) count1++;
+                if (isValid(words)) count2++;
             }
             LOGGER.info("PART 1: {}", count1);
             LOGGER.info("PART 2: {}", count2);
         }
     }
 
-    private static boolean isValid1(String passphrase) {
-        String[] words = passphrase.split(" ");
-        return words.length == Arrays.stream(words).distinct().count();
-    }
-
-    private static boolean isValid2(String passphrase) {
-        String[] words = passphrase.split(" ");
+    private static boolean isValid(String[] words) {
         for (int i = 0; i < words.length - 1; i++) {
             char[] sortedChars = words[i].toCharArray();
             Arrays.sort(sortedChars);
