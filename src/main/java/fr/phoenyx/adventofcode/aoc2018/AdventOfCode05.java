@@ -17,11 +17,11 @@ public class AdventOfCode05 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2018/adventofcode05.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String suit = "";
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) suit = currentLine;
-            LOGGER.info("PART 1: {}", shrink(suit).length());
-            LOGGER.info("PART 2: {}", getShortestShrinkedSuit(suit).length());
+            while ((currentLine = reader.readLine()) != null) {
+                LOGGER.info("PART 1: {}", shrink(currentLine).length());
+                LOGGER.info("PART 2: {}", getShortestShrinkedSuit(currentLine).length());
+            }
         }
     }
 
@@ -57,9 +57,7 @@ public class AdventOfCode05 {
         String shortestSuit = shrink(suit);
         for (String type : types) {
             StringBuilder next = new StringBuilder();
-            for (char c : suit.toCharArray()) {
-                if (!Character.toString(c).equalsIgnoreCase(type)) next.append(c);
-            }
+            for (char c : suit.toCharArray())if (!Character.toString(c).equalsIgnoreCase(type)) next.append(c);
             String shrinkedNext = shrink(next.toString());
             if (shrinkedNext.length() < shortestSuit.length()) shortestSuit = shrinkedNext;
         }

@@ -20,29 +20,25 @@ public class AdventOfCode01 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             int result = 0;
-            List<String> lines = new ArrayList<>();
+            List<Integer> values = new ArrayList<>();
             while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.charAt(0) == '+') result += Integer.parseInt(currentLine.substring(1));
-                else result -= Integer.parseInt(currentLine.substring(1));
-                lines.add(currentLine);
+                int value = Integer.parseInt(currentLine);
+                result += value;
+                values.add(value);
             }
             LOGGER.info("PART 1: {}", result);
-            LOGGER.info("PART 2: {}", getRightFrequency(lines));
+            LOGGER.info("PART 2: {}", getRightFrequency(values));
         }
     }
 
-    private static int getRightFrequency(List<String> lines) {
+    private static int getRightFrequency(List<Integer> values) {
         Set<Integer> seenFrequency = new HashSet<>();
         int currentFrequency = 0;
-        seenFrequency.add(0);
         int index = 0;
-        while (true) {
-            String line = lines.get(index % lines.size());
-            if (line.charAt(0) == '+') currentFrequency += Integer.parseInt(line.substring(1));
-            else currentFrequency -= Integer.parseInt(line.substring(1));
-            if (seenFrequency.contains(currentFrequency)) return currentFrequency;
-            seenFrequency.add(currentFrequency);
+        while (seenFrequency.add(currentFrequency)) {
+            currentFrequency += values.get(index % values.size());
             index++;
         }
+        return currentFrequency;
     }
 }

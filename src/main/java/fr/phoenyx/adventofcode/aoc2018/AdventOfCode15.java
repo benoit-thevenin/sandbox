@@ -138,7 +138,7 @@ public class AdventOfCode15 {
                     .filter(Unit::isAlive)
                     .filter(u -> unit.isElve != u.isElve)
                     .collect(Collectors.toSet());
-                if (targets.isEmpty()) return units.stream().filter(Unit::isAlive).map(u -> u.hp).reduce(Integer::sum).orElseThrow() * round;
+                if (targets.isEmpty()) return units.stream().filter(Unit::isAlive).map(u -> u.hp).reduce(0, Integer::sum) * round;
                 playTurn(unit, targets);
             }
             round++;
@@ -146,9 +146,8 @@ public class AdventOfCode15 {
     }
 
     private static void prepareData(int elveAttackModifier) {
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++) map[i][j].unit = null;
-        }
         units.clear();
         for (Unit initialUnit : initialUnits) {
             Unit unit = new Unit(initialUnit);
@@ -192,9 +191,8 @@ public class AdventOfCode15 {
         Set<Point> destinations = new HashSet<>();
         for (Unit target : targets) {
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                int x = target.pos.x + dir.dx;
-                int y = target.pos.y + dir.dy;
-                if (map[x][y].isWalkable()) destinations.add(map[x][y]);
+                Coord2 neigh = target.pos.move(dir);
+                if (map[neigh.x][neigh.y].isWalkable()) destinations.add(map[neigh.x][neigh.y]);
             }
         }
         return destinations;
@@ -204,9 +202,8 @@ public class AdventOfCode15 {
         Set<Point> next = new HashSet<>();
         for (Point current : toVisit) {
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                int x = current.x + dir.dx;
-                int y = current.y + dir.dy;
-                if (map[x][y].isWalkable() && !visited.contains(map[x][y])) next.add(map[x][y]);
+                Coord2 neigh = current.move(dir);
+                if (map[neigh.x][neigh.y].isWalkable() && !visited.contains(map[neigh.x][neigh.y])) next.add(map[neigh.x][neigh.y]);
             }
         }
         return next;
@@ -217,23 +214,22 @@ public class AdventOfCode15 {
         int minDistance = Integer.MAX_VALUE;
         Set<Point> best = new HashSet<>();
         for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-            int x = unit.pos.x + dir.dx;
-            int y = unit.pos.y + dir.dy;
-            if (!map[x][y].isWalkable()) continue;
+            Coord2 neigh = unit.pos.move(dir);
+            if (!map[neigh.x][neigh.y].isWalkable()) continue;
             Set<Point> toVisit = new HashSet<>();
-            toVisit.add(map[x][y]);
+            toVisit.add(map[neigh.x][neigh.y]);
             Set<Point> visited = new HashSet<>(toVisit);
             int steps = 0;
             while (!toVisit.isEmpty()) {
                 steps++;
                 Set<Point> next = getNextSteps(toVisit, visited);
                 if (next.contains(target)) {
-                    if (steps < minDistance) {
-                        minDistance = steps;
-                        best.clear();
-                        best.add(map[x][y]);
-                    } else if (steps == minDistance) {
-                        best.add(map[x][y]);
+                    if (steps <= minDistance) {
+                        if (steps < minDistance) {
+                            minDistance = steps;
+                            best.clear();
+                        }
+                        best.add(map[neigh.x][neigh.y]);
                     }
                     break;
                 }

@@ -70,6 +70,6 @@ public class AdventOfCode12 {
     }
 
     private static long getResult() {
-        return pots.entrySet().stream().filter(e -> e.getValue() == '#').map(Entry::getKey).reduce(Integer::sum).orElseThrow();
+        return pots.entrySet().stream().filter(e -> e.getValue() == '#').map(Entry::getKey).reduce(0, Integer::sum);
     }
 }

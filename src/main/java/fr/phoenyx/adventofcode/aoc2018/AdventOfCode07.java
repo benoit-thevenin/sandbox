@@ -17,14 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode07 {
 
-    private static class Step {
-        final char name;
-        final Set<Character> prerequisites = new HashSet<>();
-
-        Step(char name) {
-            this.name = name;
-        }
-    }
+    private record Step(char name, Set<Character> prerequisites) {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode07.class);
     private static final Map<Character, Step> steps = new HashMap<>();
@@ -36,8 +29,8 @@ public class AdventOfCode07 {
             while ((currentLine = reader.readLine()) != null) {
                 char prerequisite = currentLine.charAt(5);
                 char stepName = currentLine.charAt(36);
-                steps.putIfAbsent(prerequisite, new Step(prerequisite));
-                steps.putIfAbsent(stepName, new Step(stepName));
+                steps.putIfAbsent(prerequisite, new Step(prerequisite, new HashSet<>()));
+                steps.putIfAbsent(stepName, new Step(stepName, new HashSet<>()));
                 steps.get(stepName).prerequisites.add(prerequisite);
             }
             LOGGER.info("PART 1: {}", getStepOrder());
@@ -64,14 +57,13 @@ public class AdventOfCode07 {
         while (completedSteps.size() != steps.size()) {
             Set<Character> startedOrCompleted = new HashSet<>(completedSteps);
             startedOrCompleted.addAll(stepsStarted.keySet());
-            if (stepsStarted.size() < 5) {
+            if (stepsStarted.size() < 5)
                 steps.values().stream()
                     .filter(s -> !startedOrCompleted.contains(s.name))
                     .filter(s -> completedSteps.containsAll(s.prerequisites))
                     .sorted(Comparator.comparingInt(s -> s.name))
                     .limit(5L - stepsStarted.size())
                     .forEach(s -> stepsStarted.put(s.name, 60 + s.name - 'A' + 1));
-            }
             int lowestTime = stepsStarted.values().stream().min(Integer::compare).orElseThrow();
             for (Entry<Character, Integer> entry : stepsStarted.entrySet()) {
                 if (entry.getValue() == lowestTime) completedSteps.add(entry.getKey());

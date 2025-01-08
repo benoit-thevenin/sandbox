@@ -5,13 +5,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import fr.phoenyx.utils.Utils;
 import org.slf4j.Logger;
@@ -184,15 +182,9 @@ public class AdventOfCode16 {
                     instructions.add(instruction);
                 }
             }
-            LOGGER.info("PART 1: {}", countSamplesBehavingLikeAtLeastThreeOpCodes(device, samples));
+            LOGGER.info("PART 1: {}", samples.stream().filter(sample -> device.testSample(sample) > 2).count());
             LOGGER.info("PART 2: {}", execute(device, instructions));
         }
-    }
-
-    private static long countSamplesBehavingLikeAtLeastThreeOpCodes(Device device, List<Sample> samples) {
-        return samples.stream()
-                .filter(sample -> device.testSample(sample) > 2)
-                .count();
     }
 
     private static int execute(Device device, List<int[]> instructions) {

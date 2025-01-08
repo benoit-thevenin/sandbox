@@ -20,16 +20,15 @@ import fr.phoenyx.models.coords.Coord2;
 public class AdventOfCode06 {
 
     private static class Point extends Coord2 {
+        static int minX, maxX, minY, maxY;
         int id = -1;
-        boolean isOnEdge = false;
 
         Point(int x, int y) {
             super(x, y);
         }
 
-        Point(int x, int y, int minX, int maxX, int minY, int maxY) {
-            this(x, y);
-            isOnEdge = x == minX || x == maxX || y == minY || y == maxY;
+        boolean isOnEdge() {
+            return x == minX || x == maxX || y == minY || y == maxY;
         }
     }
 
@@ -48,19 +47,18 @@ public class AdventOfCode06 {
             }
             Set<Point> allPoints = initAllPoints(points);
             LOGGER.info("PART 1: {}", getLargestFiniteAreaSize(points, allPoints));
-            LOGGER.info("PART 2: {}", getClosestRegionSize(points, allPoints));
+            LOGGER.info("PART 2: {}", allPoints.stream().filter(p -> points.stream().map(p::manhattanDistanceTo).reduce(0, Integer::sum) < 10000).count());
         }
     }
 
     private static Set<Point> initAllPoints(List<Point> points) {
-        int minX = points.stream().min(Comparator.comparingInt(c -> c.x)).map(c -> c.x).orElseThrow();
-        int maxX = points.stream().max(Comparator.comparingInt(c -> c.x)).map(c -> c.x).orElseThrow();
-        int minY = points.stream().min(Comparator.comparingInt(c -> c.y)).map(c -> c.y).orElseThrow();
-        int maxY = points.stream().max(Comparator.comparingInt(c -> c.y)).map(c -> c.y).orElseThrow();
+        Point.minX = points.stream().min(Comparator.comparingInt(c -> c.x)).map(c -> c.x).orElseThrow();
+        Point.maxX = points.stream().max(Comparator.comparingInt(c -> c.x)).map(c -> c.x).orElseThrow();
+        Point.minY = points.stream().min(Comparator.comparingInt(c -> c.y)).map(c -> c.y).orElseThrow();
+        Point.maxY = points.stream().max(Comparator.comparingInt(c -> c.y)).map(c -> c.y).orElseThrow();
         Set<Point> allPoints = new HashSet<>(points);
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) allPoints.add(new Point(x, y, minX, maxX, minY, maxY));
-        }
+        for (int x = Point.minX; x <= Point.maxX; x++)
+            for (int y = Point.minY; y <= Point.maxY; y++) allPoints.add(new Point(x, y));
         return allPoints;
     }
 
@@ -69,9 +67,7 @@ public class AdventOfCode06 {
         Map<Point, Integer> finiteAreas = new HashMap<>();
         for (Point dangerous : points) {
             Set<Point> area = allPoints.stream().filter(p -> p.id == dangerous.id).collect(Collectors.toSet());
-            if (area.stream().noneMatch(p -> p.isOnEdge)) {
-                finiteAreas.put(dangerous, area.size());
-            }
+            if (area.stream().noneMatch(Point::isOnEdge)) finiteAreas.put(dangerous, area.size());
         }
         return finiteAreas.values().stream().max(Integer::compare).orElseThrow();
     }
@@ -91,15 +87,5 @@ public class AdventOfCode06 {
             }
             if (closest.size() == 1) point.id = closest.iterator().next().id;
         }
-    }
-
-    private static int getClosestRegionSize(List<Point> points, Set<Point> allPoints) {
-        Set<Point> region = new HashSet<>();
-        for (Point point : allPoints) {
-            int sum = 0;
-            for (Point safe : points) sum += safe.manhattanDistanceTo(point);
-            if (sum < 10000) region.add(point);
-        }
-        return region.size();
     }
 }
