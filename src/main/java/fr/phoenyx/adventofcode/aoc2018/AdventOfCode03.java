@@ -11,9 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode03 {
 
-    private static class Point {
-        Set<String> claimingIds = new HashSet<>();
-    }
+    private record Point(Set<String> claimingIds) {}
 
     private static class Fabric {
         static final int WIDTH = 1000;
@@ -23,7 +21,7 @@ public class AdventOfCode03 {
 
         Fabric() {
             for (int i = 0; i < WIDTH; i++) {
-                for (int j = 0; j < HEIGHT; j++) grid[i][j] = new Point();
+                for (int j = 0; j < HEIGHT; j++) grid[i][j] = new Point(new HashSet<>());
             }
         }
 
@@ -53,11 +51,8 @@ public class AdventOfCode03 {
         String getNonOverlappingClaimingId() {
             Set<String> nonOverlappingClaimingIds = new HashSet<>(claimingIds);
             for (int i = 0; i < WIDTH; i++) {
-                for (int j = 0; j < HEIGHT; j++) {
-                    if (grid[i][j].claimingIds.size() > 1) nonOverlappingClaimingIds.removeAll(grid[i][j].claimingIds);
-                }
+                for (int j = 0; j < HEIGHT; j++) if (grid[i][j].claimingIds.size() > 1) nonOverlappingClaimingIds.removeAll(grid[i][j].claimingIds);
             }
-            if (nonOverlappingClaimingIds.size() != 1) throw new IllegalArgumentException("Wrong dataset");
             return nonOverlappingClaimingIds.iterator().next();
         }
     }

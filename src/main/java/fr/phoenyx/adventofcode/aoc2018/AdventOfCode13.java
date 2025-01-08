@@ -74,10 +74,8 @@ public class AdventOfCode13 {
             CharGrid grid = new CharGrid(lines);
             List<Cart> carts = updateAndExtractCarts(grid);
             List<String> crashes = computeCrashes(grid, carts);
-            String firstCrash = crashes.get(0);
-            String lastCrash = crashes.get(crashes.size() - 1);
-            LOGGER.info("PART 1: {}", firstCrash);
-            LOGGER.info("PART 2: {}", lastCrash);
+            LOGGER.info("PART 1: {}", crashes.get(0));
+            LOGGER.info("PART 2: {}", crashes.get(crashes.size() - 1));
         }
     }
 
@@ -110,8 +108,7 @@ public class AdventOfCode13 {
             }
             carts.removeAll(cartsToRemove);
         }
-        Cart lastCart = carts.iterator().next();
-        crashes.add(lastCart.toString());
+        crashes.add(carts.iterator().next().toString());
         return crashes;
     }
 }
