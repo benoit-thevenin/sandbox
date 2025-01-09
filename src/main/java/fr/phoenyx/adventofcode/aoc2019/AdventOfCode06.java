@@ -32,7 +32,7 @@ public class AdventOfCode06 {
     private static int countAllOrbits(Map<String, String> orbits) {
         Map<String, Integer> orbitsCount = new HashMap<>();
         for (String key : orbits.keySet()) orbitsCount.put(key, countOrbits(key, orbits, orbitsCount));
-        return orbitsCount.values().stream().reduce(Integer::sum).orElseThrow();
+        return orbitsCount.values().stream().reduce(0, Integer::sum);
     }
 
     private static int countOrbits(String key, Map<String, String> orbits, Map<String, Integer> orbitsCount) {

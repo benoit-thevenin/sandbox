@@ -34,8 +34,7 @@ public class AdventOfCode12 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 List<Integer> coords = Arrays.stream(currentLine.replaceAll("[<>xyz= ]", "").split(","))
-                    .map(Integer::parseInt)
-                    .toList();
+                    .map(Integer::parseInt).toList();
                 moons.add(new MovingCoord3(coords.get(0), coords.get(1), coords.get(2), 0, 0, 0));
             }
             LOGGER.info("PART 1: {}", getTotalEnergy());
@@ -45,7 +44,7 @@ public class AdventOfCode12 {
 
     private static int getTotalEnergy() {
         for (int i = 0; i < 1000; i++) simulate();
-        return moons.stream().map(AdventOfCode12::getTotalEnergy).reduce(Integer::sum).orElseThrow();
+        return moons.stream().map(AdventOfCode12::getTotalEnergy).reduce(0, Integer::sum);
     }
 
     private static void simulate() {
@@ -109,6 +108,6 @@ public class AdventOfCode12 {
 
     private static long getStepsToInitialState() {
         while (stepsToInitialState.size() != 3) simulate();
-        return stepsToInitialState.values().stream().reduce(MathUtils::leastCommonMultiple).orElseThrow();
+        return stepsToInitialState.values().stream().reduce(1L, MathUtils::leastCommonMultiple);
     }
 }

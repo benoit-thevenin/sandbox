@@ -26,6 +26,11 @@ public class AdventOfCode15 {
         public Point(int x, int y) {
             super(x, y);
         }
+
+        public Point move(Dir dir) {
+            Coord2 neigh = super.move(dir);
+            return new Point(neigh.x, neigh.y);
+        }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode15.class);
@@ -35,15 +40,14 @@ public class AdventOfCode15 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode15.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            long[] program = new long[0];
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(",");
-                program = new long[split.length];
+                long[] program = new long[split.length];
                 for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
+                Entry<Integer, Integer> result = getResult(program);
+                LOGGER.info("PART 1: {}", result.getKey());
+                LOGGER.info("PART 2: {}", result.getValue());
             }
-            Entry<Integer, Integer> result = getResult(program);
-            LOGGER.info("PART 1: {}", result.getKey());
-            LOGGER.info("PART 2: {}", result.getValue());
         }
     }
 
@@ -60,17 +64,15 @@ public class AdventOfCode15 {
         Set<Point> targets = getTargets(map);
         while (!targets.isEmpty()) {
             Set<Point> finalTargets = targets;
-            int currentX = current.x;
-            int currentY = current.y;
+            Point finalCurrent = current;
             Dir dir = Dir.FOUR_NEIGHBOURS_VALUES.stream()
                 .filter(d -> {
-                    int x = currentX + d.dx;
-                    int y = currentY + d.dy;
-                    return !map.contains(new Point(x, y)) || !map.stream().filter(p -> p.x == x && p.y == y).findAny().orElseThrow().isWall;
+                    Point neigh = finalCurrent.move(d);
+                    return !map.contains(neigh) || !map.stream().filter(neigh::equals).findAny().orElseThrow().isWall;
                 })
-                .min(Comparator.comparingInt(d -> getStepsToTargets(new Point(currentX + d.dx, currentY + d.dy), map, finalTargets)))
+                .min(Comparator.comparingInt(d -> getStepsToTargets(finalCurrent.move(d), map, finalTargets)))
                 .orElseThrow();
-            Point neighbour = new Point(current.x + dir.dx, current.y + dir.dy);
+            Point neighbour = current.move(dir);
             map.add(neighbour);
             long result = computer.run(getParameterFromDir(dir));
             if (result == 0) neighbour.isWall = true;
@@ -87,7 +89,7 @@ public class AdventOfCode15 {
         Set<Point> toVisit = new HashSet<>();
         map.stream().filter(point -> !point.isWall).forEach(point -> {
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                Point neighbour = new Point(point.x + dir.dx, point.y + dir.dy);
+                Point neighbour = point.move(dir);
                 if (!map.contains(neighbour)) toVisit.add(neighbour);
             }
         });
@@ -106,11 +108,9 @@ public class AdventOfCode15 {
             steps++;
             for (Point point : toVisit) {
                 for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-                    int x = point.x + dir.dx;
-                    int y = point.y + dir.dy;
-                    Point neighbour = map.stream().filter(p -> p.x == x && p.y == y).findAny().orElse(new Point(x, y));
-                    if (targets.contains(neighbour)) return steps;
-                    if (!neighbour.isWall && !visited.contains(neighbour)) next.add(neighbour);
+                    Point neigh = map.stream().filter(point.move(dir)::equals).findAny().orElse(point.move(dir));
+                    if (targets.contains(neigh)) return steps;
+                    if (!neigh.isWall && !visited.contains(neigh)) next.add(neigh);
                 }
             }
             toVisit = next;
@@ -136,7 +136,7 @@ public class AdventOfCode15 {
             for (Point point : toVisit) {
                 for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                     Optional<Point> neighbour = map.stream()
-                        .filter(p -> !p.isWall && p.x == point.x + dir.dx && p.y == point.y + dir.dy)
+                        .filter(p -> !p.isWall && p.equals(point.move(dir)))
                         .findAny();
                     if (neighbour.isPresent() && !visited.contains(neighbour.get())) next.add(neighbour.get());
                 }

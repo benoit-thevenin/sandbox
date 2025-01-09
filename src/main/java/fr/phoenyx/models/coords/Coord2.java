@@ -21,6 +21,10 @@ public class Coord2 {
         return Math.abs(x - other.x) + Math.abs(y - other.y);
     }
 
+    public double getNorm() {
+        return Math.sqrt(x * x + y * y);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;

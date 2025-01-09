@@ -17,14 +17,13 @@ public class AdventOfCode13 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode13.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            long[] program = new long[0];
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(",");
-                program = new long[split.length];
+                long[] program = new long[split.length];
                 for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
+                LOGGER.info("PART 1: {}", countBlocks(program));
+                LOGGER.info("PART 2: {}", getHighestScore(program));
             }
-            LOGGER.info("PART 1: {}", countBlocks(program));
-            LOGGER.info("PART 2: {}", getHighestScore(program));
         }
     }
 
