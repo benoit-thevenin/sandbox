@@ -15,14 +15,13 @@ public class AdventOfCode02 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode02.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            int[] program = new int[0];
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(",");
-                program = new int[split.length];
+                int[] program = new int[split.length];
                 for (int i = 0; i < split.length; i++) program[i] = Integer.parseInt(split[i]);
+                LOGGER.info("PART 1: {}", run(program, 12, 2));
+                LOGGER.info("PART 2: {}", getNounAndVerb(program));
             }
-            LOGGER.info("PART 1: {}", run(program, 12, 2));
-            LOGGER.info("PART 2: {}", getNounAndVerb(program));
         }
     }
 

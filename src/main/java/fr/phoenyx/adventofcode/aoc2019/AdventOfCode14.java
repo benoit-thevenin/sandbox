@@ -14,14 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode14 {
 
-    private static class Reaction {
-        Map<String, Long> inputs = new HashMap<>();
-        final long quantity;
-
-        Reaction(long quantity) {
-            this.quantity = quantity;
-        }
-
+    private record Reaction(long quantity, Map<String, Long> inputs) {
         long getUsageNeeded(long quantityNeeded) {
             return quantityNeeded % quantity == 0 ? quantityNeeded / quantity : quantityNeeded / quantity + 1;
         }
@@ -37,7 +30,7 @@ public class AdventOfCode14 {
             while ((currentLine = reader.readLine()) != null) {
                 String[] inputOutputSplit = currentLine.split(" => ");
                 String[] outputSplit = inputOutputSplit[1].split(" ");
-                Reaction reaction = new Reaction(Integer.parseInt(outputSplit[0]));
+                Reaction reaction = new Reaction(Integer.parseInt(outputSplit[0]), new HashMap<>());
                 String[] inputsSplit = inputOutputSplit[0].split(", ");
                 for (String input : inputsSplit) {
                     String[] split = input.split(" ");
@@ -77,13 +70,13 @@ public class AdventOfCode14 {
         long min = maxOre / getOreAmount(1);
         long max = min * 2;
         Set<Long> tried = new HashSet<>();
-        while (true) {
-            long tryFuel = (min + max) / 2;
-            if (tried.contains(tryFuel)) return min;
+        long tryFuel = (min + max) / 2;
+        while (tried.add(tryFuel)) {
             long currentOreAmount = getOreAmount(tryFuel);
             if (currentOreAmount <= maxOre) min = tryFuel;
             else max = tryFuel;
-            tried.add(tryFuel);
+            tryFuel = (min + max) / 2;
         }
+        return min;
     }
 }

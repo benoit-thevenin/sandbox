@@ -14,6 +14,10 @@ public class MovingCoord2 extends Coord2 {
         return new MovingCoord2(x + vx, y + vy, vx, vy);
     }
 
+    public Coord2 getCoord() {
+        return new Coord2(x, y);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;

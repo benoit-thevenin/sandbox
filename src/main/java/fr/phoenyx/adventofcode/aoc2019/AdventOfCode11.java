@@ -3,6 +3,7 @@ package fr.phoenyx.adventofcode.aoc2019;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,49 +17,43 @@ import fr.phoenyx.models.coords.Dir;
 public class AdventOfCode11 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode11.class);
+    private static final Coord2 START = new Coord2(0, 0);
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode11.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            long[] program = new long[0];
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(",");
-                program = new long[split.length];
+                long[] program = new long[split.length];
                 for (int i = 0; i < split.length; i++) program[i] = Long.parseLong(split[i]);
+                Map.Entry<Integer, String> result = getResult(program);
+                LOGGER.info("PART 1: {}", result.getKey());
+                LOGGER.info("PART 2: {}", result.getValue());
             }
-            LOGGER.info("PART 1: {}", countPaintedPanels(program));
-            LOGGER.info("PART 2: {}", getRegistrationIdentifier(program));
         }
     }
 
-    private static int countPaintedPanels(long[] program) {
-        IntcodeComputer robot = new IntcodeComputer(program);
+    private static Map.Entry<Integer, String> getResult(long[] program) {
         Map<Coord2, Boolean> colors = new HashMap<>();
-        runRobot(robot, colors, new Coord2(0, 0));
-        return colors.size();
+        runRobot(new IntcodeComputer(program), colors);
+        int paintedPanels = colors.size();
+        colors.clear();
+        colors.put(START, true);
+        runRobot(new IntcodeComputer(program), colors);
+        return new AbstractMap.SimpleEntry<>(paintedPanels, getRegistrationIdentifier(colors));
     }
 
-    private static String getRegistrationIdentifier(long[] program) {
-        IntcodeComputer robot = new IntcodeComputer(program);
-        Coord2 currentPos = new Coord2(0, 0);
-        Map<Coord2, Boolean> colors = new HashMap<>();
-        colors.put(currentPos, true);
-        runRobot(robot, colors, currentPos);
-        return getRegistrationIdentifier(colors);
-    }
-
-    private static void runRobot(IntcodeComputer robot, Map<Coord2, Boolean> colors, Coord2 currentPos) {
+    private static void runRobot(IntcodeComputer robot, Map<Coord2, Boolean> colors) {
+        Coord2 currentPos = START;
         Dir currentDir = Dir.N;
         while (true) {
-            int nextInput = 0;
-            if (colors.containsKey(currentPos) && colors.get(currentPos) == Boolean.TRUE) nextInput = 1;
+            int nextInput = colors.containsKey(currentPos) && colors.get(currentPos) ? 1 : 0;
             long colorOutput = robot.run(nextInput);
             if (robot.isHalted) break;
             long turnOuput = robot.run(nextInput);
             colors.put(currentPos, colorOutput == 1);
-            if (turnOuput == 0) currentDir = currentDir.fourNeighboursTurnLeft();
-            else currentDir = currentDir.fourNeighboursTurnRight();
+            currentDir = turnOuput == 0 ? currentDir.fourNeighboursTurnLeft() : currentDir.fourNeighboursTurnRight();
             currentPos = currentPos.move(currentDir);
         }
     }
@@ -73,8 +68,7 @@ public class AdventOfCode11 {
             sb.append('\n');
             for (int j = minX; j <= maxX; j++) {
                 Coord2 current = new Coord2(j, i);
-                if (colors.containsKey(current) && colors.get(current) == Boolean.TRUE) sb.append('#');
-                else sb.append('.');
+                sb.append(colors.containsKey(current) && colors.get(current) ? '#' : '.');
             }
         }
         return sb.toString();

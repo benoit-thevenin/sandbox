@@ -45,7 +45,7 @@ public class AdventOfCode16 {
         int offset = Integer.parseInt(message.substring(0, 7));
         String line = message.repeat(10000).substring(offset);
         for (int phase = 0; phase < 100; phase++) {
-            int partialSum = Arrays.stream(line.split("")).map(c -> c.charAt(0) - '0').reduce(Integer::sum).orElseThrow();
+            int partialSum = Arrays.stream(line.split("")).map(c -> c.charAt(0) - '0').reduce(0, Integer::sum);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < line.length(); i++) {
                 sb.append(Math.abs(partialSum) % 10);

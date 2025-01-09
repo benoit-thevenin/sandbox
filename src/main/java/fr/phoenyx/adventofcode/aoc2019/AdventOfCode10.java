@@ -1,21 +1,25 @@
 package fr.phoenyx.adventofcode.aoc2019;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
-
+import fr.phoenyx.models.CharGrid;
+import fr.phoenyx.models.coords.Coord2;
+import fr.phoenyx.models.coords.MovingCoord2;
+import fr.phoenyx.utils.MathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.phoenyx.models.CharGrid;
-import fr.phoenyx.utils.MathUtils;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AdventOfCode10 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode10.class);
-    private static int xStation = 0;
-    private static int yStation = 0;
+    private static Coord2 station;
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2019/adventofcode10.txt";
@@ -24,45 +28,43 @@ public class AdventOfCode10 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
             CharGrid grid = new CharGrid(lines);
-            LOGGER.info("PART 1: {}", getHighestDetectedAsteroids(grid));
+            station = grid.getCoordinatesMatching(c -> c == '#').stream().max(Comparator.comparingInt(a -> getAsteroidsDetected(grid, a).size())).orElseThrow();
+            LOGGER.info("PART 1: {}", getAsteroidsDetected(grid, station).size());
             LOGGER.info("PART 2: {}", get200thAsteroidDestroyed(grid));
         }
     }
 
-    private static int getHighestDetectedAsteroids(CharGrid grid) {
-        int max = 0;
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                if (grid.grid[i][j] == '#') {
-                    int asteroidsDetected = getAsteroidsDetected(grid, i, j).size();
-                    if (asteroidsDetected > max) {
-                        max = asteroidsDetected;
-                        xStation = i;
-                        yStation = j;
-                    }
-                }
-            }
+    private static Set<Coord2> getAsteroidsDetected(CharGrid grid, Coord2 pos) {
+        return grid.getCoordinatesMatching(c -> c == '#').stream().filter(asteroid -> isDetected(grid, pos, asteroid)).collect(Collectors.toSet());
+    }
+
+    private static boolean isDetected(CharGrid grid, Coord2 start, Coord2 asteroid) {
+        if (start.equals(asteroid)) return false;
+        Coord2 slope = getSlope(start, asteroid);
+        MovingCoord2 current = new MovingCoord2(start.x, start.y, slope.x, slope.y).move();
+        while (!current.getCoord().equals(asteroid)) {
+            if (grid.grid[current.x][current.y] == '#') return false;
+            current = current.move();
         }
-        return max;
+        return true;
+    }
+
+    private static Coord2 getSlope(Coord2 start, Coord2 target) {
+        Coord2 slope = new Coord2(target.x - start.x, target.y - start.y);
+        int gcd = (int) MathUtils.greatestCommonDivisor(Math.abs(slope.x), Math.abs(slope.y));
+        return new Coord2(slope.x / gcd, slope.y / gcd);
     }
 
     private static int get200thAsteroidDestroyed(CharGrid grid) {
-        List<Integer> asteroidsDetectedSorted = getAsteroidsDetected(grid, xStation, yStation).stream()
-            .sorted(Comparator.comparingDouble(a -> getAngleDiff(getAngle(grid, a))))
-            .toList();
-        int hash = asteroidsDetectedSorted.get(199);
-        return 100 * (hash % grid.width) + hash / grid.width;
+        Coord2 result = getAsteroidsDetected(grid, station).stream()
+            .sorted(Comparator.comparingDouble(asteroid -> getAngleDiff(getAngle(asteroid)))).toList().get(199);
+        return 100 * result.x + result.y;
     }
 
-    private static double getAngle(CharGrid grid, int hash) {
-        int x = hash % grid.width;
-        int y = hash / grid.width;
-        int xSlope = x - xStation;
-        int ySlope = y - yStation;
-        int gcd = (int) MathUtils.greatestCommonDivisor(Math.abs(xSlope), Math.abs(ySlope));
-        xSlope /= gcd;
-        ySlope /= gcd;
-        return getAngle(xSlope, ySlope);
+    private static double getAngle(Coord2 pos) {
+        Coord2 slope = getSlope(station, pos);
+        double angle = Math.acos(slope.x / slope.getNorm());
+        return slope.y >= 0 ? -angle : angle;
     }
 
     private static double getAngleDiff(double angle) {
@@ -73,40 +75,5 @@ public class AdventOfCode10 {
 
     private static boolean isLeft(double angle) {
         return angle > Math.PI / 2 || angle < -Math.PI / 2;
-    }
-
-    private static double getAngle(int x1, int y1) {
-        double angle = Math.acos(x1 / getNorm(x1, y1));
-        return y1 >= 0 ? -angle : angle;
-    }
-
-    private static double getNorm(double x, double y) {
-        return Math.sqrt(x * x + y * y);
-    }
-
-    private static Set<Integer> getAsteroidsDetected(CharGrid grid, int x, int y) {
-        Set<Integer> asteroidsDectected = new HashSet<>();
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++)
-                if (grid.grid[i][j] == '#' && isDetected(grid, x, y, i, j)) asteroidsDectected.add(i + grid.width * j);
-        }
-        return asteroidsDectected;
-    }
-
-    private static boolean isDetected(CharGrid grid, int x, int y, int i, int j) {
-        if (x == i && y == j) return false;
-        int xSlope = i - x;
-        int ySlope = j - y;
-        int gcd = (int) MathUtils.greatestCommonDivisor(Math.abs(xSlope), Math.abs(ySlope));
-        xSlope /= gcd;
-        ySlope /= gcd;
-        x += xSlope;
-        y += ySlope;
-        while (x != i || y != j) {
-            if (grid.grid[x][y] == '#') return false;
-            x += xSlope;
-            y += ySlope;
-        }
-        return true;
     }
 }
