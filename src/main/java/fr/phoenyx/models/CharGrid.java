@@ -37,6 +37,22 @@ public class CharGrid extends AbstractGrid {
         for (int i = 0; i < width; i++) System.arraycopy(next[i], 0, grid[i], 0, height);
     }
 
+    public char get(int x, int y) {
+        return grid[x][y];
+    }
+
+    public void set(int x, int y, char value) {
+        grid[x][y] = value;
+    }
+
+    public char get(Coord2 coord) {
+        return get(coord.x, coord.y);
+    }
+
+    public void set(Coord2 coord, char value) {
+        set(coord.x, coord.y, value);
+    }
+
     public List<Coord2> getAllCoords() {
         return getCoordinatesMatching(c -> true);
     }
@@ -62,7 +78,7 @@ public class CharGrid extends AbstractGrid {
 
     public Set<Coord2> getRegionMatching(Coord2 start, BiFunction<Character, Character, Boolean> matcher) {
         if (!isInGrid(start)) throw new IllegalArgumentException(start + " is not within width and height bounds !");
-        char c = grid[start.x][start.y];
+        char c = get(start);
         Queue<Coord2> toVisit = new LinkedList<>();
         toVisit.add(start);
         Set<Coord2> region = new HashSet<>(toVisit);
@@ -70,7 +86,7 @@ public class CharGrid extends AbstractGrid {
             Coord2 current = toVisit.remove();
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                 Coord2 next = current.move(dir);
-                if (isInGrid(next) && matcher.apply(c, grid[next.x][next.y]) && region.add(next)) toVisit.add(next);
+                if (isInGrid(next) && matcher.apply(c, get(next)) && region.add(next)) toVisit.add(next);
             }
         }
         return region;
@@ -85,7 +101,7 @@ public class CharGrid extends AbstractGrid {
             Coord2 current = toVisit.remove();
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                 Coord2 next = current.move(dir);
-                if (isInGrid(next) && matcher.apply(grid[current.x][current.y], grid[next.x][next.y]) && !distances.containsKey(next)) {
+                if (isInGrid(next) && matcher.apply(get(current), get(next)) && !distances.containsKey(next)) {
                     toVisit.add(next);
                     distances.put(next, distances.get(current) + 1);
                 }

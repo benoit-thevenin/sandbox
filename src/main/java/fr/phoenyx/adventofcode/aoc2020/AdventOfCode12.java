@@ -18,8 +18,8 @@ public class AdventOfCode12 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2020/adventofcode12.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            Coord2 coordPart1 = START_POS;
             Dir currentDir = Dir.E;
+            Coord2 coordPart1 = START_POS;
             Coord2 coordPart2 = START_POS;
             Coord2 waypoint = new Coord2(10, -1);
             String currentLine;

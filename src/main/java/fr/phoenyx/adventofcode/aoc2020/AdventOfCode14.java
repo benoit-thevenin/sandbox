@@ -14,7 +14,7 @@ import fr.phoenyx.utils.Utils;
 public class AdventOfCode14 {
 
     private static class Program {
-        String mask = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+        String mask = "X".repeat(36);
         Map<Long, Long> memory1 = new HashMap<>();
         Map<Long, Long> memory2 = new HashMap<>();
 
@@ -50,14 +50,6 @@ public class AdventOfCode14 {
                 memory2.put(maskedAddress, value);
             }
         }
-
-        long getMemory1Sum() {
-            return memory1.values().stream().reduce(Long::sum).orElseThrow();
-        }
-
-        long getMemory2Sum() {
-            return memory2.values().stream().reduce(Long::sum).orElseThrow();
-        }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode14.class);
@@ -74,8 +66,8 @@ public class AdventOfCode14 {
                     program.apply(Long.parseLong(split[0].split("mem\\[")[1]), Long.parseLong(split[1]));
                 }
             }
-            LOGGER.info("PART 1: {}", program.getMemory1Sum());
-            LOGGER.info("PART 2: {}", program.getMemory2Sum());
+            LOGGER.info("PART 1: {}", program.memory1.values().stream().reduce(0L, Long::sum));
+            LOGGER.info("PART 2: {}", program.memory2.values().stream().reduce(0L, Long::sum));
         }
     }
 }

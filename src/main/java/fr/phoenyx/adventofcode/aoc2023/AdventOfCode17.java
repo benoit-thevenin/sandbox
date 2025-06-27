@@ -41,7 +41,7 @@ public class AdventOfCode17 {
                     if (isInGrid(x, y)) {
                         int steps = dir == current.dir ? current.steps + 1 : 1;
                         Node node = new Node(x, y, dir, steps);
-                        int heatLoss = heatLosses.get(current) + get(x, y);
+                        int heatLoss = heatLosses.get(current) + get(x, y) - '0';
                         if (!heatLosses.containsKey(node) || heatLosses.get(node) > heatLoss) {
                             heatLosses.put(node, heatLoss);
                             toVisit.add(node);
@@ -55,10 +55,6 @@ public class AdventOfCode17 {
                 .filter(e -> e.getKey().steps >= minStreak)
                 .map(Entry::getValue)
                 .reduce(Integer::min).orElseThrow();
-        }
-
-        private int get(int x, int y) {
-            return grid[x][y] - '0';
         }
     }
 

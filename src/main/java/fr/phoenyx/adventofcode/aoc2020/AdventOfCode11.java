@@ -41,14 +41,15 @@ public class AdventOfCode11 {
             char[][] nextGrid = new char[grid.width][grid.height];
             for (int i = 0; i < grid.width; i++) {
                 for (int j = 0; j < grid.height; j++) {
-                    int occupiedNeighbours = getOccupiedNeighbours(grid, isPart1, new Coord2(i, j));
-                    if (grid.grid[i][j] == 'L' && occupiedNeighbours == 0) {
+                    Coord2 pos = new Coord2(i, j);
+                    int occupiedNeighbours = getOccupiedNeighbours(grid, isPart1, pos);
+                    if (grid.get(pos) == 'L' && occupiedNeighbours == 0) {
                         changed = true;
                         nextGrid[i][j] = '#';
-                    } else if (grid.grid[i][j] == '#' && occupiedNeighbours >= neighboursTolerance) {
+                    } else if (grid.get(pos) == '#' && occupiedNeighbours >= neighboursTolerance) {
                         changed = true;
                         nextGrid[i][j] = 'L';
-                    } else nextGrid[i][j] = grid.grid[i][j];
+                    } else nextGrid[i][j] = grid.get(pos);
                 }
             }
             grid.copyGrid(nextGrid);
@@ -59,8 +60,8 @@ public class AdventOfCode11 {
         int occupiedNeighbours = 0;
         for (Dir dir : Dir.values()) {
             Coord2 next = pos.move(dir);
-            if (!isPart1) while (grid.isInGrid(next) && grid.grid[next.x][next.y] == '.') next = next.move(dir);
-            if (grid.isInGrid(next) && grid.grid[next.x][next.y] == '#') occupiedNeighbours++;
+            if (!isPart1) while (grid.isInGrid(next) && grid.get(next) == '.') next = next.move(dir);
+            if (grid.isInGrid(next) && grid.get(next) == '#') occupiedNeighbours++;
         }
         return occupiedNeighbours;
     }

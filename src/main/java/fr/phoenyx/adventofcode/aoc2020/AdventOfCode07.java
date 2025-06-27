@@ -17,14 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode07 {
 
-    private static class Bag {
-        final String color;
-        final Set<Entry<String, Integer>> content = new HashSet<>();
-
-        Bag(String color) {
-            this.color = color;
-        }
-    }
+    private record Bag(String color, Set<Entry<String, Integer>> content) {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode07.class);
     private static final Map<String, Bag> bags = new HashMap<>();
@@ -35,7 +28,7 @@ public class AdventOfCode07 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 String[] split = currentLine.split(" bags contain ");
-                Bag bag = new Bag(split[0]);
+                Bag bag = new Bag(split[0], new HashSet<>());
                 bags.put(bag.color, bag);
                 if (split[1].contains("no other")) continue;
                 String[] content = split[1].split(", ");
@@ -57,12 +50,11 @@ public class AdventOfCode07 {
     }
 
     private static long countBagsContainedByShinyGold() {
-        return bagsContainedBy(new SimpleEntry<>("shiny gold", 1), new ArrayList<>()).stream().map(Entry::getValue).reduce(Integer::sum).orElseThrow();
+        return bagsContainedBy(new SimpleEntry<>("shiny gold", 1), new ArrayList<>()).stream().map(Entry::getValue).reduce(0, Integer::sum);
     }
 
     private static List<Entry<String, Integer>> bagsContainedBy(Entry<String, Integer> colorQuantity, List<Entry<String, Integer>> bagsContained) {
         Bag bag = bags.get(colorQuantity.getKey());
-        if (bag.content.isEmpty()) return bagsContained;
         for (Entry<String, Integer> c : bag.content) {
             Entry<String, Integer> nextEntry = new SimpleEntry<>(c.getKey(), c.getValue() * colorQuantity.getValue());
             bagsContained.add(nextEntry);

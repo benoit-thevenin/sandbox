@@ -13,9 +13,7 @@ import fr.phoenyx.utils.Utils;
 
 public class AdventOfCode06 {
 
-    private static class Group {
-        List<String> answers = new ArrayList<>();
-
+    private record Group(List<String> answers) {
         int getAnyoneCount() {
             return Utils.getLetterCount(String.join("", answers)).size();
         }
@@ -31,17 +29,17 @@ public class AdventOfCode06 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2020/adventofcode06.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             List<Group> groups = new ArrayList<>();
-            Group current = new Group();
+            Group current = new Group(new ArrayList<>());
             groups.add(current);
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 if (currentLine.isBlank()) {
-                    current = new Group();
+                    current = new Group(new ArrayList<>());
                     groups.add(current);
                 } else current.answers.add(currentLine);
             }
-            LOGGER.info("PART 1: {}", groups.stream().map(Group::getAnyoneCount).reduce(Integer::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", groups.stream().map(Group::getEveryoneCount).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", groups.stream().map(Group::getAnyoneCount).reduce(0, Integer::sum));
+            LOGGER.info("PART 2: {}", groups.stream().map(Group::getEveryoneCount).reduce(0L, Long::sum));
         }
     }
 }

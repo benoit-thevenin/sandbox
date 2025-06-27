@@ -25,20 +25,20 @@ public class AdventOfCode03 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
             grid = new CharGrid(lines);
-            LOGGER.info("PART 1: {}", countEncounteredTrees(3, 1));
-            LOGGER.info("PART 2: {}", countEncounteredTrees(1, 1) * countEncounteredTrees(3, 1)
-                * countEncounteredTrees(5, 1) * countEncounteredTrees(7, 1) * countEncounteredTrees(1, 2));
+            LOGGER.info("PART 1: {}", countTrees(3, 1));
+            LOGGER.info("PART 2: {}", countTrees(1, 1) * countTrees(3, 1)
+                * countTrees(5, 1) * countTrees(7, 1) * countTrees(1, 2));
         }
     }
 
-    private static long countEncounteredTrees(int rightSlope, int downSlope) {
+    private static long countTrees(int rightSlope, int downSlope) {
         Coord2 current = new Coord2(0, 0);
         long trees = 0;
         while (true) {
-            for (int i = 0; i < rightSlope; i++) current = current.move(Dir.E);
-            for (int i = 0; i < downSlope; i++) current = current.move(Dir.S);
+            current = current.move(Dir.E, rightSlope);
+            current = current.move(Dir.S, downSlope);
             if (current.y >= grid.height) break;
-            if (grid.grid[current.x % grid.width][current.y] == '#') trees++;
+            if (grid.get(current.x % grid.width, current.y) == '#') trees++;
         }
         return trees;
     }

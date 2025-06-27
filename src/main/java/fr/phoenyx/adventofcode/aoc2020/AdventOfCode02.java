@@ -11,22 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class AdventOfCode02 {
 
-    private static class TobogganPassword {
-        final int policy1;
-        final int policy2;
-        final char c;
-        final String password;
-
-        TobogganPassword(String line) {
-            String[] split1 = line.split(": ");
-            password = split1[1];
-            String[] split2 = split1[0].split(" ");
-            c = split2[1].charAt(0);
-            String[] split3 = split2[0].split("-");
-            policy1 = Integer.parseInt(split3[0]);
-            policy2 = Integer.parseInt(split3[1]);
-        }
-
+    private record TobogganPassword(int policy1, int policy2, char c, String password) {
         boolean isValid() {
             int count = 0;
             for (int i = 0; i < password.length(); i++) if (password.charAt(i) == c) count++;
@@ -46,7 +31,12 @@ public class AdventOfCode02 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             List<TobogganPassword> passwords = new ArrayList<>();
-            while ((currentLine = reader.readLine()) != null) passwords.add(new TobogganPassword(currentLine));
+            while ((currentLine = reader.readLine()) != null) {
+                String[] split1 = currentLine.split(": ");
+                String[] split2 = split1[0].split(" ");
+                String[] split3 = split2[0].split("-");
+                passwords.add(new TobogganPassword(Integer.parseInt(split3[0]), Integer.parseInt(split3[1]), split2[1].charAt(0), split1[1]));
+            }
             LOGGER.info("PART 1: {}", passwords.stream().filter(TobogganPassword::isValid).count());
             LOGGER.info("PART 2: {}", passwords.stream().filter(TobogganPassword::isOfficialValid).count());
         }

@@ -26,7 +26,7 @@ public class AdventOfCode16 {
         int getErrorRate() {
             return fieldsValues.stream()
                 .filter(value -> fieldsRanges.values().stream().flatMap(Collection::stream).noneMatch(r -> r.isInRange(value)))
-                .reduce(Integer::sum).orElse(0);
+                .reduce(0, Integer::sum);
         }
     }
 
@@ -57,7 +57,7 @@ public class AdventOfCode16 {
                     else tickets.add(ticket);
                 }
             }
-            LOGGER.info("PART 1: {}", tickets.stream().map(Ticket::getErrorRate).reduce(Integer::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", tickets.stream().map(Ticket::getErrorRate).reduce(0, Integer::sum));
             tickets.add(myTicket);
             LOGGER.info("PART 2: {}", getDepartureValue(tickets.stream().filter(t -> t.getErrorRate() == 0).toList(), myTicket));
         }

@@ -47,11 +47,10 @@ public class AdventOfCode09 {
     private static long getXmasWeakness(List<Long> values, long invalid) {
         for (int i = 0; i < values.size(); i++) {
             List<Long> range = new ArrayList<>();
-            long sum = values.get(i);
             range.add(values.get(i));
             for (int j = i + 1; j < values.size(); j++) {
-                sum += values.get(j);
                 range.add(values.get(j));
+                long sum = range.stream().reduce(0L, Long::sum);
                 if (sum == invalid) {
                     Collections.sort(range);
                     return range.get(0) + range.get(range.size() - 1);

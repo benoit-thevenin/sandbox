@@ -24,7 +24,7 @@ public class AdventOfCode10 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) jolts.add(Integer.parseInt(currentLine));
             Collections.sort(jolts);
-            jolts.add(jolts.stream().max(Integer::compare).orElseThrow() + 3);
+            jolts.add(jolts.get(jolts.size() - 1) + 3);
             int oneDifference = 0;
             int threeDifference = 0;
             int current = 0;
@@ -42,7 +42,7 @@ public class AdventOfCode10 {
         if (cache.containsKey(last)) return cache.get(last);
         List<Integer> choices = jolts.stream().filter(j -> j > last && j <= last + 3).toList();
         if (choices.isEmpty()) cache.put(last, 1L);
-        else cache.put(last, choices.stream().map(c -> getValidArrangementsCount(c, jolts)).reduce(Long::sum).orElseThrow());
+        else cache.put(last, choices.stream().map(c -> getValidArrangementsCount(c, jolts)).reduce(0L, Long::sum));
         return cache.get(last);
     }
 }
