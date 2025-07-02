@@ -80,17 +80,14 @@ public class AdventOfCode04 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2021/adventofcode04.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            boolean isFirstLine = true;
             List<Integer> draws = new ArrayList<>();
             List<Bingo> bingos = new ArrayList<>();
             Bingo current = new Bingo();
             int currentRow = 0;
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                if (isFirstLine) {
-                    draws.addAll(Arrays.stream(currentLine.split(",")).map(Integer::parseInt).toList());
-                    isFirstLine = false;
-                } else if (currentLine.isBlank()) {
+                if (draws.isEmpty()) draws.addAll(Arrays.stream(currentLine.split(",")).map(Integer::parseInt).toList());
+                else if (currentLine.isBlank()) {
                     current = new Bingo();
                     bingos.add(current);
                     currentRow = 0;

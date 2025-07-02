@@ -34,8 +34,7 @@ public class AdventOfCode13 {
                 } else foldInstructions.add(new SimpleEntry<>(currentLine.contains("y"), Integer.parseInt(currentLine.split("=")[1])));
             }
             LOGGER.info("PART 1: {}", countDotsAfterFirstFold(dots, foldInstructions));
-            String code = getCode(dots, foldInstructions);
-            LOGGER.info("PART 2: {}", code);
+            LOGGER.info("PART 2: {}", getCode(dots, foldInstructions));
         }
     }
 

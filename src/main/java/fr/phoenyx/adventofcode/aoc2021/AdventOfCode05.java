@@ -15,22 +15,7 @@ import fr.phoenyx.models.coords.Coord2;
 
 public class AdventOfCode05 {
 
-    private static class Vent {
-        int x1;
-        int y1;
-        int x2;
-        int y2;
-
-        Vent(String line) {
-            String[] split = line.split(" -> ");
-            String[] start = split[0].split(",");
-            String[] end = split[1].split(",");
-            x1 = Integer.parseInt(start[0]);
-            y1 = Integer.parseInt(start[1]);
-            x2 = Integer.parseInt(end[0]);
-            y2 = Integer.parseInt(end[1]);
-        }
-
+    private record Vent(int x1, int y1, int x2, int y2) {
         boolean isHorizontal() {
             return y1 == y2;
         }
@@ -58,7 +43,12 @@ public class AdventOfCode05 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             List<Vent> vents = new ArrayList<>();
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) vents.add(new Vent(currentLine));
+            while ((currentLine = reader.readLine()) != null) {
+                String[] split = currentLine.split(" -> ");
+                String[] start = split[0].split(",");
+                String[] end = split[1].split(",");
+                vents.add(new Vent(Integer.parseInt(start[0]), Integer.parseInt(start[1]), Integer.parseInt(end[0]), Integer.parseInt(end[1])));
+            }
             LOGGER.info("PART 1: {}", getOverlapCount(vents.stream().filter(v -> v.isVertical() || v.isHorizontal()).toList()));
             LOGGER.info("PART 2: {}", getOverlapCount(vents));
         }

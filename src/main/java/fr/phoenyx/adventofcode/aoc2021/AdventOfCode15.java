@@ -60,7 +60,7 @@ public class AdventOfCode15 {
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                 Node next = new Node(current.move(dir));
                 if (grid.isInGrid(next) && !closed.contains(next)) {
-                    next.cost = current.cost + grid.grid[next.x][next.y] - '0';
+                    next.cost = current.cost + grid.get(next) - '0';
                     next.heuristic = next.cost + next.manhattanDistanceTo(END);
                     if (open.stream().filter(next::equals).noneMatch(n -> n.cost < next.cost)) {
                         open.remove(next);
@@ -79,9 +79,9 @@ public class AdventOfCode15 {
             for (int j = 0; j < 5; j++) {
                 for (int h = 0; h < grid.height; h++) {
                     for (int w = 0; w < grid.width; w++) {
-                        int risk = grid.grid[w][h] + i + j;
+                        int risk = grid.get(w, h) + i + j;
                         if (risk > '0' + 9) risk -= 9;
-                        extendedGrid.grid[w + i * grid.width][h + j * grid.height] = (char) risk;
+                        extendedGrid.set(w + i * grid.width, h + j * grid.height, (char) risk);
                     }
                 }
             }

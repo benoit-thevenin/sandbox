@@ -22,11 +22,9 @@ public class AdventOfCode14 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             String polymer = "";
-            boolean isFirstLine = true;
             while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.isBlank()) isFirstLine = false;
-                else if (isFirstLine) polymer = currentLine;
-                else {
+                if (polymer.isEmpty()) polymer = currentLine;
+                else if (!currentLine.isBlank()){
                     String[] split = currentLine.split(" -> ");
                     rules.put(split[0], split[1]);
                 }

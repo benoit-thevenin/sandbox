@@ -3,6 +3,7 @@ package fr.phoenyx.adventofcode.aoc2021;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class AdventOfCode06 {
 
     private static class Bank {
-        long[] cd = new long[9];
+        final long[] cd = new long[9];
 
         void simulateDay() {
             long newFish = cd[0];
@@ -20,9 +21,7 @@ public class AdventOfCode06 {
         }
 
         long count() {
-            long count = 0;
-            for (long c : cd) count += c;
-            return count;
+            return Arrays.stream(cd).reduce(0L, Long::sum);
         }
     }
 

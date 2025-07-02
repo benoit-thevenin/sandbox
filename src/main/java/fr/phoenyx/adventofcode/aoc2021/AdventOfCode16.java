@@ -97,7 +97,7 @@ public class AdventOfCode16 {
         }
 
         int getVersionSum() {
-            return version + subpackets.stream().map(Packet::getVersionSum).reduce(Integer::sum).orElse(0);
+            return version + subpackets.stream().map(Packet::getVersionSum).reduce(0, Integer::sum);
         }
 
         long getValue() {

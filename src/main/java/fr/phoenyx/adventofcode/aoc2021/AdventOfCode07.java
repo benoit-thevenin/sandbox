@@ -31,7 +31,7 @@ public class AdventOfCode07 {
         int lowestFuelCost = Integer.MAX_VALUE;
         for (int i = min; i <= max; i++) {
             int finalI = i;
-            int fuelCost = positions.stream().map(p -> getFuelCost(p, finalI, isPart1)).reduce(Integer::sum).orElseThrow();
+            int fuelCost = positions.stream().map(p -> getFuelCost(p, finalI, isPart1)).reduce(0, Integer::sum);
             if (fuelCost < lowestFuelCost) lowestFuelCost = fuelCost;
         }
         return lowestFuelCost;

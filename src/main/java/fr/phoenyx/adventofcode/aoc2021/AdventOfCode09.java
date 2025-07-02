@@ -35,23 +35,16 @@ public class AdventOfCode09 {
     private static Map.Entry<Integer, Integer> getResult(CharGrid grid) {
         int riskScore = 0;
         List<Integer> basinsSize = new ArrayList<>();
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                Coord2 pos = new Coord2(i, j);
-                if (isLowPoint(grid, pos)) {
-                    riskScore += 1 + grid.grid[i][j] - '0';
-                    basinsSize.add(grid.getRegionMatching(pos, (c1, c2) -> c2 != '9' && c2 > c1).size());
-                }
+        for (Coord2 pos : grid.getAllCoords()) {
+            if (isLowPoint(grid, pos)) {
+                riskScore += 1 + grid.get(pos) - '0';
+                basinsSize.add(grid.getRegionMatching(pos, (c1, c2) -> c2 != '9' && c2 > c1).size());
             }
         }
-        return new AbstractMap.SimpleEntry<>(riskScore, basinsSize.stream().sorted((a, b) -> Integer.compare(b, a)).limit(3).reduce((a, b) -> a * b).orElseThrow());
+        return new AbstractMap.SimpleEntry<>(riskScore, basinsSize.stream().sorted((a, b) -> Integer.compare(b, a)).limit(3).reduce(1, (a, b) -> a * b));
     }
 
     private static boolean isLowPoint(CharGrid grid, Coord2 pos) {
-        for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
-            Coord2 next = pos.move(dir);
-            if (grid.isInGrid(next) && grid.grid[next.x][next.y] <= grid.grid[pos.x][pos.y]) return false;
-        }
-        return true;
+        return Dir.FOUR_NEIGHBOURS_VALUES.stream().map(pos::move).noneMatch(next -> grid.isInGrid(next) && grid.get(next) <= grid.get(pos));
     }
 }
