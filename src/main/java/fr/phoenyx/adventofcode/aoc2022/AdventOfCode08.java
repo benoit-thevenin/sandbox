@@ -55,7 +55,7 @@ public class AdventOfCode08 {
                     isVisible = true;
                     end = true;
                     steps--;
-                } else if (grid.grid[current.x][current.y] >= grid.grid[tree.x][tree.y]) end = true;
+                } else if (grid.get(current) >= grid.get(tree)) end = true;
             }
             scenicScore *= steps;
         }

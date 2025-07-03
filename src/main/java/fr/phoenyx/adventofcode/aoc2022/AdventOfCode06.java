@@ -16,11 +16,11 @@ public class AdventOfCode06 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2022/adventofcode06.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String message = "";
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) message = currentLine;
-            LOGGER.info("PART 1: {}", getMarkerPosition(message, 4));
-            LOGGER.info("PART 2: {}", getMarkerPosition(message, 14));
+            while ((currentLine = reader.readLine()) != null) {
+                LOGGER.info("PART 1: {}", getMarkerPosition(currentLine, 4));
+                LOGGER.info("PART 2: {}", getMarkerPosition(currentLine, 14));
+            }
         }
     }
 

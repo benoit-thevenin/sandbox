@@ -108,36 +108,24 @@ public class AdventOfCode16 {
     private static int getMaxPressureReleased(Valve me, Valve elephant, int meDelta, int elephantDelta, int timeLeft, int pressureReleased) {
         if (timeLeft == 0 && meDelta == 0 && elephantDelta == 0) return pressureReleased;
         int max = pressureReleased;
-        if (elephantDelta == 0) {
-            Set<Valve> toVisit = me.neighboursByDistance.entrySet().stream()
-                .filter(e -> e.getKey().flowRate > 0 && e.getValue() < timeLeft + meDelta)
-                .map(Map.Entry::getKey).collect(Collectors.toSet());
-            for (Valve neighbour : toVisit) {
-                int timeConsumed = me.neighboursByDistance.get(neighbour) - meDelta + 1;
-                int flowRate = neighbour.flowRate;
-                neighbour.flowRate = 0;
-                int nextTimeLeft = timeConsumed >= 0 ? timeLeft - timeConsumed : timeLeft;
-                int nextMeDelta = timeConsumed >= 0 ? 0 : -timeConsumed;
-                int nextElephantDelta = timeConsumed >= 0 ? elephantDelta + timeConsumed : elephantDelta;
-                int nextPressureReleased = pressureReleased + (timeLeft - timeConsumed) * flowRate;
-                max = Math.max(max, getMaxPressureReleased(neighbour, elephant, nextMeDelta, nextElephantDelta, nextTimeLeft, nextPressureReleased));
-                neighbour.flowRate = flowRate;
-            }
-        } else {
-            Set<Valve> toVisit = elephant.neighboursByDistance.entrySet().stream()
-                .filter(e -> e.getKey().flowRate > 0 && e.getValue() < timeLeft + elephantDelta)
-                .map(Map.Entry::getKey).collect(Collectors.toSet());
-            for (Valve neighbour : toVisit) {
-                int timeConsumed = elephant.neighboursByDistance.get(neighbour) - elephantDelta + 1;
-                int flowRate = neighbour.flowRate;
-                neighbour.flowRate = 0;
-                int nextTimeLeft = timeConsumed >= 0 ? timeLeft - timeConsumed : timeLeft;
-                int nextMeDelta = timeConsumed >= 0 ? meDelta + timeConsumed : meDelta;
-                int nextElephantDelta = timeConsumed >= 0 ? 0 : -timeConsumed;
-                int nextPressureReleased = pressureReleased + (timeLeft - timeConsumed) * flowRate;
-                max = Math.max(max, getMaxPressureReleased(me, neighbour, nextMeDelta, nextElephantDelta, nextTimeLeft, nextPressureReleased));
-                neighbour.flowRate = flowRate;
-            }
+        Valve start = elephantDelta == 0 ? me : elephant;
+        int delta = start == me ? meDelta : elephantDelta;
+        int otherDelta = start == me ? elephantDelta : meDelta;
+        int timeConstraint = timeLeft + delta;
+        Set<Valve> toVisit = start.neighboursByDistance.entrySet().stream()
+            .filter(e -> e.getKey().flowRate > 0 && e.getValue() < timeConstraint)
+            .map(Map.Entry::getKey).collect(Collectors.toSet());
+        for (Valve neighbour : toVisit) {
+            int timeConsumed = start.neighboursByDistance.get(neighbour) - delta + 1;
+            int flowRate = neighbour.flowRate;
+            neighbour.flowRate = 0;
+            int nextTimeLeft = timeConsumed > 0 ? timeLeft - timeConsumed : timeLeft;
+            int nextDelta = timeConsumed > 0 ? 0 : -timeConsumed;
+            int nextOtherDelta = timeConsumed > 0 ? otherDelta + timeConsumed : otherDelta;
+            int nextPressureReleased = pressureReleased + (timeLeft - timeConsumed) * flowRate;
+            if (start == me) max = Math.max(max, getMaxPressureReleased(neighbour, elephant, nextDelta, nextOtherDelta, nextTimeLeft, nextPressureReleased));
+            else max = Math.max(max, getMaxPressureReleased(me, neighbour, nextOtherDelta, nextDelta, nextTimeLeft, nextPressureReleased));
+            neighbour.flowRate = flowRate;
         }
         return max;
     }
