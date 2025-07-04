@@ -30,46 +30,33 @@ public class AdventOfCode04 {
 
     private static int countXmas(CharGrid grid) {
         int count = 0;
-        for (int x = 0; x < grid.width; x++) {
-            for (int y = 0; y < grid.height; y++) {
-                Coord2 pos = new Coord2(x, y);
-                for (Dir dir : Dir.values()) {
-                    if (isWordFound(grid, pos, dir, "XMAS")) count++;
-                }
-            }
+        for (Coord2 pos : grid.getAllCoords()) {
+            for (Dir dir : Dir.values()) if (isWordFound(grid, pos, dir, "XMAS")) count++;
         }
         return count;
     }
 
     private static boolean isWordFound(CharGrid grid, Coord2 pos, Dir dir, String word) {
-        if (grid.grid[pos.x][pos.y] != word.charAt(0)) return false;
+        if (grid.get(pos) != word.charAt(0)) return false;
         Coord2 current = pos;
         for (int i = 1; i < word.length(); i++) {
             current = current.move(dir);
-            if (!grid.isInGrid(current.x, current.y) || grid.grid[current.x][current.y] != word.charAt(i)) return false;
+            if (!grid.isInGrid(current) || grid.get(current) != word.charAt(i)) return false;
         }
         return true;
     }
 
     private static int countX_mas(CharGrid grid) {
         int count = 0;
-        for (int x = 0; x < grid.width; x++) {
-            for (int y = 0; y < grid.height; y++) {
-                if (grid.grid[x][y] == 'A' && isValidX_mas(grid, new Coord2(x, y))) count++;
-            }
-        }
+        for (Coord2 pos : grid.getAllCoords()) if (grid.get(pos) == 'A' && isValidX_mas(grid, pos)) count++;
         return count;
     }
 
     private static boolean isValidX_mas(CharGrid grid, Coord2 pos) {
-        Dir firstDir = Dir.NE;
-        Coord2 first = pos.move(firstDir);
-        if (!grid.isInGrid(first.x, first.y)) return false;
-        if (!isWordFound(grid, first, firstDir.getOpposite(), "MAS") && !isWordFound(grid, first, firstDir.getOpposite(), "SAM")) return false;
-
-        Dir secondDir = Dir.SE;
-        Coord2 second = pos.move(secondDir);
-        if (!grid.isInGrid(second.x, second.y)) return false;
-        return isWordFound(grid, second, secondDir.getOpposite(), "MAS") || isWordFound(grid, second, secondDir.getOpposite(), "SAM");
+        for (Dir dir : List.of(Dir.NE, Dir.SE)) {
+            Coord2 next = pos.move(dir);
+            if (!grid.isInGrid(next) || !isWordFound(grid, next, dir.getOpposite(), "MAS") && !isWordFound(grid, next, dir.getOpposite(), "SAM")) return false;
+        }
+        return true;
     }
 }

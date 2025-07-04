@@ -57,9 +57,9 @@ public class AdventOfCode13 {
                     machines.add(current);
                 }
             }
-            LOGGER.info("PART 1: {}", machines.stream().map(Machine::getMinTokenUsageForPrize).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", machines.stream().map(Machine::getMinTokenUsageForPrize).reduce(0L, Long::sum));
             machines.forEach(Machine::applyPositionConversion);
-            LOGGER.info("PART 2: {}", machines.stream().map(Machine::getMinTokenUsageForPrize).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 2: {}", machines.stream().map(Machine::getMinTokenUsageForPrize).reduce(0L, Long::sum));
         }
     }
 }

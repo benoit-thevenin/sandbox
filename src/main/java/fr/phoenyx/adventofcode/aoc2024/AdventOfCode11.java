@@ -49,7 +49,7 @@ public class AdventOfCode11 {
             }
             counts = next;
         }
-        return counts.values().stream().reduce(Long::sum).orElseThrow();
+        return counts.values().stream().reduce(0L, Long::sum);
     }
 
     private static void addInMap(Map<Long, Long> map, Long key, Long value) {
@@ -58,7 +58,7 @@ public class AdventOfCode11 {
     }
 
     private static long applyProcessRecursively(List<Long> stones, int count) {
-        return stones.stream().map(stone -> blink(new Param(stone, count))).reduce(Long::sum).orElseThrow();
+        return stones.stream().map(stone -> blink(new Param(stone, count))).reduce(0L, Long::sum);
     }
 
     private static long blink(Param param) {

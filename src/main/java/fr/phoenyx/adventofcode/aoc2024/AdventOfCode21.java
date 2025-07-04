@@ -76,7 +76,7 @@ public class AdventOfCode21 {
     }
 
     private static boolean isNextPathValid(CharGrid robot, Coord2 start, Coord2 end, Coord2 next) {
-        return robot.isInGrid(next) && robot.grid[next.x][next.y] != '.' && next.manhattanDistanceTo(end) < start.manhattanDistanceTo(end);
+        return robot.isInGrid(next) && robot.get(next) != '.' && next.manhattanDistanceTo(end) < start.manhattanDistanceTo(end);
     }
 
     private static String dirToString(Dir dir) {

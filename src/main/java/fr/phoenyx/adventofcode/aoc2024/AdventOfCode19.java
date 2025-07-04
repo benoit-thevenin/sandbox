@@ -31,13 +31,13 @@ public class AdventOfCode19 {
                 else TOWELS.addAll(Arrays.stream(currentLine.split(", ")).toList());
             }
             LOGGER.info("PART 1: {}", patterns.stream().map(AdventOfCode19::getCount).filter(c -> c > 0).count());
-            LOGGER.info("PART 2: {}", patterns.stream().map(AdventOfCode19::getCount).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 2: {}", patterns.stream().map(AdventOfCode19::getCount).reduce(0L, Long::sum));
         }
     }
 
     private static long getCount(String pattern) {
         if (CACHE.containsKey(pattern)) return CACHE.get(pattern);
-        CACHE.put(pattern, TOWELS.stream().filter(pattern::startsWith).map(t -> getCount(pattern.substring(t.length()))).reduce(Long::sum).orElse(0L));
+        CACHE.put(pattern, TOWELS.stream().filter(pattern::startsWith).map(t -> getCount(pattern.substring(t.length()))).reduce(0L, Long::sum));
         return CACHE.get(pattern);
     }
 }

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,14 +37,12 @@ public class AdventOfCode08 {
         Set<Coord2> antinodes2 = new HashSet<>();
         Set<Character> visited = new HashSet<>();
         visited.add('.');
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                if (!visited.add(grid.grid[i][j])) continue;
-                char currentChar = grid.grid[i][j];
-                computeAllAntinodes(grid, grid.getCoordinatesMatching(c -> c == currentChar), antinodes1, antinodes2);
-            }
+        for (Coord2 coord : grid.getAllCoords()) {
+            char currentChar = grid.get(coord);
+            if (!visited.add(currentChar)) continue;
+            computeAllAntinodes(grid, grid.getCoordinatesMatching(c -> c == currentChar), antinodes1, antinodes2);
         }
-        return new AbstractMap.SimpleEntry<>(antinodes1.size(), antinodes2.size());
+        return new SimpleEntry<>(antinodes1.size(), antinodes2.size());
     }
 
     private static void computeAllAntinodes(CharGrid grid, List<Coord2> antennas, Set<Coord2> antinodes1, Set<Coord2> antinodes2) {
@@ -62,16 +60,13 @@ public class AdventOfCode08 {
             found = false;
             iteration++;
             Coord2 antinode1 = new Coord2(first.x + iteration * vect.x, first.y + iteration * vect.y);
-            if (grid.isInGrid(antinode1.x, antinode1.y)) {
-                if (iteration == 1) antinodes1.add(antinode1);
-                antinodes2.add(antinode1);
-                found = true;
-            }
             Coord2 antinode2 = new Coord2(second.x - iteration * vect.x, second.y - iteration * vect.y);
-            if (grid.isInGrid(antinode2.x, antinode2.y)) {
-                if (iteration == 1) antinodes1.add(antinode2);
-                antinodes2.add(antinode2);
-                found = true;
+            for (Coord2 antinode : List.of(antinode1, antinode2)) {
+                if (grid.isInGrid(antinode)) {
+                    if (iteration == 1) antinodes1.add(antinode);
+                    antinodes2.add(antinode);
+                    found = true;
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class AdventOfCode03 {
         long sum2 = 0;
         List<Range> doRanges = getDoRanges(line);
         Pattern mul = Pattern.compile("(mul\\([0-9]{1,3},[0-9]{1,3}\\))");
-        Matcher m =  mul.matcher(line);
+        Matcher m = mul.matcher(line);
         while (m.find()) {
             String mulOp = m.group();
             String[] numbers = mulOp.replace("mul(", "").replace(")", "").split(",");
@@ -43,7 +43,7 @@ public class AdventOfCode03 {
             sum1 += value;
             if (doRanges.stream().anyMatch(r -> r.isInRange(line.indexOf(mulOp)))) sum2 += value;
         }
-        return new AbstractMap.SimpleEntry<>(sum1, sum2);
+        return new SimpleEntry<>(sum1, sum2);
     }
 
     private static List<Range> getDoRanges(String line) {

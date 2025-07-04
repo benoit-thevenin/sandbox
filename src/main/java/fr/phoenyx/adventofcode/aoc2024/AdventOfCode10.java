@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -38,39 +38,37 @@ public class AdventOfCode10 {
     private static Map.Entry<Integer, Integer> getResult(CharGrid grid) {
         int score = 0;
         int rating = 0;
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                if (grid.grid[i][j] == '0') {
-                    Map.Entry<Integer, Integer> result = getResult(grid, i, j);
-                    score += result.getKey();
-                    rating += result.getValue();
-                }
+        for (Coord2 coord : grid.getAllCoords()) {
+            if (grid.get(coord) == '0') {
+                Map.Entry<Integer, Integer> result = getResult(grid, coord);
+                score += result.getKey();
+                rating += result.getValue();
             }
         }
-        return new AbstractMap.SimpleEntry<>(score, rating);
+        return new SimpleEntry<>(score, rating);
     }
 
 
-    private static Map.Entry<Integer, Integer> getResult(CharGrid grid, int i, int j) {
+    private static Map.Entry<Integer, Integer> getResult(CharGrid grid, Coord2 coord) {
         int score = 0;
         int rating = 0;
         Queue<Coord2> toVisit = new LinkedList<>();
-        toVisit.add(new Coord2(i, j));
+        toVisit.add(coord);
         Set<Coord2> visited = new HashSet<>(toVisit);
         while (!toVisit.isEmpty()) {
             Coord2 current = toVisit.remove();
-            int height = grid.grid[current.x][current.y] - '0';
+            int height = grid.get(current) - '0';
             for (Dir dir : Dir.FOUR_NEIGHBOURS_VALUES) {
                 Coord2 next = current.move(dir);
-                if (grid.isInGrid(next.x, next.y) && grid.grid[next.x][next.y] - '0' == height + 1) {
+                if (grid.isInGrid(next) && grid.get(next) - '0' == height + 1) {
                     boolean isNew = visited.add(next);
-                    if (grid.grid[next.x][next.y] == '9') {
+                    if (grid.get(next) == '9') {
                         rating++;
                         if (isNew) score++;
                     } else toVisit.add(next);
                 }
             }
         }
-        return new AbstractMap.SimpleEntry<>(score, rating);
+        return new SimpleEntry<>(score, rating);
     }
 }

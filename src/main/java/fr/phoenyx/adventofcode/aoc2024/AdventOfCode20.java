@@ -52,7 +52,7 @@ public class AdventOfCode20 {
                     Coord2 neigh = current.move(dir);
                     if (grid.isInGrid(neigh) && visited.add(neigh)) {
                         next.add(neigh);
-                        if (grid.grid[neigh.x][neigh.y] != '#') cheats.add(distances.get(neigh) - distances.get(start) - steps);
+                        if (grid.get(neigh) != '#') cheats.add(distances.get(neigh) - distances.get(start) - steps);
                     }
                 }
             }

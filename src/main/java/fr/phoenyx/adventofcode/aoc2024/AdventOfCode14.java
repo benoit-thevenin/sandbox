@@ -8,11 +8,10 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AdventOfCode14 {
 
@@ -57,11 +56,11 @@ public class AdventOfCode14 {
             }
         }
         printChristmasTree(current);
-        return new AbstractMap.SimpleEntry<>(safetyFactor, iteration);
+        return new SimpleEntry<>(safetyFactor, iteration);
     }
 
     private static boolean areRobotsOverlapping(List<MovingCoord2> robots) {
-        return robots.stream().map(r -> new Coord2(r.x, r.y)).collect(Collectors.toSet()).size() != robots.size();
+        return robots.stream().map(r -> new Coord2(r.x, r.y)).distinct().count() != robots.size();
     }
 
     private static void printChristmasTree(List<MovingCoord2> robots) {

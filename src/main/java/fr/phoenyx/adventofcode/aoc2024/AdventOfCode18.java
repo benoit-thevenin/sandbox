@@ -50,7 +50,7 @@ public class AdventOfCode18 {
         int steps = getMinSteps(grid);
         while (steps != -1) {
             index++;
-            grid.grid[bytes.get(index).x][bytes.get(index).y] = '#';
+            grid.set(bytes.get(index), '#');
             steps = getMinSteps(grid);
         }
         return bytes.get(index);

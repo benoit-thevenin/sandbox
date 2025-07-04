@@ -17,7 +17,7 @@ public class AdventOfCode09 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                int length = Arrays.stream(currentLine.split("")).map(Integer::parseInt).reduce(Integer::sum).orElseThrow();
+                int length = Arrays.stream(currentLine.split("")).map(Integer::parseInt).reduce(0, Integer::sum);
                 int[] disk = new int[length];
                 int index = 0;
                 int currentFileId = 0;

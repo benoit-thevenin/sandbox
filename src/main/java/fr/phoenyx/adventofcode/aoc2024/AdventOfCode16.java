@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,8 +51,8 @@ public class AdventOfCode16 {
         while (!toVisit.isEmpty()) {
             State current = toVisit.remove();
             if (visited.add(current.node)) {
-                if (grid.grid[current.node.pos.x][current.node.pos.y] == 'E')
-                    return new AbstractMap.SimpleEntry<>(current.score, getBestPathsTiles(current, predecessors).size());
+                if (grid.get(current.node.pos) == 'E')
+                    return new SimpleEntry<>(current.score, getBestPathsTiles(current, predecessors).size());
                 getNextStates(grid, current).forEach(next -> {
                     addBinding(predecessors, next, current);
                     toVisit.add(next);
@@ -65,7 +65,7 @@ public class AdventOfCode16 {
     private static Set<State> getNextStates(CharGrid grid, State current) {
         Set<State> nextStates = new HashSet<>();
         Coord2 forward = current.node.pos.move(current.node.dir);
-        if (grid.isInGrid(forward.x, forward.y) && grid.grid[forward.x][forward.y] != '#')
+        if (grid.isInGrid(forward) && grid.get(forward) != '#')
             nextStates.add(new State(new Node(forward, current.node.dir), current.score + 1));
         nextStates.add(new State(new Node(current.node.pos, current.node.dir.fourNeighboursTurnRight()), current.score + 1000));
         nextStates.add(new State(new Node(current.node.pos, current.node.dir.fourNeighboursTurnLeft()), current.score + 1000));

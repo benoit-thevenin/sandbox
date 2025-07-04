@@ -25,8 +25,8 @@ public class AdventOfCode12 {
             List<String> lines = new ArrayList<>();
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
             List<Set<Coord2>> regions = new CharGrid(lines).getAllRegionsMatching(c -> true);
-            LOGGER.info("PART 1: {}", regions.stream().map(region -> getPerimeter(region) * region.size()).reduce(Long::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", regions.stream().map(region -> getSides(region) * region.size()).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", regions.stream().map(region -> getPerimeter(region) * region.size()).reduce(0L, Long::sum));
+            LOGGER.info("PART 2: {}", regions.stream().map(region -> getSides(region) * region.size()).reduce(0L, Long::sum));
         }
     }
 

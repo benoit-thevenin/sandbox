@@ -30,19 +30,12 @@ public class AdventOfCode06 {
             List<String> lines = new ArrayList<>();
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
             CharGrid grid = new CharGrid(lines);
-            start = getStartPosition(grid);
+            start = grid.getCoordinatesMatching(c -> c == '^').stream().findFirst().orElseThrow();
             visited = getVisitedPositions(grid);
             LOGGER.info("PART 1: {}", visited.size());
             long begin = System.nanoTime();
             LOGGER.info("PART 2: {}, time elapsed: {}ms", countObstructionsPossibilities(grid), (System.nanoTime() - begin) / 1000000);
         }
-    }
-
-    private static Coord2 getStartPosition(CharGrid grid) {
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) if (grid.grid[i][j] == '^') return new Coord2(i, j);
-        }
-        throw new IllegalArgumentException("No start position found");
     }
 
     private static Set<Coord2> getVisitedPositions(CharGrid grid) {
@@ -54,8 +47,8 @@ public class AdventOfCode06 {
         visitedStates.add(new State(current, currentDir));
         while (true) {
             Coord2 next = current.move(currentDir);
-            if (!grid.isInGrid(next.x, next.y)) return visited;
-            if (grid.grid[next.x][next.y] == '#') currentDir = currentDir.fourNeighboursTurnRight();
+            if (!grid.isInGrid(next)) return visited;
+            if (grid.get(next) == '#') currentDir = currentDir.fourNeighboursTurnRight();
             else {
                 current = next;
                 visited.add(next);
@@ -67,18 +60,15 @@ public class AdventOfCode06 {
 
     private static int countObstructionsPossibilities(CharGrid grid) {
         int count = 0;
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) {
-                Coord2 current = new Coord2(i, j);
-                if (!start.equals(current) && visited.contains(current)) {
-                    grid.grid[i][j] = '#';
-                    try {
-                        getVisitedPositions(grid);
-                    } catch (IllegalArgumentException e) {
-                        count++;
-                    }
-                    grid.grid[i][j] = '.';
+        for (Coord2 current : grid.getAllCoords()) {
+            if (!start.equals(current) && visited.contains(current)) {
+                grid.set(current, '#');
+                try {
+                    getVisitedPositions(grid);
+                } catch (IllegalArgumentException e) {
+                    count++;
                 }
+                grid.set(current, '.');
             }
         }
         return count;

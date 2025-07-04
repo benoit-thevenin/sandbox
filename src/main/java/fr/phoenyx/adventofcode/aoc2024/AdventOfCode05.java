@@ -39,7 +39,7 @@ public class AdventOfCode05 {
         return updates.stream()
             .filter(update -> isCorrectlyOrdered(orderingRules, update))
             .map(update -> update.get(update.size() / 2))
-            .reduce(Integer::sum).orElseThrow();
+            .reduce(0, Integer::sum);
     }
 
     private static boolean isCorrectlyOrdered(List<OrderingRule> orderingRules, List<Integer> update) {
@@ -61,6 +61,6 @@ public class AdventOfCode05 {
                 return 0;
             });
         }
-        return toFix.stream().map(update -> update.get(update.size() / 2)).reduce(Integer::sum).orElseThrow();
+        return toFix.stream().map(update -> update.get(update.size() / 2)).reduce(0, Integer::sum);
     }
 }

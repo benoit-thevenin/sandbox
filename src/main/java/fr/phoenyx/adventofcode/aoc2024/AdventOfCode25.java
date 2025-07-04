@@ -36,7 +36,7 @@ public class AdventOfCode25 {
         CharGrid grid = new CharGrid(lines);
         if (height == -1) height = grid.height;
         else if (height != grid.height) throw new IllegalArgumentException("Wrong input: heights don't match");
-        if (grid.grid[0][0] == '#') locks.add(getHeights(grid));
+        if (grid.get(0, 0) == '#') locks.add(getHeights(grid));
         else keys.add(getHeights(grid));
         lines.clear();
     }

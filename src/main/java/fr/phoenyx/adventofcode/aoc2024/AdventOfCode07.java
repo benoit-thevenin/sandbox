@@ -40,8 +40,8 @@ public class AdventOfCode07 {
                 String[] split = currentLine.split(": ");
                 equations.add(new Equation(Long.parseLong(split[0]), Arrays.stream(split[1].split(" ")).map(Long::parseLong).toList()));
             }
-            LOGGER.info("PART 1: {}", equations.stream().filter(e -> e.isValid(false)).map(e -> e.result).reduce(Long::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", equations.stream().filter(e -> e.isValid(true)).map(e -> e.result).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", equations.stream().filter(e -> e.isValid(false)).map(e -> e.result).reduce(0L, Long::sum));
+            LOGGER.info("PART 2: {}", equations.stream().filter(e -> e.isValid(true)).map(e -> e.result).reduce(0L, Long::sum));
         }
     }
 }

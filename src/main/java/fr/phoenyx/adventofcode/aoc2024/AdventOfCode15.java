@@ -30,7 +30,7 @@ public class AdventOfCode15 {
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
             List<String> mapLines = lines.subList(0, lines.indexOf(""));
             CharGrid grid = new CharGrid(mapLines);
-            String moves = lines.subList(lines.indexOf("") + 1, lines.size()).stream().reduce(String::concat).orElseThrow();
+            String moves = lines.subList(lines.indexOf("") + 1, lines.size()).stream().reduce("", String::concat);
             applyRobotMoves(grid, moves);
             LOGGER.info("PART 1: {}", getGpsSum(grid));
             grid = getScaledGrid(mapLines);
@@ -41,12 +41,12 @@ public class AdventOfCode15 {
 
     private static void applyRobotMoves(CharGrid grid, String moves) {
         Coord2 robot = grid.getCoordinatesMatching(c -> c == '@').get(0);
-        grid.grid[robot.x][robot.y] = '.';
+        grid.set(robot, '.');
         for (char c : moves.toCharArray()) {
             Dir dir = Dir.fromChar(c);
             Coord2 next = robot.move(dir);
             Set<Coord2> pushed = getPushed(grid, next, dir);
-            if (pushed.stream().noneMatch(pos -> grid.grid[pos.x][pos.y] == '#')) {
+            if (pushed.stream().noneMatch(pos -> grid.get(pos) == '#')) {
                 moveBoxes(grid, pushed, dir);
                 robot = next;
             }
@@ -57,17 +57,17 @@ public class AdventOfCode15 {
         Queue<Coord2> toVisit = new LinkedList<>();
         toVisit.add(start);
         Set<Coord2> pushed = new HashSet<>(toVisit);
-        while (pushed.stream().noneMatch(pos -> grid.grid[pos.x][pos.y] == '#') && !toVisit.isEmpty()) {
+        while (pushed.stream().noneMatch(pos -> grid.get(pos) == '#') && !toVisit.isEmpty()) {
             Coord2 current = toVisit.remove();
-            if (grid.grid[current.x][current.y] == '.') continue;
-            if ('O' != grid.grid[current.x][current.y] && VERTICAL_DIRS.contains(dir)) {
-                Coord2 neigh = grid.grid[current.x][current.y] == '[' ? current.move(Dir.E) : current.move(Dir.W);
+            if (grid.get(current) == '.') continue;
+            if ('O' != grid.get(current) && VERTICAL_DIRS.contains(dir)) {
+                Coord2 neigh = grid.get(current) == '[' ? current.move(Dir.E) : current.move(Dir.W);
                 if (pushed.add(neigh)) toVisit.add(neigh);
             }
             Coord2 next = current.move(dir);
             if (pushed.add(next)) toVisit.add(next);
         }
-        return pushed.stream().filter(pos -> grid.grid[pos.x][pos.y] != '.').collect(Collectors.toSet());
+        return pushed.stream().filter(pos -> grid.get(pos) != '.').collect(Collectors.toSet());
     }
 
     private static void moveBoxes(CharGrid grid, Set<Coord2> pushed, Dir dir) {
@@ -84,22 +84,18 @@ public class AdventOfCode15 {
     private static Set<Coord2> getNextBoxesToMove(CharGrid grid, Set<Coord2> pushed, Dir dir) {
         return pushed.stream().filter(pos -> {
             Coord2 next = pos.move(dir);
-            return grid.grid[next.x][next.y] == '.';
+            return grid.get(next) == '.';
         }).collect(Collectors.toSet());
     }
 
     private static void move(CharGrid grid, Coord2 pos, Dir dir) {
         Coord2 next = pos.move(dir);
-        grid.grid[next.x][next.y] = grid.grid[pos.x][pos.y];
-        grid.grid[pos.x][pos.y] = '.';
+        grid.set(next, grid.get(pos));
+        grid.set(pos, '.');
     }
 
     private static int getGpsSum(CharGrid grid) {
-        int sum = 0;
-        for (int i = 0; i < grid.width; i++) {
-            for (int j = 0; j < grid.height; j++) if (grid.grid[i][j] == 'O' || grid.grid[i][j] == '[') sum += 100 * j + i;
-        }
-        return sum;
+        return grid.getCoordinatesMatching(c -> c == 'O' || c == '[').stream().map(c -> 100 * c.y + c.x).reduce(0, Integer::sum);
     }
 
     private static CharGrid getScaledGrid(List<String> mapLines) {
