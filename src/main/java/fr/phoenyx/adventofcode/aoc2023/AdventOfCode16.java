@@ -22,11 +22,15 @@ import fr.phoenyx.models.coords.Dir;
 public class AdventOfCode16 {
 
     private static class Beam extends Coord2 {
-        Dir dir;
+        final Dir dir;
 
         Beam(int x, int y, Dir dir) {
             super(x, y);
             this.dir = dir;
+        }
+
+        Beam(Coord2 coord, Dir dir) {
+            this(coord.x, coord.y, dir);
         }
 
         @Override
@@ -44,7 +48,7 @@ public class AdventOfCode16 {
     }
 
     private static class Tile {
-        char type;
+        final char type;
         boolean isEnergized;
 
         Tile(char type) {
@@ -77,19 +81,17 @@ public class AdventOfCode16 {
             int bestEnergizedConfiguration = Integer.MIN_VALUE;
             for (Beam current : beamsToTest) {
                 resetEnergized();
-                processLight(current.x, current.y, current.dir);
-                int energized = getEnergized();
-                if (energized > bestEnergizedConfiguration) bestEnergizedConfiguration = energized;
+                processLight(current);
+                bestEnergizedConfiguration = Math.max(bestEnergizedConfiguration, getEnergized());
             }
             return bestEnergizedConfiguration;
         }
 
-        void processLight(int initialX, int initialY, Dir initialDir) {
+        void processLight(Beam beam) {
             Queue<Beam> toVisit = new LinkedList<>();
             Set<Beam> visited = new HashSet<>();
-            Beam initialBeam = new Beam(initialX, initialY, initialDir);
-            toVisit.add(initialBeam);
-            visited.add(initialBeam);
+            toVisit.add(beam);
+            visited.add(beam);
             while (!toVisit.isEmpty()) {
                 Beam current = toVisit.remove();
                 grid[current.x][current.y].isEnergized = true;
@@ -112,24 +114,21 @@ public class AdventOfCode16 {
         private List<Beam> getNextBeams(Beam beam) {
             char tileType = grid[beam.x][beam.y].type;
             if (isBeamPassingThrough(tileType, beam)) {
-                int nextX = beam.x + beam.dir.dx;
-                int nextY = beam.y + beam.dir.dy;
-                return isInGrid(nextX, nextY) ? List.of(new Beam(nextX, nextY, beam.dir)) : Collections.emptyList();
+                Coord2 next = beam.move(beam.dir);
+                return isInGrid(next) ? List.of(new Beam(next, beam.dir)) : Collections.emptyList();
             }
             if (tileType == '|' || tileType == '-') {
                 List<Beam> beams = new ArrayList<>();
                 List<Dir> dirs = tileType == '|' ? List.of(Dir.N, Dir.S) : List.of(Dir.W, Dir.E);
                 for (Dir dir : dirs) {
-                    int nextX = beam.x + dir.dx;
-                    int nextY = beam.y + dir.dy;
-                    if (isInGrid(nextX, nextY)) beams.add(new Beam(nextX, nextY, dir));
+                    Coord2 next = beam.move(dir);
+                    if (isInGrid(next)) beams.add(new Beam(next, dir));
                 }
                 return beams;
             }
             Dir nextDir = beam.dir.getMirroredDir(tileType);
-            int nextX = beam.x + nextDir.dx;
-            int nextY = beam.y + nextDir.dy;
-            return isInGrid(nextX, nextY) ? List.of(new Beam(nextX, nextY, nextDir)) : Collections.emptyList();
+            Coord2 next = beam.move(nextDir);
+            return isInGrid(next) ? List.of(new Beam(next, nextDir)) : Collections.emptyList();
         }
 
         int getEnergized() {
@@ -156,7 +155,7 @@ public class AdventOfCode16 {
             List<String> lines = new ArrayList<>();
             while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
             Contraption contraption = new Contraption(lines);
-            contraption.processLight(0, 0, Dir.E);
+            contraption.processLight(new Beam(0, 0, Dir.E));
             LOGGER.info("PART 1: {}", contraption.getEnergized());
             LOGGER.info("PART 2: {}", contraption.getBestEnergizedConfiguration());
         }

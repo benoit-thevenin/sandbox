@@ -41,20 +41,7 @@ public class AdventOfCode19 {
         }
     }
 
-    private static class Part {
-        int x;
-        int m;
-        int a;
-        int s;
-
-        Part(String line) {
-            String[] split = line.split(",");
-            x = Integer.parseInt(split[0].split("=")[1]);
-            m = Integer.parseInt(split[1].split("=")[1]);
-            a = Integer.parseInt(split[2].split("=")[1]);
-            s = Integer.parseInt(split[3].replace("}", "").split("=")[1]);
-        }
-
+    private record Part(int x, int m, int a, int s) {
         int get(char c) {
             if (c == 'x') return x;
             if (c == 'm') return m;
@@ -81,7 +68,7 @@ public class AdventOfCode19 {
         }
 
         RangePart(RangePart source) {
-            for (char c : new char[]{'x', 'm', 'a', 's'}) {
+            for (char c : "xmas".toCharArray()) {
                 setMin(c, source.getMin(c));
                 setMax(c, source.getMax(c));
             }
@@ -162,10 +149,17 @@ public class AdventOfCode19 {
                 else if (isWorkflow) {
                     Workflow workflow = new Workflow(currentLine);
                     workflows.put(workflow.name, workflow);
-                } else parts.add(new Part(currentLine));
+                } else {
+                    String[] split = currentLine.split(",");
+                    int x = Integer.parseInt(split[0].split("=")[1]);
+                    int m = Integer.parseInt(split[1].split("=")[1]);
+                    int a = Integer.parseInt(split[2].split("=")[1]);
+                    int s = Integer.parseInt(split[3].replace("}", "").split("=")[1]);
+                    parts.add(new Part(x, m, a, s));
+                }
             }
-            LOGGER.info("PART 1: {}", parts.stream().map(p -> getValue(p, workflows.get("in"))).reduce(Integer::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", getValidRangeParts(new RangePart(), workflows.get("in")).stream().map(RangePart::getCombinations).reduce(Long::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", parts.stream().map(p -> getValue(p, workflows.get("in"))).reduce(0, Integer::sum));
+            LOGGER.info("PART 2: {}", getValidRangeParts(new RangePart(), workflows.get("in")).stream().map(RangePart::getCombinations).reduce(0L, Long::sum));
         }
     }
 
@@ -174,8 +168,7 @@ public class AdventOfCode19 {
             Optional<String> target = rule.apply(part);
             if (target.isPresent()) {
                 if (target.get().equals("A")) return part.getValue();
-                if (target.get().equals("R")) return 0;
-                return getValue(part, workflows.get(target.get()));
+                return target.get().equals("R") ? 0 : getValue(part, workflows.get(target.get()));
             }
         }
         throw new IllegalArgumentException("Last rule should be terminal");

@@ -3,7 +3,9 @@ package fr.phoenyx.adventofcode.aoc2023;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -29,15 +31,11 @@ public class AdventOfCode01 {
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2023/adventofcode01.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            List<String> lines = new ArrayList<>();
             String currentLine;
-            int sumPart1 = 0;
-            int sumPart2 = 0;
-            while ((currentLine = reader.readLine()) != null) {
-                sumPart1 += computeSubResult(currentLine, true);
-                sumPart2 += computeSubResult(currentLine, false);
-            }
-            LOGGER.info("PART 1: {}", sumPart1);
-            LOGGER.info("PART 2: {}", sumPart2);
+            while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
+            LOGGER.info("PART 1: {}", lines.stream().map(line -> computeSubResult(line, true)).reduce(0, Integer::sum));
+            LOGGER.info("PART 2: {}", lines.stream().map(line -> computeSubResult(line, false)).reduce(0, Integer::sum));
         }
     }
 
@@ -51,9 +49,7 @@ public class AdventOfCode01 {
             if (part1) continue;
             for (Map.Entry<String, Character> entry : WORD_TO_DIGIT_MAP.entrySet()) {
                 int wordLength = entry.getKey().length();
-                if (i + wordLength <= line.length() && line.substring(i, i + wordLength).equals(entry.getKey())) {
-                    return entry.getValue();
-                }
+                if (i + wordLength <= line.length() && line.substring(i, i + wordLength).equals(entry.getKey())) return entry.getValue();
             }
         }
         throw new IllegalArgumentException("The line must contain at least one digit");
@@ -65,9 +61,7 @@ public class AdventOfCode01 {
             if (part1) continue;
             for (Map.Entry<String, Character> entry : WORD_TO_DIGIT_MAP.entrySet()) {
                 int wordLength = entry.getKey().length();
-                if (i - wordLength + 1 >= 0 && line.substring(i - wordLength + 1, i + 1).equals(entry.getKey())) {
-                    return entry.getValue();
-                }
+                if (i - wordLength + 1 >= 0 && line.substring(i - wordLength + 1, i + 1).equals(entry.getKey())) return entry.getValue();
             }
         }
         throw new IllegalArgumentException("The line must contain at least one digit");

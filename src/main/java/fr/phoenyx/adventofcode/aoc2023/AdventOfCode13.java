@@ -20,8 +20,7 @@ public class AdventOfCode13 {
 
         int getReflectionValue(int errorCount) {
             int verticalReflection = getVerticalReflection(errorCount);
-            if (verticalReflection != -1) return verticalReflection;
-            return 100 * getHorizontalReflection(errorCount);
+            return verticalReflection != -1 ? verticalReflection : 100 * getHorizontalReflection(errorCount);
         }
 
         private int getVerticalReflection(int errorCount) {
@@ -29,9 +28,7 @@ public class AdventOfCode13 {
                 int errors = 0;
                 int length = Math.min(i, width - i);
                 for (int j = 0; j < length; j++) {
-                    for (int k = 0; k < height; k++) {
-                        if (grid[i - j - 1][k] != grid[i + j][k]) errors++;
-                    }
+                    for (int k = 0; k < height; k++) if (get(i - j - 1, k) != get(i + j, k)) errors++;
                 }
                 if (errors == errorCount) return i;
             }
@@ -43,9 +40,7 @@ public class AdventOfCode13 {
                 int errors = 0;
                 int length = Math.min(i, height - i);
                 for (int j = 0; j < length; j++) {
-                    for (int k = 0; k < width; k++) {
-                        if (grid[k][i - j - 1] != grid[k][i + j]) errors++;
-                    }
+                    for (int k = 0; k < width; k++) if (get(k, i - j - 1) != get(k, i + j)) errors++;
                 }
                 if (errors == errorCount) return i;
             }
@@ -68,8 +63,8 @@ public class AdventOfCode13 {
                 } else lines.add(currentLine);
             }
             patterns.add(new Pattern(lines));
-            LOGGER.info("PART 1: {}", patterns.stream().map(p -> p.getReflectionValue(0)).reduce(Integer::sum).orElseThrow());
-            LOGGER.info("PART 2: {}", patterns.stream().map(p -> p.getReflectionValue(1)).reduce(Integer::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", patterns.stream().map(p -> p.getReflectionValue(0)).reduce(0, Integer::sum));
+            LOGGER.info("PART 2: {}", patterns.stream().map(p -> p.getReflectionValue(1)).reduce(0, Integer::sum));
         }
     }
 }

@@ -63,7 +63,7 @@ public class AdventOfCode15 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) instructions = Arrays.asList(currentLine.split(","));
-            LOGGER.info("PART 1: {}", instructions.stream().map(AdventOfCode15::hash).reduce(Integer::sum).orElseThrow());
+            LOGGER.info("PART 1: {}", instructions.stream().map(AdventOfCode15::hash).reduce(0, Integer::sum));
             processInstructions();
             LOGGER.info("PART 2: {}", computeFocusingPower());
         }

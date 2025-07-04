@@ -1,5 +1,10 @@
 package fr.phoenyx.adventofcode.aoc2023;
 
+import fr.phoenyx.models.CharGrid;
+import fr.phoenyx.models.coords.Coord2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,38 +13,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.phoenyx.models.AbstractGrid;
-import fr.phoenyx.models.coords.Coord2;
-
 public class AdventOfCode11 {
 
-    private static class Point extends Coord2 {
-        boolean isGalaxy;
-
-        Point(int x, int y, boolean isGalaxy) {
-            super(x, y);
-            this.isGalaxy = isGalaxy;
-        }
-    }
-
-    private static class Universe extends AbstractGrid {
-        final Point[][] grid;
-        final List<Point> galaxies = new ArrayList<>();
+    private static class Universe extends CharGrid {
+        final List<Coord2> galaxies = new ArrayList<>();
         final Set<Integer> expansionX = new HashSet<>();
         final Set<Integer> expansionY = new HashSet<>();
 
         Universe(List<String> lines) {
             super(lines);
-            grid = new Point[width][height];
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    grid[j][i] = new Point(j, i, lines.get(i).charAt(j) == '#');
-                    if (grid[j][i].isGalaxy) galaxies.add(grid[j][i]);
-                }
-            }
+            galaxies.addAll(getCoordinatesMatching(c -> c == '#'));
             setExpansions(true);
             setExpansions(false);
         }
@@ -54,7 +37,7 @@ public class AdventOfCode11 {
                 for (int j = 0; j < second; j++) {
                     if (isLine) x = j;
                     else y = j;
-                    if (grid[x][y].isGalaxy) {
+                    if (get(x, y) == '#') {
                         isExpanding = false;
                         break;
                     }
@@ -69,9 +52,9 @@ public class AdventOfCode11 {
         long getGalaxiesDistancesSum(int weight) {
             long result = 0;
             for (int i = 0; i < galaxies.size() - 1; i++) {
-                Point first = galaxies.get(i);
+                Coord2 first = galaxies.get(i);
                 for (int j = i + 1; j < galaxies.size(); j++) {
-                    Point second = galaxies.get(j);
+                    Coord2 second = galaxies.get(j);
                     long countExpansionX = expansionX.stream().filter(x -> x > Math.min(first.x, second.x) && x < Math.max(first.x, second.x)).count();
                     long countExpansionY = expansionY.stream().filter(x -> x > Math.min(first.y, second.y) && x < Math.max(first.y, second.y)).count();
                     result += first.manhattanDistanceTo(second) + (weight - 1) * (countExpansionX + countExpansionY);

@@ -14,35 +14,7 @@ import fr.phoenyx.utils.MathUtils;
 
 public class AdventOfCode24 {
 
-    private static class Hailstone {
-        double x;
-        double y;
-        double z;
-        double vx;
-        double vy;
-        double vz;
-
-        Hailstone(double x, double y, double z, double vx, double vy, double vz) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.vx = vx;
-            this.vy = vy;
-            this.vz = vz;
-        }
-
-        Hailstone(String line) {
-            String[] split = line.split(" @ ");
-            String[] stringCoordinates = split[0].split(", ");
-            String[] stringVelocities = split[1].split(", ");
-            x = Double.parseDouble(stringCoordinates[0]);
-            y = Double.parseDouble(stringCoordinates[1]);
-            z = Double.parseDouble(stringCoordinates[2]);
-            vx = Double.parseDouble(stringVelocities[0]);
-            vy = Double.parseDouble(stringVelocities[1]);
-            vz = Double.parseDouble(stringVelocities[2]);
-        }
-
+    private record Hailstone(double x, double y, double z, double vx, double vy, double vz) {
         boolean isPathCrossingXY(Hailstone other) {
             double denominator = getDenominator(vx, vy, other.vx, other.vy);
             if (denominator == 0) return false;
@@ -71,7 +43,18 @@ public class AdventOfCode24 {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2023/adventofcode24.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) hailstones.add(new Hailstone(currentLine));
+            while ((currentLine = reader.readLine()) != null) {
+                String[] split = currentLine.split(" @ ");
+                String[] stringCoordinates = split[0].split(", ");
+                String[] stringVelocities = split[1].split(", ");
+                double x = Double.parseDouble(stringCoordinates[0]);
+                double y = Double.parseDouble(stringCoordinates[1]);
+                double z = Double.parseDouble(stringCoordinates[2]);
+                double vx = Double.parseDouble(stringVelocities[0]);
+                double vy = Double.parseDouble(stringVelocities[1]);
+                double vz = Double.parseDouble(stringVelocities[2]);
+                hailstones.add(new Hailstone(x, y, z, vx, vy, vz));
+            }
             LOGGER.info("PART 1: {}", countHorizontalCollides());
             LOGGER.info("PART 2: {}", computeThrowPosition());
         }

@@ -35,7 +35,7 @@ public class AdventOfCode02 {
                     }
                 }
                 if (lowestPerColor.get("red") <= 12 && lowestPerColor.get("green") <= 13 && lowestPerColor.get("blue") <= 14) sumPart1 += currentId;
-                sumPart2 += lowestPerColor.values().stream().reduce((a, b) -> a * b).orElseThrow();
+                sumPart2 += lowestPerColor.values().stream().reduce(1, (a, b) -> a * b);
             }
             LOGGER.info("PART 1: {}", sumPart1);
             LOGGER.info("PART 2: {}", sumPart2);

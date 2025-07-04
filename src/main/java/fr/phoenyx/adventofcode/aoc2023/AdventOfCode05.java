@@ -17,19 +17,7 @@ import fr.phoenyx.models.Range;
 
 public class AdventOfCode05 {
 
-    private static class MappingRange {
-        Range destinationRange;
-        Range sourceRange;
-
-        MappingRange(String line) {
-            String[] split = line.split(" ");
-            long destinationStart = Long.parseLong(split[0]);
-            long sourceStart = Long.parseLong(split[1]);
-            long length = Long.parseLong(split[2]);
-            destinationRange = Range.buildFromStartAndLength(destinationStart, length);
-            sourceRange = Range.buildFromStartAndLength(sourceStart, length);
-        }
-
+    private record MappingRange(Range destinationRange, Range sourceRange) {
         long getDestination(long source) {
             return source - sourceRange.start + destinationRange.start;
         }
@@ -48,15 +36,19 @@ public class AdventOfCode05 {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.isBlank()) continue;
                 if (currentLine.startsWith("seeds: ")) {
                     String[] split = currentLine.split("seeds: ")[1].split(" ");
                     seedValues.get(0).addAll(Arrays.stream(split).map(Long::parseLong).toList());
-                    for (int i = 0; i < split.length; i += 2)
-                        seedRanges.get(0).add(Range.buildFromStartAndLength(Long.parseLong(split[i]), Long.parseLong(split[i + 1])));
+                    for (int i = 0; i < split.length; i += 2) seedRanges.get(0).add(Range.buildFromStartAndLength(Long.parseLong(split[i]), Long.parseLong(split[i + 1])));
+                } else if (currentLine.contains("-")) ranges.add(new ArrayList<>());
+                else if (!currentLine.isBlank()) {
+                    String[] split = currentLine.split(" ");
+                    long length = Long.parseLong(split[2]);
+                    ranges.get(ranges.size() - 1).add(new MappingRange(
+                        Range.buildFromStartAndLength(Long.parseLong(split[0]), length),
+                        Range.buildFromStartAndLength(Long.parseLong(split[1]), length))
+                    );
                 }
-                else if (currentLine.contains("-")) ranges.add(new ArrayList<>());
-                else ranges.get(ranges.size() - 1).add(new MappingRange(currentLine));
             }
             setSeedValues();
             setSeedRanges();
@@ -70,10 +62,9 @@ public class AdventOfCode05 {
             List<Long> sourceValues = seedValues.get(i);
             List<Long> destinationValues = new ArrayList<>();
             List<MappingRange> map = ranges.get(i);
-            for (long source : sourceValues) {
-                long destination = map.stream().filter(r -> r.sourceRange.isInRange(source)).findFirst().map(r -> r.getDestination(source)).orElse(source);
-                destinationValues.add(destination);
-            }
+            sourceValues.stream()
+                .map(source -> map.stream().filter(r -> r.sourceRange.isInRange(source)).findFirst().map(r -> r.getDestination(source)).orElse(source))
+                .forEach(destinationValues::add);
             seedValues.add(destinationValues);
         }
     }
@@ -105,8 +96,7 @@ public class AdventOfCode05 {
         List<Range> unmapped = new ArrayList<>();
         Iterator<Range> iterator = destinations.iterator();
         Range current = iterator.next();
-        if (current.start > source.start)
-            unmapped.add(Range.buildFromStartAndLength(source.start, current.start - source.start));
+        if (current.start > source.start) unmapped.add(Range.buildFromStartAndLength(source.start, current.start - source.start));
         while (iterator.hasNext()) {
             Range previous = current;
             current = iterator.next();

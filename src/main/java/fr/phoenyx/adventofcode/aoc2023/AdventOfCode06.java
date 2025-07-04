@@ -52,8 +52,8 @@ public class AdventOfCode06 {
     }
 
     private static int computePart2() {
-        int timeAllowed = Integer.parseInt(times.stream().map(Object::toString).reduce(String::concat).orElseThrow());
-        long distanceToBeat = Long.parseLong(distances.stream().map(Object::toString).reduce(String::concat).orElseThrow());
+        int timeAllowed = Integer.parseInt(times.stream().map(Object::toString).reduce("", String::concat));
+        long distanceToBeat = Long.parseLong(distances.stream().map(Object::toString).reduce("", String::concat));
         int result = 0;
         for (long i = 1; i < timeAllowed; i++) {
             long distance = i * (timeAllowed - i);

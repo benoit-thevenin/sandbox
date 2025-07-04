@@ -14,48 +14,35 @@ import fr.phoenyx.utils.MathUtils;
 
 public class AdventOfCode08 {
 
-    private static class Node {
-        String name;
-        String leftNodeName;
-        String rightNodeName;
-
-        Node(String line) {
-            String[] split1 = line.split(" = ");
-            name = split1[0];
-            split1[1] = split1[1].replace("(", "");
-            split1[1] = split1[1].replace(")", "");
-            String[] split2 = split1[1].split(", ");
-            leftNodeName = split2[0];
-            rightNodeName = split2[1];
-        }
-
+    private record Node(String name, String leftNodeName, String rightNodeName) {
         String getNeighbourName(char instruction) {
-            if (instruction == 'L') return leftNodeName;
-            return rightNodeName;
+            return instruction == 'L' ? leftNodeName : rightNodeName;
         }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode08.class);
 
-    private static String instructions;
+    private static String instructions = null;
     private static final Map<String, Node> nodes = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         String filePath = "src/main/resources/fr/phoenyx/adventofcode/aoc2023/adventofcode08.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            boolean isInstructionsLine = true;
             while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.isBlank()) isInstructionsLine = false;
-                else if (isInstructionsLine) instructions = currentLine;
-                else {
-                    Node node = new Node(currentLine);
+                if (instructions == null) instructions = currentLine;
+                else if (!currentLine.isBlank()) {
+                    String[] split1 = currentLine.split(" = ");
+                    split1[1] = split1[1].replace("(", "");
+                    split1[1] = split1[1].replace(")", "");
+                    String[] split2 = split1[1].split(", ");
+                    Node node = new Node(split1[0], split2[0], split2[1]);
                     nodes.put(node.name, node);
                 }
             }
             Map<String, Long> count = getStepCounts();
             LOGGER.info("PART 1: {}", count.get("AAA"));
-            LOGGER.info("PART 2: {}", count.values().stream().reduce(MathUtils::leastCommonMultiple).orElseThrow());
+            LOGGER.info("PART 2: {}", count.values().stream().reduce(1L, MathUtils::leastCommonMultiple));
         }
     }
 

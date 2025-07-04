@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.phoenyx.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,32 +24,21 @@ public class AdventOfCode07 {
             this.index = index;
         }
 
-        static HandType getFromHand(char[] hand, boolean joker) {
-            Map<Character, Integer> map = new HashMap<>();
-            for (char c : hand) {
-                if (map.containsKey(c)) map.put(c, map.get(c) + 1);
-                else map.put(c, 1);
+        static HandType getFromHand(String hand, boolean joker) {
+            Map<Character, Integer> map = Utils.getLetterCount(hand);
+            boolean hasJoker = joker && map.containsKey('J');
+            if (map.size() == 1) return FIVE;
+            if (map.size() == 2) {
+                if (hasJoker) return FIVE;
+                return map.values().stream().anyMatch(v -> v == 4) ? FOUR : FULL;
             }
-            if (map.entrySet().size() == 1) return FIVE;
-            if (map.entrySet().size() == 5) return joker && map.containsKey('J') ? PAIR : HIGH;
-            if (map.entrySet().size() == 2) {
-                if (joker && map.containsKey('J')) return FIVE;
-                List<Integer> values = new ArrayList<>(map.values());
-                if (values.get(0) == 4 || values.get(1) == 4) return FOUR;
-                else return FULL;
+            if (map.size() == 3) {
+                boolean hasThree = map.values().stream().anyMatch(v -> v == 3);
+                if (hasJoker) return map.get('J') > 1 || hasThree ? FOUR : FULL;
+                return hasThree ? THREE : TWO_PAIRS;
             }
-            if (map.entrySet().size() == 3) {
-                if (joker && map.containsKey('J')) {
-                    int jokerCount = map.get('J');
-                    map.remove('J');
-                    List<Integer> values = new ArrayList<>(map.values());
-                    return jokerCount > 1 || values.get(0) == 3 || values.get(1) == 3 ? FOUR : FULL;
-                }
-                List<Integer> values = new ArrayList<>(map.values());
-                if (values.get(0) == 3 || values.get(1) == 3 || values.get(2) == 3) return THREE;
-                else return TWO_PAIRS;
-            }
-            return joker && map.containsKey('J') ? THREE : PAIR;
+            if (map.size() == 4) return hasJoker ? THREE : PAIR;
+            return hasJoker ? PAIR : HIGH;
         }
     }
 
@@ -69,19 +59,17 @@ public class AdventOfCode07 {
             String[] split = line.split(" ");
             cards = split[0];
             bid = Integer.parseInt(split[1]);
-            type = HandType.getFromHand(cards.toCharArray(), joker);
+            type = HandType.getFromHand(cards, joker);
             for (int i = 0; i < cards.length(); i++) {
                 char c = cards.charAt(i);
-                if (c == 'J' && joker) continue;
-                handScore += (int) Math.pow((cardsValue.size() + 1), (5 - i)) * cardsValue.get(c);
+                if (c != 'J' || !joker) handScore += (int) Math.pow((cardsValue.size() + 1), (5 - i)) * cardsValue.get(c);
             }
         }
 
         @Override
         public int compareTo(Hand o) {
             int typeCompare = Integer.compare(o.type.index, type.index);
-            if (typeCompare != 0) return typeCompare;
-            return Integer.compare(handScore, o.handScore);
+            return typeCompare != 0 ? typeCompare : Integer.compare(handScore, o.handScore);
         }
     }
 

@@ -3,10 +3,10 @@ package fr.phoenyx.adventofcode.aoc2023;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +26,13 @@ public class AdventOfCode09 {
                 for (int i = 0; i < split.length; i++) history[i] = Integer.parseInt(split[i]);
                 values.add(history);
             }
-            AbstractMap.SimpleEntry<Integer, Integer> result = computeResult();
+            Map.Entry<Integer, Integer> result = computeResult();
             LOGGER.info("PART 1: {}", result.getKey());
             LOGGER.info("PART 2: {}", result.getValue());
         }
     }
 
-    private static AbstractMap.SimpleEntry<Integer, Integer> computeResult() {
+    private static Map.Entry<Integer, Integer> computeResult() {
         int resultPart1 = 0;
         int resultPart2 = 0;
         for (int[] history : values) {

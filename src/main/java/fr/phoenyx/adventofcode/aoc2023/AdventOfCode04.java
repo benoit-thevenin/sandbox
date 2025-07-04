@@ -24,9 +24,7 @@ public class AdventOfCode04 {
             String winningNumber = split[0];
             String numbers = split[1];
             Set<Integer> winningNumbers = new HashSet<>();
-            for (String number : winningNumber.split(" ")) {
-                winningNumbers.add(Integer.parseInt(number));
-            }
+            for (String number : winningNumber.split(" ")) winningNumbers.add(Integer.parseInt(number));
             for (String number : numbers.split(" ")) {
                 int value = Integer.parseInt(number);
                 if (winningNumbers.contains(value)) {
@@ -47,8 +45,8 @@ public class AdventOfCode04 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) CARDS.add(new Card(currentLine.replace("  ", " ")));
             setCardsQuantity();
-            LOGGER.info("PART 1: {}", CARDS.stream().map(c -> c.score).reduce(Integer::sum).orElse(0));
-            LOGGER.info("PART 2: {}", CARDS.stream().map(c -> c.quantity).reduce(Integer::sum).orElse(0));
+            LOGGER.info("PART 1: {}", CARDS.stream().map(c -> c.score).reduce(0, Integer::sum));
+            LOGGER.info("PART 2: {}", CARDS.stream().map(c -> c.quantity).reduce(0, Integer::sum));
         }
     }
 

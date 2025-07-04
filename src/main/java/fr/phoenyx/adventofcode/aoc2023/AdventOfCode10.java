@@ -35,7 +35,7 @@ public class AdventOfCode10 {
         }
 
         Set<Dir> getConnectedDirs() {
-            return Arrays.stream(this.name().split("")).map(Dir::valueOf).collect(Collectors.toSet());
+            return Arrays.stream(name().split("")).map(Dir::valueOf).collect(Collectors.toSet());
         }
     }
 

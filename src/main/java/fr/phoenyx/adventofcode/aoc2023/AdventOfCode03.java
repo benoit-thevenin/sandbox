@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +25,7 @@ public class AdventOfCode03 {
         List<String> lines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                lines.add(currentLine);
-            }
+            while ((currentLine = reader.readLine()) != null) lines.add(currentLine);
         }
         buildDataStructures(lines);
         LOGGER.info("PART 1: {}", computePart1());
@@ -45,44 +43,31 @@ public class AdventOfCode03 {
                     partNumber.append(charGrid.grid[j][i]);
                     j++;
                 }
-                for (int k = j - 1; k > j - 1 - partNumber.length(); k--) {
-                    partNumbers[k][i] = Integer.parseInt(partNumber.toString());
-                }
+                for (int k = j - 1; k > j - 1 - partNumber.length(); k--) partNumbers[k][i] = Integer.parseInt(partNumber.toString());
             }
         }
     }
 
     private static int computePart1() {
-        int sum = 0;
-        for (int i = 0; i < charGrid.height; i++) {
-            for (int j = 0; j < charGrid.width; j++) {
-                if (charGrid.grid[j][i] == '.' || Character.isDigit(charGrid.grid[j][i])) continue;
-                Set<Integer> numbers = new HashSet<>();
-                for (Dir dir : Dir.values()) {
-                    int neighbourX = j + dir.dx;
-                    int neighbourY = i + dir.dy;
-                    if (charGrid.isInGrid(neighbourX, neighbourY)) numbers.add(partNumbers[neighbourX][neighbourY]);
-                }
-                sum += numbers.stream().reduce(Integer::sum).orElseThrow();
-            }
-        }
-        return sum;
+        return charGrid.getCoordinatesMatching(c -> c != '.' && !Character.isDigit(c)).stream()
+            .map(c1 -> Arrays.stream(Dir.values())
+                .map(c1::move)
+                .filter(charGrid::isInGrid)
+                .map(c2 -> partNumbers[c2.x][c2.y])
+                .collect(Collectors.toSet()).stream().reduce(0, Integer::sum))
+            .reduce(0, Integer::sum);
     }
 
     private static int computePart2() {
-        int sum = 0;
-        for (int i = 0; i < charGrid.width; i++) {
-            for (int j = 0; j < charGrid.height; j++) {
-                if (charGrid.grid[i][j] != '*') continue;
-                Set<Integer> numbers = new HashSet<>();
-                for (Dir dir : Dir.values()) {
-                    int neighbourX = i + dir.dx;
-                    int neighbourY = j + dir.dy;
-                    if (charGrid.isInGrid(neighbourX, neighbourY) && partNumbers[neighbourX][neighbourY] != 0) numbers.add(partNumbers[neighbourX][neighbourY]);
-                }
-                if (numbers.size() == 2) sum += numbers.stream().reduce((a, b) -> a * b).orElseThrow();
-            }
-        }
-        return sum;
+        return charGrid.getCoordinatesMatching(c -> c == '*').stream()
+            .map(c1 -> Arrays.stream(Dir.values())
+                .map(c1::move)
+                .filter(charGrid::isInGrid)
+                .map(c2 -> partNumbers[c2.x][c2.y])
+                .filter(value -> value != 0)
+                .collect(Collectors.toSet()))
+                .filter(sets -> sets.size() == 2)
+                .map(sets -> sets.stream().reduce(1, (a, b) -> a * b))
+            .reduce(0, Integer::sum);
     }
 }

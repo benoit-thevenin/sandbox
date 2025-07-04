@@ -81,10 +81,10 @@ public class AdventOfCode12 {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) springRows.add(new SpringRow(currentLine));
             long begin = System.nanoTime();
-            LOGGER.info("PART 1: {}, time elapsed: {}ms", springRows.stream().map(SpringRow::springsArrangements).reduce(Long::sum).orElseThrow(), (System.nanoTime() - begin) / 1000000);
+            LOGGER.info("PART 1: {}, time elapsed: {}ms", springRows.stream().map(SpringRow::springsArrangements).reduce(0L, Long::sum), (System.nanoTime() - begin) / 1000000);
             springRows.forEach(SpringRow::unfoldRow);
             begin = System.nanoTime();
-            LOGGER.info("PART 2: {}, time elapsed: {}ms", springRows.stream().map(SpringRow::springsArrangements).reduce(Long::sum).orElseThrow(), (System.nanoTime() - begin) / 1000000);
+            LOGGER.info("PART 2: {}, time elapsed: {}ms", springRows.stream().map(SpringRow::springsArrangements).reduce(0L, Long::sum), (System.nanoTime() - begin) / 1000000);
         }
     }
 }

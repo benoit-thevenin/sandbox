@@ -36,12 +36,11 @@ public class AdventOfCode17 {
                 Node current = toVisit.remove();
                 List<Dir> possibleDirs = current.dir.getFourNeighboursPossibleDirs(current.steps, minStreak, maxStreak);
                 for (Dir dir : possibleDirs) {
-                    int x = current.x + dir.dx;
-                    int y = current.y + dir.dy;
-                    if (isInGrid(x, y)) {
+                    Coord2 next = current.move(dir);
+                    if (isInGrid(next)) {
                         int steps = dir == current.dir ? current.steps + 1 : 1;
-                        Node node = new Node(x, y, dir, steps);
-                        int heatLoss = heatLosses.get(current) + get(x, y) - '0';
+                        Node node = new Node(next, dir, steps);
+                        int heatLoss = heatLosses.get(current) + get(next) - '0';
                         if (!heatLosses.containsKey(node) || heatLosses.get(node) > heatLoss) {
                             heatLosses.put(node, heatLoss);
                             toVisit.add(node);
@@ -66,6 +65,10 @@ public class AdventOfCode17 {
             super(x, y);
             this.dir = dir;
             this.steps = steps;
+        }
+
+        Node(Coord2 coord, Dir dir, int steps) {
+            this(coord.x, coord.y, dir, steps);
         }
 
         @Override

@@ -78,9 +78,8 @@ public class AdventOfCode25 {
         Map<Link, Integer> linksUsage = new HashMap<>();
         for (Node node : nodes.values()) {
             Queue<Node> toVisit = new LinkedList<>();
-            Set<Node> visited = new HashSet<>();
             toVisit.add(node);
-            visited.add(node);
+            Set<Node> visited = new HashSet<>(toVisit);
             while (!toVisit.isEmpty()) {
                 Node current = toVisit.remove();
                 for (Link link : current.links) {
@@ -101,9 +100,8 @@ public class AdventOfCode25 {
         Set<Integer> sizes = new HashSet<>();
         for (Node node : nodes.values()) {
             Queue<Node> toVisit = new LinkedList<>();
-            Set<Node> visited = new HashSet<>();
             toVisit.add(node);
-            visited.add(node);
+            Set<Node> visited = new HashSet<>(toVisit);
             while (!toVisit.isEmpty()) {
                 Node current = toVisit.remove();
                 for (Link link : current.links) {
@@ -116,6 +114,6 @@ public class AdventOfCode25 {
             }
             sizes.add(visited.size());
         }
-        return sizes.stream().reduce((s1, s2) -> s1 * s2).orElseThrow();
+        return sizes.stream().reduce(1, (s1, s2) -> s1 * s2);
     }
 }
