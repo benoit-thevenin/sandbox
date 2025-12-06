@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 public class AdventOfCode24 {
 
-    private record Gate(String input1, String input2, BiFunction<Boolean, Boolean, Boolean> operation, String output) {
+    private record Gate(String input1, String input2, BinaryOperator<Boolean> operation, String output) {
         boolean hasInputMatching(String input) {
             return input1.equals(input) || input2.equals(input);
         }
@@ -29,7 +29,7 @@ public class AdventOfCode24 {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdventOfCode24.class);
-    private static final Map<String, BiFunction<Boolean, Boolean, Boolean>> OPERATIONS = new HashMap<>();
+    private static final Map<String, BinaryOperator<Boolean>> OPERATIONS = new HashMap<>();
 
     static {
         OPERATIONS.put("AND", (a, b) -> a && b);
@@ -52,7 +52,7 @@ public class AdventOfCode24 {
                 } else {
                     String[] split = currentLine.split(" -> ");
                     String[] input = split[0].split(" ");
-                    BiFunction<Boolean, Boolean, Boolean> operation = OPERATIONS.get(input[1]);
+                    BinaryOperator<Boolean> operation = OPERATIONS.get(input[1]);
                     gates.add(new Gate(input[0], input[2], operation, split[1]));
                 }
             }

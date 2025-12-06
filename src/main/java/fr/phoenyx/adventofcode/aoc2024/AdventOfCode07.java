@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 
 public class AdventOfCode07 {
 
     private record Equation(long result, List<Long> values) {
         boolean isValid(boolean isPart2) {
             if (values.size() == 1) return result == values.get(0);
-            List<BiFunction<Long, Long, Long>> operators = new ArrayList<>(List.of(Long::sum, (a, b) -> a * b));
+            List<BinaryOperator<Long>> operators = new ArrayList<>(List.of(Long::sum, (a, b) -> a * b));
             if (isPart2) operators.add((a, b) -> Long.parseLong(a.toString() + b));
             int possibilities = (int) Math.pow(operators.size(), values.size() - 1);
             for (int i = 0; i < possibilities; i++) {
