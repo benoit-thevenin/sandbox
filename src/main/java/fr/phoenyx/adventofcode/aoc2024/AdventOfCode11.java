@@ -36,25 +36,20 @@ public class AdventOfCode11 {
 
     private static long applyProcessIteratively(List<Long> stones, int count) {
         Map<Long, Long> counts = new HashMap<>();
-        for (Long stone: stones) addInMap(counts, stone, 1L);
+        for (Long stone: stones) counts.merge(stone, 1L, Long::sum);
         for (int i = 0; i < count; i++) {
             Map<Long, Long> next = new HashMap<>();
             for (Map.Entry<Long, Long> entry: counts.entrySet()) {
-                if (entry.getKey() == 0) addInMap(next, 1L, entry.getValue());
+                if (entry.getKey() == 0) next.merge(1L, entry.getValue(), Long::sum);
                 else if (entry.getKey().toString().length() % 2 == 0) {
                     String stoneString = entry.getKey().toString();
-                    addInMap(next, Long.parseLong(stoneString.substring(0, stoneString.length() / 2)), entry.getValue());
-                    addInMap(next, Long.parseLong(stoneString.substring(stoneString.length() / 2)), entry.getValue());
-                } else addInMap(next, entry.getKey() * 2024, entry.getValue());
+                    next.merge(Long.parseLong(stoneString.substring(0, stoneString.length() / 2)), entry.getValue(), Long::sum);
+                    next.merge(Long.parseLong(stoneString.substring(stoneString.length() / 2)), entry.getValue(), Long::sum);
+                } else next.merge(entry.getKey() * 2024, entry.getValue(), Long::sum);
             }
             counts = next;
         }
         return counts.values().stream().reduce(0L, Long::sum);
-    }
-
-    private static void addInMap(Map<Long, Long> map, Long key, Long value) {
-        if (map.containsKey(key)) map.put(key, map.get(key) + value);
-        else map.put(key, value);
     }
 
     private static long applyProcessRecursively(List<Long> stones, int count) {
