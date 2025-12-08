@@ -15,6 +15,10 @@ public class Coord3 {
         return (Math.abs(x - other.x) + Math.abs(y - other.y) + Math.abs(z - other.z)) / 2;
     }
 
+    public double distanceTo(Coord3 other) {
+        return Math.sqrt(Math.pow((x - other.x), 2) + Math.pow((y - other.y), 2) + Math.pow((z - other.z), 2));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
